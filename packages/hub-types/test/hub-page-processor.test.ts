@@ -15,7 +15,6 @@
  */
 import * as utils from "../../common/test/mocks/utils";
 import * as sitesPackage from "@esri/hub-sites";
-import * as portalPackage from "@esri/arcgis-rest-portal";
 import * as moveHelper from "../src/helpers/move-model-to-folder";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
@@ -24,329 +23,245 @@ import * as postProcessModule from "../src/helpers/_post-process-page";
 import * as common from "@esri/solution-common";
 import * as hubCommon from "@esri/hub-common";
 import * as replacerModule from "../src/helpers/replace-item-ids";
-import { cloneObject, fail } from "@esri/solution-common/src/generalHelpers";
 
 describe("HubPageProcessor: ", () => {
   describe("convertItemToTemplate: ", () => {
     it("exists", () => {
-      expect(HubPageProcessor.convertItemToTemplate).toBeDefined(
-        "Should have convertItemToTemplate method"
-      );
+      expect(HubPageProcessor.convertItemToTemplate)
+        .withContext("Should have convertItemToTemplate method")
+        .toBeDefined();
     });
-    it("should fetch the model, convert it, and swap ids", () => {
+
+    it("should fetch the model, convert it, and swap ids", async () => {
       // we are not testing the conversion, so the model can be empty
       const model = {
         item: {
           created: 1520968147000,
-          modified: 1522178539000
-        }
+          modified: 1522178539000,
+        },
       } as hubCommon.IModel;
       // we are testing some post-templating logic, so the rawTmpl needs to have some props
       const rawTmpl = {
         item: {
-          typeKeywords: ["doNotDelete"]
+          typeKeywords: ["doNotDelete"],
         },
         itemId: "ef4",
         key: "not-used",
         type: "Hub Page",
         data: {},
-        properties: {}
+        properties: {},
       } as hubCommon.IModelTemplate;
       const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo(model);
-      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubUserRequestOptions
-      );
-      const convertSpy = spyOn(
-        sitesPackage,
-        "convertPageToTemplate"
-      ).and.resolveTo(rawTmpl);
-      const replaceSpy = spyOn(
-        replacerModule,
-        "replaceItemIds"
-      ).and.callThrough();
-      return HubPageProcessor.convertItemToTemplate(
-        { id: "ef4" },
-        MOCK_USER_SESSION
-      ).then(tmpl => {
-        expect(tmpl.item.typeKeywords.length).toBe(
-          0,
-          "should remove doNotDelete kwd"
-        );
-        expect(tmpl.groups).toBeDefined("should have groups");
-        expect(tmpl.resources).toBeDefined("should have resources");
-        expect(tmpl.properties).toBeDefined("should have properties");
-        expect(tmpl.estimatedDeploymentCostFactor).toBeDefined(
-          "should have estimatedDeploymentCostFactor"
-        );
-        expect(convertSpy.calls.count()).toBe(1, "should convert model");
-        expect(hubRoSpy.calls.count()).toBe(1, "should create requestOptions");
-        expect(getModelSpy.calls.count()).toBe(1, "should get the page model");
-        expect(replaceSpy.calls.count()).toBe(1, "should replace ids");
-      });
+      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
+      const convertSpy = spyOn(sitesPackage, "convertPageToTemplate").and.resolveTo(rawTmpl);
+      const replaceSpy = spyOn(replacerModule, "replaceItemIds").and.callThrough();
+
+      const tmpl = await HubPageProcessor.convertItemToTemplate({ id: "ef4" }, MOCK_USER_SESSION);
+      expect((tmpl.item.typeKeywords ?? []).length)
+        .withContext("should remove doNotDelete kwd")
+        .toBe(0);
+      expect(tmpl.groups).withContext("should have groups").toBeDefined();
+      expect(tmpl.resources).withContext("should have resources").toBeDefined();
+      expect(tmpl.properties).withContext("should have properties").toBeDefined();
+      expect(tmpl.estimatedDeploymentCostFactor).withContext("should have estimatedDeploymentCostFactor").toBeDefined();
+      expect(convertSpy.calls.count()).withContext("should convert model").toBe(1);
+      expect(hubRoSpy.calls.count()).withContext("should create requestOptions").toBe(1);
+      expect(getModelSpy.calls.count()).withContext("should get the page model").toBe(1);
+      expect(replaceSpy.calls.count()).withContext("should replace ids").toBe(1);
     });
-    it("appends properties to template if missing", () => {
+
+    it("appends properties to template if missing", async () => {
       // we are not testing the conversion, so the model can be empty
       const model = {
         item: {
           created: 1520968147000,
-          modified: 1522178539000
-        }
+          modified: 1522178539000,
+        },
       } as hubCommon.IModel;
       // we are testing some post-templating logic, so the rawTmpl needs to have some props
       const rawTmpl = {
         item: {
-          typeKeywords: ["doNotDelete"]
+          typeKeywords: ["doNotDelete"],
         },
         itemId: "ef4",
         key: "not-used",
         type: "Hub Page",
-        data: {}
+        data: {},
       } as hubCommon.IModelTemplate;
       const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo(model);
-      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubUserRequestOptions
-      );
-      const convertSpy = spyOn(
-        sitesPackage,
-        "convertPageToTemplate"
-      ).and.resolveTo(rawTmpl);
-      const replaceSpy = spyOn(
-        replacerModule,
-        "replaceItemIds"
-      ).and.callThrough();
-      return HubPageProcessor.convertItemToTemplate(
-        { id: "ef4" },
-        MOCK_USER_SESSION,
-        MOCK_USER_SESSION
-      ).then(tmpl => {
-        expect(tmpl.item.typeKeywords.length).toBe(
-          0,
-          "should remove doNotDelete kwd"
-        );
-        expect(tmpl.groups).toBeDefined("should have groups");
-        expect(tmpl.resources).toBeDefined("should have resources");
-        expect(tmpl.properties).toBeDefined("should have properties");
-        expect(tmpl.estimatedDeploymentCostFactor).toBeDefined(
-          "should have estimatedDeploymentCostFactor"
-        );
-        expect(convertSpy.calls.count()).toBe(1, "should convert model");
-        expect(hubRoSpy.calls.count()).toBe(1, "should create requestOptions");
-        expect(getModelSpy.calls.count()).toBe(1, "should get the page model");
-        expect(replaceSpy.calls.count()).toBe(1, "should replace ids");
-      });
+      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
+      const convertSpy = spyOn(sitesPackage, "convertPageToTemplate").and.resolveTo(rawTmpl);
+      const replaceSpy = spyOn(replacerModule, "replaceItemIds").and.callThrough();
+
+      const tmpl = await HubPageProcessor.convertItemToTemplate({ id: "ef4" }, MOCK_USER_SESSION, MOCK_USER_SESSION);
+      expect((tmpl.item.typeKeywords ?? []).length)
+        .withContext("should remove doNotDelete kwd")
+        .toBe(0);
+      expect(tmpl.groups).withContext("should have groups").toBeDefined();
+      expect(tmpl.resources).withContext("should have resources").toBeDefined();
+      expect(tmpl.properties).withContext("should have properties").toBeDefined();
+      expect(tmpl.estimatedDeploymentCostFactor).withContext("should have estimatedDeploymentCostFactor").toBeDefined();
+      expect(convertSpy.calls.count()).withContext("should convert model").toBe(1);
+      expect(hubRoSpy.calls.count()).withContext("should create requestOptions").toBe(1);
+      expect(getModelSpy.calls.count()).withContext("should get the page model").toBe(1);
+      expect(replaceSpy.calls.count()).withContext("should replace ids").toBe(1);
     });
   });
+
   describe("createItemFromTemplate: ", () => {
     // objects used in following tests
     const fakePage = {
       item: {
-        id: "FAKE3ef"
-      }
+        id: "FAKE3ef",
+      },
     } as hubCommon.IModel;
     const tmpl = {
       itemId: "bc7",
       type: "Hub Page",
-      item: {}
+      item: {},
     } as common.IItemTemplate;
-    const tmplThmb = {
-      itemId: "bc7",
-      type: "Hub Page",
-      item: {
-        thumbnail: "yoda"
-      }
-    } as any;
 
     it("exists", () => {
-      expect(HubPageProcessor.createItemFromTemplate).toBeDefined(
-        "Should have createItemFromTemplate method"
-      );
+      expect(HubPageProcessor.createItemFromTemplate)
+        .withContext("Should have createItemFromTemplate method")
+        .toBeDefined();
     });
-    it("happy-path:: delegates to hub.js", () => {
-      const createFromTmplSpy = spyOn(
-        sitesPackage,
-        "createPageModelFromTemplate"
-      ).and.resolveTo(fakePage);
-      const createPageSpy = spyOn(sitesPackage, "createPage").and.resolveTo(
-        fakePage
-      );
-      const movePageSpy = spyOn(
-        moveHelper,
-        "moveModelToFolder"
-      ).and.resolveTo();
-      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+
+    it("happy-path:: delegates to hub.js", async () => {
+      const createFromTmplSpy = spyOn(sitesPackage, "createPageModelFromTemplate").and.resolveTo(fakePage);
+      const createPageSpy = spyOn(sitesPackage, "createPage").and.resolveTo(fakePage);
+      const movePageSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo();
+      spyOn(common, "restUpdateItem").and.resolveTo({
         success: true,
-        id: "fred"
+        id: "fred",
       });
-      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubUserRequestOptions
-      );
+      spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
       const td = {
         organization: {
           id: "somePortalId",
-          portalHostname: "www.arcgis.com"
+          portalHostname: "www.arcgis.com",
         },
         user: {
-          username: "vader"
+          username: "vader",
         },
         solutionItemExtent: "10,10,20,20",
         solution: {
-          title: "Some Title"
-        }
+          title: "Some Title",
+        },
       };
       const cb = () => true;
-      return HubPageProcessor.createItemFromTemplate(
-        tmpl,
-        td,
-        MOCK_USER_SESSION,
-        cb
-      ).then(result => {
-        expect(result.id).toBe("FAKE3ef", "should return the created item id");
-        expect(result.type).toBe("Hub Page", "should return the type");
-        expect(result.postProcess).toBe(true, "should flag postProcess");
-        expect(createFromTmplSpy.calls.count()).toBe(
-          1,
-          "should call createFromTemplate"
-        );
-        expect(createPageSpy.calls.count()).toBe(1, "should call createPage");
-        expect(movePageSpy.calls.count()).toBe(1, "should call move");
-      });
+
+      const result = await HubPageProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb);
+      expect(result.id).withContext("should return the created item id").toBe("FAKE3ef");
+      expect(result.type).withContext("should return the type").toBe("Hub Page");
+      expect(result.postProcess).withContext("should flag postProcess").toBe(true);
+      expect(createFromTmplSpy.calls.count()).withContext("should call createFromTemplate").toBe(1);
+      expect(createPageSpy.calls.count()).withContext("should call createPage").toBe(1);
+      expect(movePageSpy.calls.count()).withContext("should call move").toBe(1);
     });
 
-    it("asset and resource juggling", () => {
-      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubUserRequestOptions
-      );
-      const createFromTmplSpy = spyOn(
-        sitesPackage,
-        "createPageModelFromTemplate"
-      ).and.resolveTo(fakePage);
-      const createPageSpy = spyOn(sitesPackage, "createPage").and.resolveTo(
-        fakePage
-      );
-      const movePageSpy = spyOn(
-        moveHelper,
-        "moveModelToFolder"
-      ).and.resolveTo();
-      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+    it("asset and resource juggling", async () => {
+      spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
+      const createFromTmplSpy = spyOn(sitesPackage, "createPageModelFromTemplate").and.resolveTo(fakePage);
+      const createPageSpy = spyOn(sitesPackage, "createPage").and.resolveTo(fakePage);
+      const movePageSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo();
+      spyOn(common, "restUpdateItem").and.resolveTo({
         success: true,
-        id: "fred"
+        id: "fred",
       });
 
       const td = {
         organization: {
           id: "somePortalId",
-          portalHostname: "www.arcgis.com"
+          portalHostname: "www.arcgis.com",
         },
         user: {
-          username: "vader"
+          username: "vader",
         },
         solutionItemExtent: "10,10,20,20",
         solution: {
-          title: "Some Title"
-        }
+          title: "Some Title",
+        },
       };
-      const tmplWithAssetsAndResources = cloneObject(tmpl);
+      const tmplWithAssetsAndResources = common.cloneObject(tmpl);
       tmplWithAssetsAndResources.assets = [];
       tmplWithAssetsAndResources.resources = [];
 
       const cb = () => true;
-      return HubPageProcessor.createItemFromTemplate(
+
+      const result = await HubPageProcessor.createItemFromTemplate(
         tmplWithAssetsAndResources,
         td,
         MOCK_USER_SESSION,
-        cb
-      ).then(result => {
-        expect(result.id).toBe("FAKE3ef", "should return the created item id");
-        expect(result.type).toBe("Hub Page", "should return the type");
-        expect(result.postProcess).toBe(true, "should flag postProcess");
-        expect(createFromTmplSpy.calls.count()).toBe(
-          1,
-          "should call createFromTemplate"
-        );
-        expect(createPageSpy.calls.count()).toBe(1, "should call createPage");
-        expect(movePageSpy.calls.count()).toBe(1, "should call move");
-      });
+        cb,
+      );
+      expect(result.id).withContext("should return the created item id").toBe("FAKE3ef");
+      expect(result.type).withContext("should return the type").toBe("Hub Page");
+      expect(result.postProcess).withContext("should flag postProcess").toBe(true);
+      expect(createFromTmplSpy.calls.count()).withContext("should call createFromTemplate").toBe(1);
+      expect(createPageSpy.calls.count()).withContext("should call createPage").toBe(1);
+      expect(movePageSpy.calls.count()).withContext("should call move").toBe(1);
     });
-    it("callsback on exception", done => {
-      spyOn(sitesPackage, "createPageModelFromTemplate").and.rejectWith(
-        "Whoa thats bad"
-      );
-      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubUserRequestOptions
-      );
+
+    it("callsback on exception", async () => {
+      spyOn(sitesPackage, "createPageModelFromTemplate").and.rejectWith("Whoa thats bad");
+      spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
       const td = {
         organization: {
           id: "somePortalId",
-          portalHostname: "www.arcgis.com"
+          portalHostname: "www.arcgis.com",
         },
         user: {
-          username: "vader"
-        }
+          username: "vader",
+        },
       };
       const cb = () => true;
-      HubPageProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb)
+
+      return HubPageProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb)
         .then(() => {
-          done.fail();
+          common.fail();
         })
-        .catch(ex => {
-          expect(ex).toBe("Whoa thats bad", "should re-throw");
-          done();
+        .catch((ex) => {
+          expect(ex).withContext("should re-throw").toBe("Whoa thats bad");
+          return Promise.resolve();
         });
     });
-    it("it early-exits correctly", () => {
-      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubUserRequestOptions
-      );
+
+    it("it early-exits correctly", async () => {
+      spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
       const td = {};
       const cb = () => false;
-      return HubPageProcessor.createItemFromTemplate(
-        tmpl,
-        td,
-        MOCK_USER_SESSION,
-        cb
-      ).then(result => {
-        expect(result.id).toBe("", "should return empty result");
-        expect(result.postProcess).toBe(
-          false,
-          "should return postProcess false"
-        );
-      });
+
+      const result = await HubPageProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb);
+      expect(result.id).withContext("should return empty result").toBe("");
+      expect(result.postProcess).withContext("should return postProcess false").toBe(false);
     });
-    it("cleans up if job is cancelled late", () => {
-      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubUserRequestOptions
-      );
-      const createFromTmplSpy = spyOn(
-        sitesPackage,
-        "createPageModelFromTemplate"
-      ).and.resolveTo(fakePage);
-      const createPageSpy = spyOn(sitesPackage, "createPage").and.resolveTo(
-        fakePage
-      );
-      const movePageSpy = spyOn(
-        moveHelper,
-        "moveModelToFolder"
-      ).and.resolveTo();
-      const thumbnailSpy = spyOn(portalPackage, "updateItem").and.resolveTo({
+
+    it("cleans up if job is cancelled late", async () => {
+      spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
+      const createFromTmplSpy = spyOn(sitesPackage, "createPageModelFromTemplate").and.resolveTo(fakePage);
+      const createPageSpy = spyOn(sitesPackage, "createPage").and.resolveTo(fakePage);
+      const movePageSpy = spyOn(moveHelper, "moveModelToFolder").and.resolveTo();
+      spyOn(common, "restUpdateItem").and.resolveTo({
         success: true,
-        id: "fred"
+        id: "fred",
       });
       const removePageSpy = spyOn(sitesPackage, "removePage").and.resolveTo({
         success: true,
-        itemId: "FAKE3ef"
+        itemId: "FAKE3ef",
       });
       const td = {
         organization: {
           id: "somePortalId",
-          portalHostname: "www.arcgis.com"
+          portalHostname: "www.arcgis.com",
         },
         user: {
-          username: "vader"
+          username: "vader",
         },
         solutionItemExtent: "10,10,20,20",
         solution: {
-          title: "Some Title"
-        }
+          title: "Some Title",
+        },
       };
       // fn that returns a fn that closes over a counter so that
       // it can return false after the first call
@@ -357,77 +272,57 @@ describe("HubPageProcessor: ", () => {
           return calls < 2;
         };
       };
-      return HubPageProcessor.createItemFromTemplate(
-        tmpl,
-        td,
-        MOCK_USER_SESSION,
-        createCb()
-      ).then(result => {
-        expect(result.id).toBe("", "should return empty result");
-        expect(result.type).toBe("Hub Page", "should return the type");
-        expect(result.postProcess).toBe(false, "should not flag postProcess");
-        expect(createFromTmplSpy.calls.count()).toBe(
-          1,
-          "should call createFromTemplate"
-        );
-        expect(createPageSpy.calls.count()).toBe(1, "should call createPage");
-        expect(movePageSpy.calls.count()).toBe(1, "should call move");
-        expect(removePageSpy.calls.count()).toBe(1, "should call removePage");
-      });
+
+      const result = await HubPageProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, createCb());
+      expect(result.id).withContext("should return empty result").toBe("");
+      expect(result.type).withContext("should return the type").toBe("Hub Page");
+      expect(result.postProcess).withContext("should not flag postProcess").toBe(false);
+      expect(createFromTmplSpy.calls.count()).withContext("should call createFromTemplate").toBe(1);
+      expect(createPageSpy.calls.count()).withContext("should call createPage").toBe(1);
+      expect(movePageSpy.calls.count()).withContext("should call move").toBe(1);
+      expect(removePageSpy.calls.count()).withContext("should call removePage").toBe(1);
     });
   });
+
   describe("postProcess :: ", () => {
-    it("fetches page model and delegates to _postProcessPage", done => {
+    it("fetches page model and delegates to _postProcessPage", async () => {
       const model = {} as hubCommon.IModel;
       const getModelSpy = spyOn(hubCommon, "getModel").and.resolveTo(model);
-      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo(
-        {} as hubCommon.IHubUserRequestOptions
-      );
-      const postProcessSpy = spyOn(
-        postProcessModule,
-        "_postProcessPage"
-      ).and.resolveTo(true);
+      const hubRoSpy = spyOn(common, "createHubRequestOptions").and.resolveTo({} as hubCommon.IHubUserRequestOptions);
+      const postProcessSpy = spyOn(postProcessModule, "_postProcessPage").and.resolveTo(true);
       const templates = [
         { itemId: "bc3", data: {} },
-        { itemId: "bc4", data: {} }
+        { itemId: "bc4", data: {} },
       ] as common.IItemTemplate[];
       const td = {
         organization: {
           id: "somePortalId",
-          portalHostname: "www.arcgis.com"
+          portalHostname: "www.arcgis.com",
         },
         user: {
-          username: "vader"
+          username: "vader",
         },
         bc3: {
-          id: "new-bc3"
+          id: "new-bc3",
         },
         bc4: {
-          id: "new-bc4"
-        }
+          id: "new-bc4",
+        },
       };
-      HubPageProcessor.postProcess(
-        "ef3",
-        "Hub Page",
-        [],
-        templates,
-        [],
-        td,
-        MOCK_USER_SESSION
-      ).then(result => {
-        expect(result).toBe(true, "should return true");
-        expect(hubRoSpy.calls.count()).toBe(1, "should create requestOptions");
-        expect(getModelSpy.calls.count()).toBe(1, "should get the page model");
-        expect(postProcessSpy.calls.count()).toBe(1, "should delegate");
-        done();
-      });
+
+      const result = await HubPageProcessor.postProcess("ef3", "Hub Page", [], templates, [], td, MOCK_USER_SESSION);
+      expect(result).withContext("should return true").toBe(true);
+      expect(hubRoSpy.calls.count()).withContext("should create requestOptions").toBe(1);
+      expect(getModelSpy.calls.count()).withContext("should get the page model").toBe(1);
+      expect(postProcessSpy.calls.count()).withContext("should delegate").toBe(1);
     });
   });
+
   describe("isAPage :: ", () => {
     it("recognizes both types", () => {
-      expect(HubPageProcessor.isAPage("Hub Page")).toBe(true, "Ago Type");
-      expect(HubPageProcessor.isAPage("Site Page")).toBe(true, "Portal type");
-      expect(HubPageProcessor.isAPage("Web Map")).toBe(false, "other type");
+      expect(HubPageProcessor.isAPage("Hub Page")).withContext("Ago Type").toBe(true);
+      expect(HubPageProcessor.isAPage("Site Page")).withContext("Portal type").toBe(true);
+      expect(HubPageProcessor.isAPage("Web Map")).withContext("other type").toBe(false);
     });
   });
 });

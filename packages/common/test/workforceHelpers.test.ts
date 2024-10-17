@@ -18,16 +18,17 @@
  * Provides tests for functions involving the creation and deployment of Workforce item types.
  */
 
+import { UserSession } from "../src/arcgisRestJS";
 import * as workforceHelpers from "../src/workforceHelpers";
-import * as interfaces from "../src/interfaces";
+import { IItemTemplate, IFeatureServiceProperties } from "../src/interfaces";
 import * as mockItems from "../../common/test/mocks/agolItems";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require("fetch-mock");
 import * as utils from "../../common/test/mocks/utils";
 import * as templates from "../../common/test/mocks/templates";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -41,25 +42,16 @@ afterEach(() => {
 
 describe("Module `workforceHelpers`: manages the creation and deployment of workforce project item types", () => {
   describe("_applyEdits", () => {
-    it("will handle no edits", done => {
-      workforceHelpers
-        ._applyEdits("http://url", [], MOCK_USER_SESSION)
-        .then(
-          () => {
-            done();
-          },
-          () => {
-            done.fail();
-          }
-        );
+    it("will handle no edits", () => {
+      return workforceHelpers._applyEdits("http://url", [], MOCK_USER_SESSION);
     });
   });
   describe("_extractDependencies", () => {
-    it("handles serviceItemId variants", done => {
+    it("handles serviceItemId variants", async () => {
       const data: any = {
         dispatchers: {
-          serviceItemId: "1234567890abcdef1234567890abcdef"
-        }
+          serviceItemId: "1234567890abcdef1234567890abcdef",
+        },
       };
       const keyProperties: string[] = [
         "groupId",
@@ -68,25 +60,21 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
         "dispatchers",
         "assignments",
         "workers",
-        "tracks"
+        "tracks",
       ];
 
       const expected: any = {
         dependencies: ["1234567890abcdef1234567890abcdef"],
-        urlHash: {}
+        urlHash: {},
       };
 
-      workforceHelpers
-        .extractWorkforceDependencies(data, keyProperties, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
+      const actual = await workforceHelpers.extractWorkforceDependencies(data, keyProperties, MOCK_USER_SESSION);
+      expect(actual).toEqual(expected);
     });
 
-    it("handles direct ids", done => {
+    it("handles direct ids", async () => {
       const data: any = {
-        workerWebMapId: "1234567890abcdef1234567890abcdef"
+        workerWebMapId: "1234567890abcdef1234567890abcdef",
       };
       const keyProperties: string[] = [
         "groupId",
@@ -95,25 +83,21 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
         "dispatchers",
         "assignments",
         "workers",
-        "tracks"
+        "tracks",
       ];
 
       const expected: any = {
         dependencies: ["1234567890abcdef1234567890abcdef"],
-        urlHash: {}
+        urlHash: {},
       };
 
-      workforceHelpers
-        .extractWorkforceDependencies(data, keyProperties, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
+      const actual = await workforceHelpers.extractWorkforceDependencies(data, keyProperties, MOCK_USER_SESSION);
+      expect(actual).toEqual(expected);
     });
 
-    it("skips uninteresting id", done => {
+    it("skips uninteresting id", async () => {
       const data: any = {
-        folderId: "1234567890abcdef1234567890abcdef"
+        folderId: "1234567890abcdef1234567890abcdef",
       };
       const keyProperties: string[] = [
         "groupId",
@@ -122,47 +106,43 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
         "dispatchers",
         "assignments",
         "workers",
-        "tracks"
+        "tracks",
       ];
 
       const expected: any = {
         dependencies: [],
-        urlHash: {}
+        urlHash: {},
       };
 
-      workforceHelpers
-        .extractWorkforceDependencies(data, keyProperties, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
+      const actual = await workforceHelpers.extractWorkforceDependencies(data, keyProperties, MOCK_USER_SESSION);
+      expect(actual).toEqual(expected);
     });
 
-    it("handles multiple types of id", done => {
+    it("handles multiple types of id", async () => {
       const data: any = {
         workerWebMapId: "abc116555b16437f8435e079033128d0",
         dispatcherWebMapId: "abc26a244163430590151395821fb845",
         dispatchers: {
           serviceItemId: "abc302ec12b74d2f9f2b3cc549420086",
-          url: "abc302ec12b74d2f9f2b3cc549420086"
+          url: "abc302ec12b74d2f9f2b3cc549420086",
         },
         assignments: {
           serviceItemId: "abc4494043c3459faabcfd0e1ab557fc",
-          url: "abc4494043c3459faabcfd0e1ab557fc"
+          url: "abc4494043c3459faabcfd0e1ab557fc",
         },
         workers: {
           serviceItemId: "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
-          url: "abc5dd4bdd18437f8d5ff1aa2d25fd7c"
+          url: "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
         },
         tracks: {
           serviceItemId: "abc64329e69144c59f69f3f3e0d45269",
           url: "abc64329e69144c59f69f3f3e0d45269",
           enabled: true,
-          updateInterval: 300
+          updateInterval: 300,
         },
         version: "1.2.0",
         groupId: "abc715c2df2b466da05577776e82d044",
-        folderId: "d61c63538d8c45c68de809e4fe01e243"
+        folderId: "d61c63538d8c45c68de809e4fe01e243",
       };
       const keyProperties: string[] = [
         "groupId",
@@ -171,7 +151,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
         "dispatchers",
         "assignments",
         "workers",
-        "tracks"
+        "tracks",
       ];
 
       const expected: any = {
@@ -182,44 +162,40 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
           "abc302ec12b74d2f9f2b3cc549420086",
           "abc4494043c3459faabcfd0e1ab557fc",
           "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
-          "abc64329e69144c59f69f3f3e0d45269"
+          "abc64329e69144c59f69f3f3e0d45269",
         ],
-        urlHash: {}
+        urlHash: {},
       };
 
-      workforceHelpers
-        .extractWorkforceDependencies(data, keyProperties, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
+      const actual = await workforceHelpers.extractWorkforceDependencies(data, keyProperties, MOCK_USER_SESSION);
+      expect(actual).toEqual(expected);
     });
 
-    it("handles id repeats", done => {
+    it("handles id repeats", async () => {
       const data: any = {
         workerWebMapId: "abc116555b16437f8435e079033128d0",
         dispatcherWebMapId: "abc116555b16437f8435e079033128d0",
         dispatchers: {
           serviceItemId: "abc302ec12b74d2f9f2b3cc549420086",
-          url: "abc302ec12b74d2f9f2b3cc549420086"
+          url: "abc302ec12b74d2f9f2b3cc549420086",
         },
         assignments: {
           serviceItemId: "abc4494043c3459faabcfd0e1ab557fc",
-          url: "abc4494043c3459faabcfd0e1ab557fc"
+          url: "abc4494043c3459faabcfd0e1ab557fc",
         },
         workers: {
           serviceItemId: "abc302ec12b74d2f9f2b3cc549420086",
-          url: "abc5dd4bdd18437f8d5ff1aa2d25fd7c"
+          url: "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
         },
         tracks: {
           serviceItemId: "abc64329e69144c59f69f3f3e0d45269",
           url: "abc64329e69144c59f69f3f3e0d45269",
           enabled: true,
-          updateInterval: 300
+          updateInterval: 300,
         },
         version: "1.2.0",
         groupId: "abc715c2df2b466da05577776e82d044",
-        folderId: "d61c63538d8c45c68de809e4fe01e243"
+        folderId: "d61c63538d8c45c68de809e4fe01e243",
       };
       const keyProperties: string[] = [
         "groupId",
@@ -228,7 +204,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
         "dispatchers",
         "assignments",
         "workers",
-        "tracks"
+        "tracks",
       ];
 
       const expected: any = {
@@ -237,17 +213,13 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
           "abc116555b16437f8435e079033128d0",
           "abc302ec12b74d2f9f2b3cc549420086",
           "abc4494043c3459faabcfd0e1ab557fc",
-          "abc64329e69144c59f69f3f3e0d45269"
+          "abc64329e69144c59f69f3f3e0d45269",
         ],
-        urlHash: {}
+        urlHash: {},
       };
 
-      workforceHelpers
-        .extractWorkforceDependencies(data, keyProperties, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
+      const actual = await workforceHelpers.extractWorkforceDependencies(data, keyProperties, MOCK_USER_SESSION);
+      expect(actual).toEqual(expected);
     });
   });
 
@@ -283,20 +255,12 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
       const expected: any = mockItems.getAGOLItemData("Workforce Project");
       delete expected.assignmentIntegrations;
       delete expected["dispatchers"].url;
-      expected["dispatchers"].serviceItemId =
-        "{{abc302ec12b74d2f9f2b3cc549420086.itemId}}";
+      expected["dispatchers"].serviceItemId = "{{abc302ec12b74d2f9f2b3cc549420086.itemId}}";
       expected["folderId"] = "{{folderId}}";
-      expected["assignments"].serviceItemId =
-        "{{abc4494043c3459faabcfd0e1ab557fc.layer0.itemId}}";
-      expected["assignments"].url =
-        "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}";
+      expected["assignments"].serviceItemId = "{{abc4494043c3459faabcfd0e1ab557fc.layer0.itemId}}";
+      expected["assignments"].url = "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}";
 
-      const actual = workforceHelpers.templatizeWorkforce(
-        data,
-        ["dispatchers", "assignments"],
-        {},
-        {}
-      );
+      const actual = workforceHelpers.templatizeWorkforce(data, ["dispatchers", "assignments"], {}, {});
       expect(actual).toEqual(expected);
     });
 
@@ -321,8 +285,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
 
       const expected: any = mockItems.getAGOLItemData("Workforce Project");
       expected.assignmentIntegrations[0].urlTemplate = "ABC123";
-      expected.assignmentIntegrations[0].assignmentTypes[0].urlTemplate =
-        "ABC123";
+      expected.assignmentIntegrations[0].assignmentTypes[0].urlTemplate = "ABC123";
       expected["folderId"] = "{{folderId}}";
 
       const actual = workforceHelpers.templatizeWorkforce(data, [], {}, {});
@@ -334,20 +297,18 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
     it("can get dependencies from workforce service", () => {
       const template = templates.getItemTemplateSkeleton();
       delete template.item.properties;
-      const actual = workforceHelpers.getWorkforceDependencies(template, [
-        "ABC123"
-      ]);
+      const actual = workforceHelpers.getWorkforceDependencies(template, ["ABC123"]);
       const expected = [{ id: "ABC123", name: "" }];
       expect(actual).toEqual(expected);
     });
   });
 
   describe("getWorkforceServiceInfo", () => {
-    it("can handle query failure", done => {
-      const props: interfaces.IFeatureServiceProperties = {
+    it("can handle query failure", async () => {
+      const props: IFeatureServiceProperties = {
         service: {},
         layers: [],
-        tables: []
+        tables: [],
       };
 
       const urlNonAdmin =
@@ -356,34 +317,20 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
         "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/admin/services/workforce_733f169eddb3451a9901abc8bd3d4ad4/FeatureServer";
 
       fetchMock
-        .get(
-          urlNonAdmin +
-            "/3/query?f=json&where=1%3D1&outFields=*&token=fake-token",
-          mockItems.get400Failure()
-        )
-        .get(
-          urlNonAdmin +
-            "/4/query?f=json&where=1%3D1&outFields=*&token=fake-token",
-          mockItems.get400Failure()
-        );
+        .get(urlNonAdmin + "/3/query?f=json&where=1%3D1&outFields=*&token=fake-token", mockItems.get400Failure())
+        .get(urlNonAdmin + "/4/query?f=json&where=1%3D1&outFields=*&token=fake-token", mockItems.get400Failure());
 
-      workforceHelpers
-        .getWorkforceServiceInfo(props, url, MOCK_USER_SESSION)
-        .then(
-          () => {
-            done.fail();
-          },
-          () => {
-            done();
-          }
-        );
+      return workforceHelpers.getWorkforceServiceInfo(props, url, MOCK_USER_SESSION).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
     });
 
-    it("can handle _getAssignmentIntegrationInfos failure", done => {
-      const props: interfaces.IFeatureServiceProperties = {
+    it("can handle _getAssignmentIntegrationInfos failure", async () => {
+      const props: IFeatureServiceProperties = {
         service: {},
         layers: [],
-        tables: []
+        tables: [],
       };
 
       const assignmentIntegrations = {
@@ -395,50 +342,50 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             name: "OBJECTID",
             type: "esriFieldTypeOID",
             alias: "OBJECTID",
-            sqlType: "sqlTypeInteger"
+            sqlType: "sqlTypeInteger",
           },
           {
             name: "GlobalID",
             type: "esriFieldTypeGlobalID",
             alias: "GlobalID",
             sqlType: "sqlTypeOther",
-            length: 38
+            length: 38,
           },
           {
             name: "appid",
             type: "esriFieldTypeString",
             alias: "App ID",
             sqlType: "sqlTypeVarchar",
-            length: 255
+            length: 255,
           },
           {
             name: "prompt",
             type: "esriFieldTypeString",
             alias: "Prompt",
             sqlType: "sqlTypeVarchar",
-            length: 255
+            length: 255,
           },
           {
             name: "urltemplate",
             type: "esriFieldTypeString",
             alias: "URL Template",
             sqlType: "sqlTypeVarchar",
-            length: 4000
+            length: 4000,
           },
           {
             name: "assignmenttype",
             type: "esriFieldTypeGUID",
             alias: "Assignment Type",
             sqlType: "sqlTypeOther",
-            length: 38
+            length: 38,
           },
           {
             name: "CreationDate",
             type: "esriFieldTypeDate",
             alias: "CreationDate",
             sqlType: "sqlTypeOther",
-            length: 8
-          }
+            length: 8,
+          },
         ],
         features: [
           {
@@ -450,8 +397,8 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               urltemplate:
                 "https://navigator.arcgis.app?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce",
               assignmenttype: null,
-              CreationDate: 1598295988457
-            }
+              CreationDate: 1598295988457,
+            },
           },
           {
             attributes: {
@@ -462,8 +409,8 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               urltemplate:
                 "https://collector.arcgis.app?itemID=79625fd36f30420a8b961df47dae8bbf&center=${assignment.latitude},${assignment.longitude}",
               assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d",
-              CreationDate: 1598295988457
-            }
+              CreationDate: 1598295988457,
+            },
           },
           {
             attributes: {
@@ -474,10 +421,10 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               urltemplate:
                 "https://collector.arcgis.app?itemID=79625fd36f30420a8b961df47dae8bbf&center=${assignment.latitude},${assignment.longitude}&featureSourceURL=https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_field_483ff5d0f06d42fba56b479147b4422d/FeatureServer/0&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
               assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896",
-              CreationDate: 1598295988457
-            }
-          }
-        ]
+              CreationDate: 1598295988457,
+            },
+          },
+        ],
       };
       const assignmentTypes = {
         objectIdFieldName: "OBJECTID",
@@ -488,29 +435,29 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             name: "OBJECTID",
             type: "esriFieldTypeOID",
             alias: "OBJECTID",
-            sqlType: "sqlTypeInteger"
+            sqlType: "sqlTypeInteger",
           },
           {
             name: "description",
             type: "esriFieldTypeString",
             alias: "Description",
             sqlType: "sqlTypeVarchar",
-            length: 255
+            length: 255,
           },
           {
             name: "GlobalID",
             type: "esriFieldTypeGlobalID",
             alias: "GlobalID",
             sqlType: "sqlTypeOther",
-            length: 38
+            length: 38,
           },
           {
             name: "CreationDate",
             type: "esriFieldTypeDate",
             alias: "CreationDate",
             sqlType: "sqlTypeOther",
-            length: 8
-          }
+            length: 8,
+          },
         ],
         features: [
           {
@@ -518,18 +465,18 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               OBJECTID: 1,
               description: "Verify Address",
               GlobalID: "72832e11-2f1c-42c2-809b-b1108b5c625d",
-              CreationDate: 1598295988210
-            }
+              CreationDate: 1598295988210,
+            },
           },
           {
             attributes: {
               OBJECTID: 2,
               description: "Collect New Address",
               GlobalID: "0db1c114-7221-4cf1-9df9-a37801fb2896",
-              CreationDate: 1598295988210
-            }
-          }
-        ]
+              CreationDate: 1598295988210,
+            },
+          },
+        ],
       };
 
       const urlNonAdmin =
@@ -540,30 +487,20 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
         "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_field_483ff5d0f06d42fba56b479147b4422d/FeatureServer/0";
 
       fetchMock
-        .get(
-          urlNonAdmin +
-            "/3/query?f=json&where=1%3D1&outFields=*&token=fake-token",
-          assignmentTypes
-        )
-        .get(
-          urlNonAdmin +
-            "/4/query?f=json&where=1%3D1&outFields=*&token=fake-token",
-          assignmentIntegrations
-        )
+        .get(urlNonAdmin + "/3/query?f=json&where=1%3D1&outFields=*&token=fake-token", assignmentTypes)
+        .get(urlNonAdmin + "/4/query?f=json&where=1%3D1&outFields=*&token=fake-token", assignmentIntegrations)
         .post(fetchUrl, mockItems.get400Failure());
 
-      workforceHelpers
-        .getWorkforceServiceInfo(props, url, MOCK_USER_SESSION)
-        .then(
-          () => done.fail(),
-          () => done()
-        );
+      return workforceHelpers.getWorkforceServiceInfo(props, url, MOCK_USER_SESSION).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
     });
   });
 
   describe("postProcessWorkforceTemplates", () => {
     it("post process workforce service V2", () => {
-      const _templates: interfaces.IItemTemplate[] = [
+      const _templates: IItemTemplate[] = [
         {
           itemId: "47e0189b806b4151b891a6aa4643e5d8",
           type: "Feature Service",
@@ -576,7 +513,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               workforceProjectGroupId: "733f169eddb3451a9901abc8bd3d4ad4",
               workforceProjectVersion: "2.0.0",
               workforceDispatcherMapId: "af20c97da8864abaaa35a6fcfebcfaa4",
-              workforceWorkerMapId: "686c1f6b308e4fa7939257811c604be1"
+              workforceWorkerMapId: "686c1f6b308e4fa7939257811c604be1",
             },
             title: "Address Assignments v2",
             typeKeywords: [
@@ -587,9 +524,9 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               "Multilayer",
               "Service",
               "Workforce Project",
-              "Hosted Service"
+              "Hosted Service",
             ],
-            url: "{{47e0189b806b4151b891a6aa4643e5d8.url}}"
+            url: "{{47e0189b806b4151b891a6aa4643e5d8.url}}",
           },
           data: null,
           resources: [],
@@ -597,7 +534,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             "af20c97da8864abaaa35a6fcfebcfaa4",
             "733f169eddb3451a9901abc8bd3d4ad4",
             "686c1f6b308e4fa7939257811c604be1",
-            "79625fd36f30420a8b961df47dae8bbf"
+            "79625fd36f30420a8b961df47dae8bbf",
           ],
           groups: ["733f169eddb3451a9901abc8bd3d4ad4"],
           properties: {
@@ -605,12 +542,12 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               assignmentTypeInfos: [
                 {
                   description: "Verify Address",
-                  GlobalID: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+                  GlobalID: "72832e11-2f1c-42c2-809b-b1108b5c625d",
                 },
                 {
                   description: "Collect New Address",
-                  GlobalID: "0db1c114-7221-4cf1-9df9-a37801fb2896"
-                }
+                  GlobalID: "0db1c114-7221-4cf1-9df9-a37801fb2896",
+                },
               ],
               assignmentIntegrationInfos: [
                 {
@@ -620,7 +557,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                   urltemplate:
                     "https://navigator.arcgis.app?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce",
                   dependencies: [],
-                  assignmenttype: null
+                  assignmenttype: null,
                 },
                 {
                   appid: "arcgis-collector",
@@ -629,7 +566,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                   urltemplate:
                     "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}",
                   dependencies: ["79625fd36f30420a8b961df47dae8bbf"],
-                  assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+                  assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d",
                 },
                 {
                   appid: "arcgis-collector",
@@ -638,12 +575,12 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                   urltemplate:
                     "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{8e1397c8f8ec45f69ff13b2fbf6b58a7.layer0.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
                   dependencies: ["79625fd36f30420a8b961df47dae8bbf"],
-                  assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896"
-                }
-              ]
-            }
+                  assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896",
+                },
+              ],
+            },
           },
-          estimatedDeploymentCostFactor: 10
+          estimatedDeploymentCostFactor: 10,
         },
         {
           itemId: "af20c97da8864abaaa35a6fcfebcfaa4",
@@ -654,7 +591,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             type: "Web Map",
             name: null,
             properties: {
-              workforceFeatureServiceId: "47e0189b806b4151b891a6aa4643e5d8"
+              workforceFeatureServiceId: "47e0189b806b4151b891a6aa4643e5d8",
             },
             title: "Address Assignments v2 Dispatcher Map",
             typeKeywords: [
@@ -664,10 +601,9 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               "Offline",
               "Online Map",
               "Web Map",
-              "Workforce Dispatcher"
+              "Workforce Dispatcher",
             ],
-            url:
-              "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{af20c97da8864abaaa35a6fcfebcfaa4.itemId}}"
+            url: "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{af20c97da8864abaaa35a6fcfebcfaa4.itemId}}",
           },
           data: {},
           resources: [],
@@ -675,7 +611,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
           groups: ["733f169eddb3451a9901abc8bd3d4ad4"],
           properties: {},
           estimatedDeploymentCostFactor: 2,
-          relatedItems: []
+          relatedItems: [],
         },
         {
           itemId: "733f169eddb3451a9901abc8bd3d4ad4",
@@ -685,14 +621,14 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             id: "{{733f169eddb3451a9901abc8bd3d4ad4.itemId}}",
             title: "Address Assignments v2",
             typeKeywords: [],
-            type: "Group"
+            type: "Group",
           },
           data: {},
           resources: [],
           dependencies: [],
           groups: [],
           properties: {},
-          estimatedDeploymentCostFactor: 2
+          estimatedDeploymentCostFactor: 2,
         },
         {
           itemId: "686c1f6b308e4fa7939257811c604be1",
@@ -702,7 +638,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             id: "{{686c1f6b308e4fa7939257811c604be1.itemId}}",
             type: "Web Map",
             properties: {
-              workforceFeatureServiceId: "47e0189b806b4151b891a6aa4643e5d8"
+              workforceFeatureServiceId: "47e0189b806b4151b891a6aa4643e5d8",
             },
             title: "Address Assignments v2",
             typeKeywords: [
@@ -713,10 +649,9 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               "Offline",
               "Online Map",
               "Web Map",
-              "Workforce Worker"
+              "Workforce Worker",
             ],
-            url:
-              "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{686c1f6b308e4fa7939257811c604be1.itemId}}"
+            url: "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{686c1f6b308e4fa7939257811c604be1.itemId}}",
           },
           data: {},
           resources: [],
@@ -724,7 +659,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
           groups: ["733f169eddb3451a9901abc8bd3d4ad4"],
           properties: {},
           estimatedDeploymentCostFactor: 2,
-          relatedItems: []
+          relatedItems: [],
         },
         {
           itemId: "79625fd36f30420a8b961df47dae8bbf",
@@ -743,10 +678,9 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               "Explorer Web Map",
               "Map",
               "Online Map",
-              "Web Map"
+              "Web Map",
             ],
-            url:
-              "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{79625fd36f30420a8b961df47dae8bbf.itemId}}"
+            url: "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{79625fd36f30420a8b961df47dae8bbf.itemId}}",
           },
           data: {},
           resources: [],
@@ -754,7 +688,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
           groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2,
-          relatedItems: []
+          relatedItems: [],
         },
         {
           itemId: "8e1397c8f8ec45f69ff13b2fbf6b58a7",
@@ -774,16 +708,16 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               "Service",
               "Singlelayer",
               "Hosted Service",
-              "View Service"
+              "View Service",
             ],
-            url: "{{8e1397c8f8ec45f69ff13b2fbf6b58a7.url}}"
+            url: "{{8e1397c8f8ec45f69ff13b2fbf6b58a7.url}}",
           },
           data: {},
           resources: [],
           dependencies: ["8db2828e30174705a6aa31c30d8d69bd"],
           groups: [],
           properties: {},
-          estimatedDeploymentCostFactor: 10
+          estimatedDeploymentCostFactor: 10,
         },
         {
           itemId: "8db2828e30174705a6aa31c30d8d69bd",
@@ -803,20 +737,20 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               "Metadata",
               "Service",
               "Singlelayer",
-              "Hosted Service"
+              "Hosted Service",
             ],
-            url: "{{8db2828e30174705a6aa31c30d8d69bd.url}}"
+            url: "{{8db2828e30174705a6aa31c30d8d69bd.url}}",
           },
           data: {},
           resources: [],
           dependencies: [],
           groups: [],
           properties: {},
-          estimatedDeploymentCostFactor: 10
-        }
+          estimatedDeploymentCostFactor: 10,
+        },
       ];
 
-      const expected: interfaces.IItemTemplate[] = [
+      const expected: IItemTemplate[] = [
         {
           itemId: "47e0189b806b4151b891a6aa4643e5d8",
           type: "Feature Service",
@@ -826,13 +760,10 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             type: "Feature Service",
             name: "workforce_733f169eddb3451a9901abc8bd3d4ad4",
             properties: {
-              workforceProjectGroupId:
-                "{{733f169eddb3451a9901abc8bd3d4ad4.itemId}}",
+              workforceProjectGroupId: "{{733f169eddb3451a9901abc8bd3d4ad4.itemId}}",
               workforceProjectVersion: "2.0.0",
-              workforceDispatcherMapId:
-                "{{af20c97da8864abaaa35a6fcfebcfaa4.itemId}}",
-              workforceWorkerMapId:
-                "{{686c1f6b308e4fa7939257811c604be1.itemId}}"
+              workforceDispatcherMapId: "{{af20c97da8864abaaa35a6fcfebcfaa4.itemId}}",
+              workforceWorkerMapId: "{{686c1f6b308e4fa7939257811c604be1.itemId}}",
             },
             title: "Address Assignments v2",
             typeKeywords: [
@@ -843,9 +774,9 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               "Multilayer",
               "Service",
               "Workforce Project",
-              "Hosted Service"
+              "Hosted Service",
             ],
-            url: "{{47e0189b806b4151b891a6aa4643e5d8.url}}"
+            url: "{{47e0189b806b4151b891a6aa4643e5d8.url}}",
           },
           data: null,
           resources: [],
@@ -856,12 +787,12 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               assignmentTypeInfos: [
                 {
                   description: "Verify Address",
-                  GlobalID: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+                  GlobalID: "72832e11-2f1c-42c2-809b-b1108b5c625d",
                 },
                 {
                   description: "Collect New Address",
-                  GlobalID: "0db1c114-7221-4cf1-9df9-a37801fb2896"
-                }
+                  GlobalID: "0db1c114-7221-4cf1-9df9-a37801fb2896",
+                },
               ],
               assignmentIntegrationInfos: [
                 {
@@ -870,7 +801,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                   prompt: "Navigate to Assignment",
                   urltemplate:
                     "https://navigator.arcgis.app?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce",
-                  assignmenttype: null
+                  assignmenttype: null,
                 },
                 {
                   appid: "arcgis-collector",
@@ -878,7 +809,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                   prompt: "Collect at Assignment",
                   urltemplate:
                     "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}",
-                  assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+                  assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d",
                 },
                 {
                   appid: "arcgis-collector",
@@ -886,12 +817,12 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                   prompt: "Collect at Assignment",
                   urltemplate:
                     "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{8e1397c8f8ec45f69ff13b2fbf6b58a7.layer0.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
-                  assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896"
-                }
-              ]
-            }
+                  assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896",
+                },
+              ],
+            },
           },
-          estimatedDeploymentCostFactor: 10
+          estimatedDeploymentCostFactor: 10,
         },
         {
           itemId: "af20c97da8864abaaa35a6fcfebcfaa4",
@@ -902,8 +833,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             type: "Web Map",
             name: null,
             properties: {
-              workforceFeatureServiceId:
-                "{{47e0189b806b4151b891a6aa4643e5d8.itemId}}"
+              workforceFeatureServiceId: "{{47e0189b806b4151b891a6aa4643e5d8.itemId}}",
             },
             title: "Address Assignments v2 Dispatcher Map",
             typeKeywords: [
@@ -913,10 +843,9 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               "Offline",
               "Online Map",
               "Web Map",
-              "Workforce Dispatcher"
+              "Workforce Dispatcher",
             ],
-            url:
-              "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{af20c97da8864abaaa35a6fcfebcfaa4.itemId}}"
+            url: "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{af20c97da8864abaaa35a6fcfebcfaa4.itemId}}",
           },
           data: {},
           resources: [],
@@ -924,7 +853,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
           groups: ["733f169eddb3451a9901abc8bd3d4ad4"],
           properties: {},
           estimatedDeploymentCostFactor: 2,
-          relatedItems: []
+          relatedItems: [],
         },
         {
           itemId: "733f169eddb3451a9901abc8bd3d4ad4",
@@ -934,18 +863,18 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             id: "{{733f169eddb3451a9901abc8bd3d4ad4.itemId}}",
             title: "Address Assignments v2",
             typeKeywords: [],
-            type: "Group"
+            type: "Group",
           },
           data: {},
           resources: [],
           dependencies: [
             "af20c97da8864abaaa35a6fcfebcfaa4",
             "686c1f6b308e4fa7939257811c604be1",
-            "79625fd36f30420a8b961df47dae8bbf"
+            "79625fd36f30420a8b961df47dae8bbf",
           ],
           groups: [],
           properties: {},
-          estimatedDeploymentCostFactor: 2
+          estimatedDeploymentCostFactor: 2,
         },
         {
           itemId: "686c1f6b308e4fa7939257811c604be1",
@@ -955,8 +884,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             id: "{{686c1f6b308e4fa7939257811c604be1.itemId}}",
             type: "Web Map",
             properties: {
-              workforceFeatureServiceId:
-                "{{47e0189b806b4151b891a6aa4643e5d8.itemId}}"
+              workforceFeatureServiceId: "{{47e0189b806b4151b891a6aa4643e5d8.itemId}}",
             },
             title: "Address Assignments v2",
             typeKeywords: [
@@ -967,10 +895,9 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               "Offline",
               "Online Map",
               "Web Map",
-              "Workforce Worker"
+              "Workforce Worker",
             ],
-            url:
-              "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{686c1f6b308e4fa7939257811c604be1.itemId}}"
+            url: "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{686c1f6b308e4fa7939257811c604be1.itemId}}",
           },
           data: {},
           resources: [],
@@ -978,7 +905,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
           groups: ["733f169eddb3451a9901abc8bd3d4ad4"],
           properties: {},
           estimatedDeploymentCostFactor: 2,
-          relatedItems: []
+          relatedItems: [],
         },
         {
           itemId: "79625fd36f30420a8b961df47dae8bbf",
@@ -997,10 +924,9 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               "Explorer Web Map",
               "Map",
               "Online Map",
-              "Web Map"
+              "Web Map",
             ],
-            url:
-              "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{79625fd36f30420a8b961df47dae8bbf.itemId}}"
+            url: "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{79625fd36f30420a8b961df47dae8bbf.itemId}}",
           },
           data: {},
           resources: [],
@@ -1008,7 +934,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
           groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2,
-          relatedItems: []
+          relatedItems: [],
         },
         {
           itemId: "8e1397c8f8ec45f69ff13b2fbf6b58a7",
@@ -1028,16 +954,16 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               "Service",
               "Singlelayer",
               "Hosted Service",
-              "View Service"
+              "View Service",
             ],
-            url: "{{8e1397c8f8ec45f69ff13b2fbf6b58a7.url}}"
+            url: "{{8e1397c8f8ec45f69ff13b2fbf6b58a7.url}}",
           },
           data: {},
           resources: [],
           dependencies: ["8db2828e30174705a6aa31c30d8d69bd"],
           groups: [],
           properties: {},
-          estimatedDeploymentCostFactor: 10
+          estimatedDeploymentCostFactor: 10,
         },
         {
           itemId: "8db2828e30174705a6aa31c30d8d69bd",
@@ -1057,17 +983,17 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
               "Metadata",
               "Service",
               "Singlelayer",
-              "Hosted Service"
+              "Hosted Service",
             ],
-            url: "{{8db2828e30174705a6aa31c30d8d69bd.url}}"
+            url: "{{8db2828e30174705a6aa31c30d8d69bd.url}}",
           },
           data: {},
           resources: [],
           dependencies: [],
           groups: [],
           properties: {},
-          estimatedDeploymentCostFactor: 10
-        }
+          estimatedDeploymentCostFactor: 10,
+        },
       ];
 
       const actual = workforceHelpers.postProcessWorkforceTemplates(_templates);
@@ -1076,8 +1002,8 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
   });
 
   describe("fineTuneCreatedWorkforceItem", () => {
-    it("post process a workforce service", done => {
-      const template: interfaces.IItemTemplate = {
+    it("post process a workforce service", async () => {
+      const template: IItemTemplate = {
         itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
         type: "Feature Service",
         key: "w4jsjf18",
@@ -1092,15 +1018,12 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
           licenseInfo: null,
           name: "workforce_7b1c2d1841df41dabbeb4a6ca46d026a",
           properties: {
-            workforceProjectGroupId:
-              "{{733f169eddb3451a9901abc8bd3d4ad4.itemId}}",
+            workforceProjectGroupId: "{{733f169eddb3451a9901abc8bd3d4ad4.itemId}}",
             workforceProjectVersion: "2.0.0",
-            workforceDispatcherMapId:
-              "{{af20c97da8864abaaa35a6fcfebcfaa4.itemId}}",
-            workforceWorkerMapId: "{{686c1f6b308e4fa7939257811c604be1.itemId}}"
+            workforceDispatcherMapId: "{{af20c97da8864abaaa35a6fcfebcfaa4.itemId}}",
+            workforceWorkerMapId: "{{686c1f6b308e4fa7939257811c604be1.itemId}}",
           },
-          snippet:
-            "A Workforce for ArcGIS Project used by addressing staff to manage address field operations.",
+          snippet: "A Workforce for ArcGIS Project used by addressing staff to manage address field operations.",
           tags: ["workforce"],
           title: "Address Assignments v2",
           typeKeywords: [
@@ -1112,16 +1035,14 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             "Service",
             "Workforce Project",
             "Hosted Service",
-            "source-47e0189b806b4151b891a6aa4643e5d8"
+            "source-47e0189b806b4151b891a6aa4643e5d8",
           ],
           url: "{{47e0189b806b4151b891a6aa4643e5d8.url}}",
           thumbnailurl:
-            "https://www.arcgis.com/sharing/rest/content/items/f3743033960544cca79f51e5f4a3701c/resources/47e0189b806b4151b891a6aa4643e5d8_info_thumbnail/ago_downloaded.png?token=-6rdVI7jrVE_5ikmGG90hCIeqZiWAfd_-vxMKuPLDeo6pGuZB0IrLNxIaSwzy9QJzOQdKv7hdiXbRyOA14PIAdPJYVlevteGzT84JxSUrSZdr3g25Wy4mQRW_W4DI7DofS9U4zBD8XkTyAuguy2BrYgo5XZ5ynmrSxjHg5bis4dUTJDgGN9oPtIQdJfbmTWKWs1RHm-g7HWJY0ZBUxBSreP-mRrylxnCFpJfoq6GriE.&w=400"
+            "https://www.arcgis.com/sharing/rest/content/items/f3743033960544cca79f51e5f4a3701c/resources/47e0189b806b4151b891a6aa4643e5d8_info_thumbnail/ago_downloaded.png?token=-6rdVI7jrVE_5ikmGG90hCIeqZiWAfd_-vxMKuPLDeo6pGuZB0IrLNxIaSwzy9QJzOQdKv7hdiXbRyOA14PIAdPJYVlevteGzT84JxSUrSZdr3g25Wy4mQRW_W4DI7DofS9U4zBD8XkTyAuguy2BrYgo5XZ5ynmrSxjHg5bis4dUTJDgGN9oPtIQdJfbmTWKWs1RHm-g7HWJY0ZBUxBSreP-mRrylxnCFpJfoq6GriE.&w=400",
         },
         data: null,
-        resources: [
-          "47e0189b806b4151b891a6aa4643e5d8_info_thumbnail/ago_downloaded.png"
-        ],
+        resources: ["47e0189b806b4151b891a6aa4643e5d8_info_thumbnail/ago_downloaded.png"],
         dependencies: [],
         groups: ["733f169eddb3451a9901abc8bd3d4ad4"],
         properties: {
@@ -1129,12 +1050,12 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             assignmentTypeInfos: [
               {
                 description: "Verify Address",
-                GlobalID: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+                GlobalID: "72832e11-2f1c-42c2-809b-b1108b5c625d",
               },
               {
                 description: "Collect New Address",
-                GlobalID: "0db1c114-7221-4cf1-9df9-a37801fb2896"
-              }
+                GlobalID: "0db1c114-7221-4cf1-9df9-a37801fb2896",
+              },
             ],
             assignmentIntegrationInfos: [
               {
@@ -1143,7 +1064,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 prompt: "Navigate to Assignment",
                 urltemplate:
                   "https://navigator.arcgis.app?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce",
-                assignmenttype: null
+                assignmenttype: null,
               },
               {
                 appid: "arcgis-collector",
@@ -1151,7 +1072,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 prompt: "Collect at Assignment",
                 urltemplate:
                   "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}",
-                assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+                assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d",
               },
               {
                 appid: "arcgis-collector",
@@ -1159,9 +1080,9 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 prompt: "Collect at Assignment",
                 urltemplate:
                   "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{8e1397c8f8ec45f69ff13b2fbf6b58a7.layer0.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
-                assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896"
-              }
-            ]
+                assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896",
+              },
+            ],
           },
           defaultExtent: {
             xmin: -14999999.999989873,
@@ -1170,27 +1091,26 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             ymax: 6499999.99999407,
             spatialReference: {
               wkid: 102100,
-              latestWkid: 3857
-            }
-          }
+              latestWkid: 3857,
+            },
+          },
         },
         estimatedDeploymentCostFactor: 10,
-        originalItemId: "47e0189b806b4151b891a6aa4643e5d8"
+        originalItemId: "47e0189b806b4151b891a6aa4643e5d8",
       };
 
       const url =
         "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer";
       const templateDictionary = {
-        title: "JH Test Publish Group",
-        tags: ["test"],
-        thumbnailurl:
+        "title": "JH Test Publish Group",
+        "tags": ["test"],
+        "thumbnailurl":
           "https://www.arcgis.com/sharing/rest/content/items/f3743033960544cca79f51e5f4a3701c/info/thumbnail/ago_downloaded.png",
-        isPortal: false,
-        portalBaseUrl: "https://statelocaltryit.maps.arcgis.com",
-        folderId: "5bf0bc1e21234863a0ab0ae223017afe",
-        solutionItemExtent:
-          "-134.74729261783725,23.560962423754177,-55.69554761537273,50.309217030255674",
-        solutionItemId: "7b1c2d1841df41dabbeb4a6ca46d026a",
+        "isPortal": false,
+        "portalBaseUrl": "https://statelocaltryit.maps.arcgis.com",
+        "folderId": "5bf0bc1e21234863a0ab0ae223017afe",
+        "solutionItemExtent": "-134.74729261783725,23.560962423754177,-55.69554761537273,50.309217030255674",
+        "solutionItemId": "7b1c2d1841df41dabbeb4a6ca46d026a",
         "47e0189b806b4151b891a6aa4643e5d8": {
           def: {},
           solutionExtent: {
@@ -1200,54 +1120,48 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             xmax: -6199999.999995815,
             ymax: 6499999.99999407,
             spatialReference: {
-              wkid: 102100
-            }
+              wkid: 102100,
+            },
           },
           itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
-          url:
-            "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
+          url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
           name: "workforce_7b1c2d1841df41dabbeb4a6ca46d026a",
           layer0: {
             fields: {},
-            url:
-              "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/0",
+            url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/0",
             layerId: "0",
-            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea"
+            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
           },
           layer1: {
             fields: {},
-            url:
-              "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/1",
+            url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/1",
             layerId: "1",
-            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea"
+            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
           },
           layer2: {
             fields: {},
-            url:
-              "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/2",
+            url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/2",
             layerId: "2",
-            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea"
+            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
           },
           layer3: {
             fields: {},
-            url:
-              "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/3",
+            url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/3",
             layerId: "3",
-            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea"
+            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
           },
           layer4: {
             fields: {},
-            url:
-              "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/4",
+            url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/4",
             layerId: "4",
-            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea"
-          }
+            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
+          },
         },
-        af20c97da8864abaaa35a6fcfebcfaa4: {
-          itemId: "5385e40c69f5433caf327a98af2af033"
+        "af20c97da8864abaaa35a6fcfebcfaa4": {
+          itemId: "5385e40c69f5433caf327a98af2af033",
         },
         "686c1f6b308e4fa7939257811c604be1": {
-          itemId: "a8f95972ab09405687991cd4f1cda72a"
+          itemId: "a8f95972ab09405687991cd4f1cda72a",
         },
         "8db2828e30174705a6aa31c30d8d69bd": {
           def: {},
@@ -1258,13 +1172,12 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             xmax: -6199999.999995815,
             ymax: 6499999.99999407,
             spatialReference: {
-              wkid: 102100
-            }
+              wkid: 102100,
+            },
           },
           itemId: "efd2895b19d64fc4b20f86c0915165cb",
-          url:
-            "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
-          name: "ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a"
+          url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
+          name: "ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a",
         },
         "8e1397c8f8ec45f69ff13b2fbf6b58a7": {
           def: {},
@@ -1275,50 +1188,43 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             xmax: -6199999.999995815,
             ymax: 6499999.99999407,
             spatialReference: {
-              wkid: 102100
-            }
+              wkid: 102100,
+            },
           },
           itemId: "7f98a949f7cb4a24b0d3b58d39b1e5cf",
-          url:
-            "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
-          name: "ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a"
+          url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
+          name: "ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a",
         },
         "79625fd36f30420a8b961df47dae8bbf": {
-          itemId: "600e2e3505a147a8a5ac82496c24218c"
+          itemId: "600e2e3505a147a8a5ac82496c24218c",
         },
         "733f169eddb3451a9901abc8bd3d4ad4": {
-          itemId: "98e335ed2a3d4a9b875fc87dae8f7506"
+          itemId: "98e335ed2a3d4a9b875fc87dae8f7506",
         },
-        efd2895b19d64fc4b20f86c0915165cb: {
+        "efd2895b19d64fc4b20f86c0915165cb": {
           itemId: "efd2895b19d64fc4b20f86c0915165cb",
-          url:
-            "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
-          name: "ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a"
+          url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
+          name: "ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a",
         },
         "58d8b90f6a0f4900a9ea0b627f07b8ea": {
           itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
-          url:
-            "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
-          name: "workforce_7b1c2d1841df41dabbeb4a6ca46d026a"
+          url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
+          name: "workforce_7b1c2d1841df41dabbeb4a6ca46d026a",
         },
         "7f98a949f7cb4a24b0d3b58d39b1e5cf": {
           itemId: "7f98a949f7cb4a24b0d3b58d39b1e5cf",
-          url:
-            "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
-          name: "ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a"
-        }
+          url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
+          name: "ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a",
+        },
       };
 
       const expected = [true, true];
 
       fetchMock
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/self?f=json&token=fake-token",
-          {}
-        )
+        .get("https://myorg.maps.arcgis.com/sharing/rest/community/self?f=json&token=fake-token", {})
         .get(
           "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/2/query?f=json&where=userId%20%3D%20%27%27&outFields=*&token=fake-token",
-          {}
+          {},
         )
         .post(
           "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/2",
@@ -1333,7 +1239,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: false,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "name",
@@ -1344,7 +1250,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: false,
                 editable: true,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "contactnumber",
@@ -1355,7 +1261,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: true,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "userid",
@@ -1366,7 +1272,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: false,
                 editable: true,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "GlobalID",
@@ -1377,7 +1283,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: false,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "wfprivileges",
@@ -1388,7 +1294,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: true,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "CreationDate",
@@ -1399,7 +1305,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "Creator",
@@ -1410,7 +1316,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "EditDate",
@@ -1421,7 +1327,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "Editor",
@@ -1432,10 +1338,10 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: false,
                 domain: null,
-                defaultValue: null
-              }
-            ]
-          }
+                defaultValue: null,
+              },
+            ],
+          },
         )
         .post(
           "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/3",
@@ -1450,7 +1356,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: false,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "description",
@@ -1461,7 +1367,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: false,
                 editable: true,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "GlobalID",
@@ -1472,7 +1378,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: false,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "CreationDate",
@@ -1483,7 +1389,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "Creator",
@@ -1494,7 +1400,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "EditDate",
@@ -1505,7 +1411,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "Editor",
@@ -1516,10 +1422,10 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: false,
                 domain: null,
-                defaultValue: null
-              }
-            ]
-          }
+                defaultValue: null,
+              },
+            ],
+          },
         )
         .post(
           "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/4",
@@ -1534,7 +1440,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: false,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "GlobalID",
@@ -1545,7 +1451,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: false,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "appid",
@@ -1556,7 +1462,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: false,
                 editable: true,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "prompt",
@@ -1567,7 +1473,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: false,
                 editable: true,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "urltemplate",
@@ -1578,7 +1484,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: false,
                 editable: true,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "assignmenttype",
@@ -1589,7 +1495,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: true,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "CreationDate",
@@ -1600,7 +1506,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "Creator",
@@ -1611,7 +1517,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "EditDate",
@@ -1622,7 +1528,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: false,
                 domain: null,
-                defaultValue: null
+                defaultValue: null,
               },
               {
                 name: "Editor",
@@ -1633,39 +1539,35 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 nullable: true,
                 editable: false,
                 domain: null,
-                defaultValue: null
-              }
-            ]
-          }
+                defaultValue: null,
+              },
+            ],
+          },
         )
         .post(
           "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/3/applyEdits",
           {
-            addResults: [{}]
-          }
+            addResults: [{}],
+          },
         )
         .post(
           "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/4/applyEdits",
           {
-            addResults: [{}]
-          }
+            addResults: [{}],
+          },
         );
 
-      workforceHelpers
-        .fineTuneCreatedWorkforceItem(
-          template,
-          MOCK_USER_SESSION,
-          url,
-          templateDictionary
-        )
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
+      const actual = await workforceHelpers.fineTuneCreatedWorkforceItem(
+        template,
+        MOCK_USER_SESSION,
+        url,
+        templateDictionary,
+      );
+      expect(actual).toEqual(expected);
     });
 
-    it("handle error fetching fields", done => {
-      const template: interfaces.IItemTemplate = {
+    it("handle error fetching fields", async () => {
+      const template: IItemTemplate = {
         itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
         type: "Feature Service",
         key: "w4jsjf18",
@@ -1680,15 +1582,12 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
           licenseInfo: null,
           name: "workforce_7b1c2d1841df41dabbeb4a6ca46d026a",
           properties: {
-            workforceProjectGroupId:
-              "{{733f169eddb3451a9901abc8bd3d4ad4.itemId}}",
+            workforceProjectGroupId: "{{733f169eddb3451a9901abc8bd3d4ad4.itemId}}",
             workforceProjectVersion: "2.0.0",
-            workforceDispatcherMapId:
-              "{{af20c97da8864abaaa35a6fcfebcfaa4.itemId}}",
-            workforceWorkerMapId: "{{686c1f6b308e4fa7939257811c604be1.itemId}}"
+            workforceDispatcherMapId: "{{af20c97da8864abaaa35a6fcfebcfaa4.itemId}}",
+            workforceWorkerMapId: "{{686c1f6b308e4fa7939257811c604be1.itemId}}",
           },
-          snippet:
-            "A Workforce for ArcGIS Project used by addressing staff to manage address field operations.",
+          snippet: "A Workforce for ArcGIS Project used by addressing staff to manage address field operations.",
           tags: ["workforce"],
           title: "Address Assignments v2",
           typeKeywords: [
@@ -1700,16 +1599,14 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             "Service",
             "Workforce Project",
             "Hosted Service",
-            "source-47e0189b806b4151b891a6aa4643e5d8"
+            "source-47e0189b806b4151b891a6aa4643e5d8",
           ],
           url: "{{47e0189b806b4151b891a6aa4643e5d8.url}}",
           thumbnailurl:
-            "https://www.arcgis.com/sharing/rest/content/items/f3743033960544cca79f51e5f4a3701c/resources/47e0189b806b4151b891a6aa4643e5d8_info_thumbnail/ago_downloaded.png?token=-6rdVI7jrVE_5ikmGG90hCIeqZiWAfd_-vxMKuPLDeo6pGuZB0IrLNxIaSwzy9QJzOQdKv7hdiXbRyOA14PIAdPJYVlevteGzT84JxSUrSZdr3g25Wy4mQRW_W4DI7DofS9U4zBD8XkTyAuguy2BrYgo5XZ5ynmrSxjHg5bis4dUTJDgGN9oPtIQdJfbmTWKWs1RHm-g7HWJY0ZBUxBSreP-mRrylxnCFpJfoq6GriE.&w=400"
+            "https://www.arcgis.com/sharing/rest/content/items/f3743033960544cca79f51e5f4a3701c/resources/47e0189b806b4151b891a6aa4643e5d8_info_thumbnail/ago_downloaded.png?token=-6rdVI7jrVE_5ikmGG90hCIeqZiWAfd_-vxMKuPLDeo6pGuZB0IrLNxIaSwzy9QJzOQdKv7hdiXbRyOA14PIAdPJYVlevteGzT84JxSUrSZdr3g25Wy4mQRW_W4DI7DofS9U4zBD8XkTyAuguy2BrYgo5XZ5ynmrSxjHg5bis4dUTJDgGN9oPtIQdJfbmTWKWs1RHm-g7HWJY0ZBUxBSreP-mRrylxnCFpJfoq6GriE.&w=400",
         },
         data: null,
-        resources: [
-          "47e0189b806b4151b891a6aa4643e5d8_info_thumbnail/ago_downloaded.png"
-        ],
+        resources: ["47e0189b806b4151b891a6aa4643e5d8_info_thumbnail/ago_downloaded.png"],
         dependencies: [],
         groups: ["733f169eddb3451a9901abc8bd3d4ad4"],
         properties: {
@@ -1717,12 +1614,12 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             assignmentTypeInfos: [
               {
                 description: "Verify Address",
-                GlobalID: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+                GlobalID: "72832e11-2f1c-42c2-809b-b1108b5c625d",
               },
               {
                 description: "Collect New Address",
-                GlobalID: "0db1c114-7221-4cf1-9df9-a37801fb2896"
-              }
+                GlobalID: "0db1c114-7221-4cf1-9df9-a37801fb2896",
+              },
             ],
             assignmentIntegrationInfos: [
               {
@@ -1731,7 +1628,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 prompt: "Navigate to Assignment",
                 urltemplate:
                   "https://navigator.arcgis.app?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce",
-                assignmenttype: null
+                assignmenttype: null,
               },
               {
                 appid: "arcgis-collector",
@@ -1739,7 +1636,7 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 prompt: "Collect at Assignment",
                 urltemplate:
                   "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}",
-                assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d"
+                assignmenttype: "72832e11-2f1c-42c2-809b-b1108b5c625d",
               },
               {
                 appid: "arcgis-collector",
@@ -1747,9 +1644,9 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
                 prompt: "Collect at Assignment",
                 urltemplate:
                   "https://collector.arcgis.app?itemID={{79625fd36f30420a8b961df47dae8bbf.itemId}}&center=${assignment.latitude},${assignment.longitude}&featureSourceURL={{8e1397c8f8ec45f69ff13b2fbf6b58a7.layer0.url}}&featureAttributes=%7B%22placename%22:%22${assignment.location}%22%7D",
-                assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896"
-              }
-            ]
+                assignmenttype: "0db1c114-7221-4cf1-9df9-a37801fb2896",
+              },
+            ],
           },
           defaultExtent: {
             xmin: -14999999.999989873,
@@ -1758,27 +1655,26 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             ymax: 6499999.99999407,
             spatialReference: {
               wkid: 102100,
-              latestWkid: 3857
-            }
-          }
+              latestWkid: 3857,
+            },
+          },
         },
         estimatedDeploymentCostFactor: 10,
-        originalItemId: "47e0189b806b4151b891a6aa4643e5d8"
+        originalItemId: "47e0189b806b4151b891a6aa4643e5d8",
       };
 
       const url =
         "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer";
       const templateDictionary = {
-        title: "JH Test Publish Group",
-        tags: ["test"],
-        thumbnailurl:
+        "title": "JH Test Publish Group",
+        "tags": ["test"],
+        "thumbnailurl":
           "https://www.arcgis.com/sharing/rest/content/items/f3743033960544cca79f51e5f4a3701c/info/thumbnail/ago_downloaded.png",
-        isPortal: false,
-        portalBaseUrl: "https://statelocaltryit.maps.arcgis.com",
-        folderId: "5bf0bc1e21234863a0ab0ae223017afe",
-        solutionItemExtent:
-          "-134.74729261783725,23.560962423754177,-55.69554761537273,50.309217030255674",
-        solutionItemId: "7b1c2d1841df41dabbeb4a6ca46d026a",
+        "isPortal": false,
+        "portalBaseUrl": "https://statelocaltryit.maps.arcgis.com",
+        "folderId": "5bf0bc1e21234863a0ab0ae223017afe",
+        "solutionItemExtent": "-134.74729261783725,23.560962423754177,-55.69554761537273,50.309217030255674",
+        "solutionItemId": "7b1c2d1841df41dabbeb4a6ca46d026a",
         "47e0189b806b4151b891a6aa4643e5d8": {
           def: {},
           solutionExtent: {
@@ -1788,54 +1684,48 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             xmax: -6199999.999995815,
             ymax: 6499999.99999407,
             spatialReference: {
-              wkid: 102100
-            }
+              wkid: 102100,
+            },
           },
           itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
-          url:
-            "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
+          url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
           name: "workforce_7b1c2d1841df41dabbeb4a6ca46d026a",
           layer0: {
             fields: {},
-            url:
-              "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/0",
+            url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/0",
             layerId: "0",
-            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea"
+            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
           },
           layer1: {
             fields: {},
-            url:
-              "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/1",
+            url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/1",
             layerId: "1",
-            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea"
+            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
           },
           layer2: {
             fields: {},
-            url:
-              "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/2",
+            url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/2",
             layerId: "2",
-            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea"
+            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
           },
           layer3: {
             fields: {},
-            url:
-              "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/3",
+            url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/3",
             layerId: "3",
-            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea"
+            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
           },
           layer4: {
             fields: {},
-            url:
-              "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/4",
+            url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/4",
             layerId: "4",
-            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea"
-          }
+            itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
+          },
         },
-        af20c97da8864abaaa35a6fcfebcfaa4: {
-          itemId: "5385e40c69f5433caf327a98af2af033"
+        "af20c97da8864abaaa35a6fcfebcfaa4": {
+          itemId: "5385e40c69f5433caf327a98af2af033",
         },
         "686c1f6b308e4fa7939257811c604be1": {
-          itemId: "a8f95972ab09405687991cd4f1cda72a"
+          itemId: "a8f95972ab09405687991cd4f1cda72a",
         },
         "8db2828e30174705a6aa31c30d8d69bd": {
           def: {},
@@ -1846,13 +1736,12 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             xmax: -6199999.999995815,
             ymax: 6499999.99999407,
             spatialReference: {
-              wkid: 102100
-            }
+              wkid: 102100,
+            },
           },
           itemId: "efd2895b19d64fc4b20f86c0915165cb",
-          url:
-            "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
-          name: "ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a"
+          url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
+          name: "ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a",
         },
         "8e1397c8f8ec45f69ff13b2fbf6b58a7": {
           def: {},
@@ -1863,98 +1752,81 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
             xmax: -6199999.999995815,
             ymax: 6499999.99999407,
             spatialReference: {
-              wkid: 102100
-            }
+              wkid: 102100,
+            },
           },
           itemId: "7f98a949f7cb4a24b0d3b58d39b1e5cf",
-          url:
-            "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
-          name: "ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a"
+          url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
+          name: "ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a",
         },
         "79625fd36f30420a8b961df47dae8bbf": {
-          itemId: "600e2e3505a147a8a5ac82496c24218c"
+          itemId: "600e2e3505a147a8a5ac82496c24218c",
         },
         "733f169eddb3451a9901abc8bd3d4ad4": {
-          itemId: "98e335ed2a3d4a9b875fc87dae8f7506"
+          itemId: "98e335ed2a3d4a9b875fc87dae8f7506",
         },
-        efd2895b19d64fc4b20f86c0915165cb: {
+        "efd2895b19d64fc4b20f86c0915165cb": {
           itemId: "efd2895b19d64fc4b20f86c0915165cb",
-          url:
-            "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
-          name: "ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a"
+          url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
+          name: "ProposedSiteAddress_7b1c2d1841df41dabbeb4a6ca46d026a",
         },
         "58d8b90f6a0f4900a9ea0b627f07b8ea": {
           itemId: "58d8b90f6a0f4900a9ea0b627f07b8ea",
-          url:
-            "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
-          name: "workforce_7b1c2d1841df41dabbeb4a6ca46d026a"
+          url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
+          name: "workforce_7b1c2d1841df41dabbeb4a6ca46d026a",
         },
         "7f98a949f7cb4a24b0d3b58d39b1e5cf": {
           itemId: "7f98a949f7cb4a24b0d3b58d39b1e5cf",
-          url:
-            "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
-          name: "ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a"
-        }
+          url: "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/",
+          name: "ProposedSiteAddress_field_7b1c2d1841df41dabbeb4a6ca46d026a",
+        },
       };
 
-      const expected = [true, true];
-
       fetchMock
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/self?f=json&token=fake-token",
-          {}
-        )
+        .get("https://myorg.maps.arcgis.com/sharing/rest/community/self?f=json&token=fake-token", {})
         .get(
           "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/2/query?f=json&where=userId%20%3D%20%27%27&outFields=*&token=fake-token",
-          {}
+          {},
         )
         .post(
           "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/2",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         )
         .post(
           "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/3",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         )
         .post(
           "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/workforce_7b1c2d1841df41dabbeb4a6ca46d026a/FeatureServer/4",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         );
 
-      workforceHelpers
-        .fineTuneCreatedWorkforceItem(
-          template,
-          MOCK_USER_SESSION,
-          url,
-          templateDictionary
-        )
-        .then(
-          () => done.fail(),
-          () => done()
-        );
+      return workforceHelpers.fineTuneCreatedWorkforceItem(template, MOCK_USER_SESSION, url, templateDictionary).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
     });
   });
 
   describe("getUrlDependencies", () => {
-    it("can handle no requests", done => {
+    it("can handle no requests", async () => {
       const expected: any = {
         dependencies: [],
-        urlHash: {}
+        urlHash: {},
       };
-      workforceHelpers.getUrlDependencies([], []).then(actual => {
-        expect(actual).toEqual(expected);
-        done();
-      }, done.fail);
+
+      const actual = await workforceHelpers.getUrlDependencies([], []);
+      expect(actual).toEqual(expected);
     });
   });
 
   describe("_templatizeWorkforceProject", () => {
     it("can handle missing properties", () => {
-      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const template: IItemTemplate = templates.getItemTemplateSkeleton();
       template.item.typeKeywords = ["Workforce Project"];
       delete template.item.properties;
 
-      const expected: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const expected: IItemTemplate = templates.getItemTemplateSkeleton();
       expected.item.typeKeywords = ["Workforce Project"];
       delete expected.item.properties;
 
@@ -1966,46 +1838,36 @@ describe("Module `workforceHelpers`: manages the creation and deployment of work
 
   describe("_templatizeWorkforceDispatcherOrWorker", () => {
     it("can handle missing typeKeywords", () => {
-      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const template: IItemTemplate = templates.getItemTemplateSkeleton();
       delete template.item.typeKeywords;
 
-      const expected: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const expected: IItemTemplate = templates.getItemTemplateSkeleton();
       delete expected.item.typeKeywords;
 
-      const actual = workforceHelpers._templatizeWorkforceDispatcherOrWorker(
-        template,
-        ""
-      );
+      const actual = workforceHelpers._templatizeWorkforceDispatcherOrWorker(template, "");
 
       expect(actual).toEqual(expected);
     });
 
     it("can handle missing properties ", () => {
-      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const template: IItemTemplate = templates.getItemTemplateSkeleton();
       template.item.typeKeywords = ["Workforce Project"];
       delete template.item.properties;
 
-      const expected: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      const expected: IItemTemplate = templates.getItemTemplateSkeleton();
       expected.item.typeKeywords = ["Workforce Project"];
       delete expected.item.properties;
 
-      const actual = workforceHelpers._templatizeWorkforceDispatcherOrWorker(
-        template,
-        "Workforce Project"
-      );
+      const actual = workforceHelpers._templatizeWorkforceDispatcherOrWorker(template, "Workforce Project");
 
       expect(actual).toEqual(expected);
     });
   });
 
   describe("_updateDispatchers", () => {
-    it("will not fail with missing url", done => {
-      workforceHelpers
-        ._updateDispatchers(undefined, "A", "AA", MOCK_USER_SESSION, true)
-        .then(actual => {
-          expect(actual).toEqual(false);
-          done();
-        }, done.fail);
+    it("will not fail with missing url", async () => {
+      const actual = await workforceHelpers._updateDispatchers(undefined, "A", "AA", MOCK_USER_SESSION, true);
+      expect(actual).toEqual(false);
     });
   });
 });

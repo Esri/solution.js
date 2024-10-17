@@ -20,11 +20,7 @@ import * as fileProcessor from "@esri/solution-file";
 import * as formProcessor from "@esri/solution-form";
 import * as group from "@esri/solution-group";
 import { HubPageProcessor, HubSiteProcessor } from "@esri/solution-hub-types";
-import {
-  simpleTypes,
-  notebookProcessor,
-  quickcaptureProcessor
-} from "@esri/solution-simple-types";
+import { simpleTypes, notebookProcessor, quickcaptureProcessor } from "@esri/solution-simple-types";
 import { StoryMapProcessor } from "@esri/solution-storymap";
 import { VelocityProcessor } from "@esri/solution-velocity";
 import { WebExperienceProcessor } from "@esri/solution-web-experience";
@@ -41,32 +37,32 @@ export const UNSUPPORTED: moduleHandler = null;
 export const moduleMap: IItemTypeModuleMap = {
   ////////////////////////////////////////////////////////
   // Group type
-  Group: group,
+  "Group": group,
 
   ////////////////////////////////////////////////////////
   // Layer types
   "Big Data Analytic": VelocityProcessor,
   "Feature Collection": simpleTypes,
   "Feature Service": featureLayer,
-  Feed: VelocityProcessor,
+  "Feed": VelocityProcessor,
   "Geocoding Service": undefined,
   "Geodata Service": undefined,
   "Geometry Service": undefined,
   "Geoprocessing Service": WebToolProcessor,
   "Globe Service": undefined,
   "Image Service": undefined,
-  KML: undefined,
+  "KML": undefined,
   "Map Service": featureLayer,
   "Network Analysis Service": undefined,
   "Real Time Analytic": VelocityProcessor,
   "Relational Database Connection": undefined,
   "Scene Service": undefined,
   "Stream Service": undefined,
-  Tool: undefined,
+  "Tool": undefined,
   "Vector Tile Service": simpleTypes,
-  WFS: undefined,
-  WMS: undefined,
-  WMTS: undefined,
+  "WFS": undefined,
+  "WMS": undefined,
+  "WMTS": undefined,
   "Workflow Manager Service": undefined,
 
   ////////////////////////////////////////////////////////
@@ -77,13 +73,13 @@ export const moduleMap: IItemTypeModuleMap = {
 
   ////////////////////////////////////////////////////////
   // App types
-  Application: undefined,
-  Dashboard: simpleTypes,
+  "Application": undefined,
+  "Dashboard": simpleTypes,
   "Data Pipeline": simpleTypes,
   "Data Store": undefined,
   "Desktop Application": undefined,
   "Excalibur Imagery Project": undefined,
-  Form: formProcessor,
+  "Form": formProcessor,
   "Hub Initiative": UNSUPPORTED,
   "Hub Page": HubPageProcessor,
   "Hub Site Application": HubSiteProcessor,
@@ -91,16 +87,16 @@ export const moduleMap: IItemTypeModuleMap = {
   "Insights Page": undefined,
   "Insights Theme": undefined,
   "Insights Workbook": undefined,
-  Mission: undefined,
+  "Mission": undefined,
   "Mobile Application": undefined,
-  Notebook: notebookProcessor,
+  "Notebook": notebookProcessor,
   "Oriented Imagery Catalog": simpleTypes,
   "Ortho Mapping Project": undefined,
   "QuickCapture Project": quickcaptureProcessor,
   "Site Application": HubSiteProcessor,
   "Site Page": HubPageProcessor,
-  Solution: UNSUPPORTED,
-  StoryMap: StoryMapProcessor,
+  "Solution": UNSUPPORTED,
+  "StoryMap": StoryMapProcessor,
   "Urban Model": undefined,
   "Web Experience Template": undefined,
   "Web Experience": WebExperienceProcessor,
@@ -124,7 +120,7 @@ export const moduleMap: IItemTypeModuleMap = {
   "Color Set": fileProcessor,
   "Compact Tile Package": fileProcessor,
   "CSV Collection": fileProcessor,
-  CSV: fileProcessor,
+  "CSV": fileProcessor,
   "Deep Learning Package": fileProcessor,
   "Desktop Add In": fileProcessor,
   "Desktop Application Template": fileProcessor,
@@ -135,21 +131,21 @@ export const moduleMap: IItemTypeModuleMap = {
   "Explorer Map": fileProcessor,
   "Feature Collection Template": fileProcessor,
   "File Geodatabase": fileProcessor,
-  GeoJson: fileProcessor,
-  GeoPackage: fileProcessor,
+  "GeoJson": fileProcessor,
+  "GeoPackage": fileProcessor,
   "Geoprocessing Package": fileProcessor,
   "Geoprocessing Sample": fileProcessor,
   "Globe Document": fileProcessor,
   "Image Collection": fileProcessor,
-  Image: fileProcessor,
+  "Image": fileProcessor,
   "iWork Keynote": fileProcessor,
   "iWork Numbers": fileProcessor,
   "iWork Pages": fileProcessor,
   "KML Collection": fileProcessor,
   "Layer Package": fileProcessor,
   "Layer Template": fileProcessor,
-  Layer: fileProcessor,
-  Layout: fileProcessor,
+  "Layer": fileProcessor,
+  "Layout": fileProcessor,
   "Locator Package": fileProcessor,
   "Map Document": fileProcessor,
   "Map Package": fileProcessor,
@@ -163,11 +159,11 @@ export const moduleMap: IItemTypeModuleMap = {
   "Native Application": fileProcessor,
   "Native Application Installer": fileProcessor,
   "Native Application Template": fileProcessor,
-  netCDF: fileProcessor,
+  "netCDF": fileProcessor,
   "Operation View": fileProcessor,
   "Operations Dashboard Add In": fileProcessor,
   "Operations Dashboard Extension": fileProcessor,
-  PDF: fileProcessor,
+  "PDF": fileProcessor,
   "Pro Layer Package": fileProcessor,
   "Pro Layer": fileProcessor,
   "Pro Map Package": fileProcessor,
@@ -182,9 +178,9 @@ export const moduleMap: IItemTypeModuleMap = {
   "Scene Document": fileProcessor,
   "Scene Package": fileProcessor,
   "Service Definition": fileProcessor,
-  Shapefile: fileProcessor,
+  "Shapefile": fileProcessor,
   "Statistical Data Collection": fileProcessor,
-  Style: fileProcessor,
+  "Style": fileProcessor,
   "Survey123 Add In": fileProcessor,
   "Symbol Set": fileProcessor,
   "Task File": fileProcessor,
@@ -197,7 +193,7 @@ export const moduleMap: IItemTypeModuleMap = {
   "Windows Mobile Package": fileProcessor,
   "Windows Viewer Add In": fileProcessor,
   "Windows Viewer Configuration": fileProcessor,
-  Workflow: workflowProcessor,
+  "Workflow": workflowProcessor,
   "Workflow Manager Package": fileProcessor,
 
   ////////////////////////////////////////////////////////
@@ -214,7 +210,7 @@ export const moduleMap: IItemTypeModuleMap = {
   "GeoBIM Application": undefined,
   "GeoBIM Project": undefined,
   "Geoenrichment Service": undefined,
-  GML: undefined,
+  "GML": undefined,
   "Hub Event": undefined,
   "Hub Initiative Template": undefined,
   "Hub Project": undefined,
@@ -225,19 +221,19 @@ export const moduleMap: IItemTypeModuleMap = {
   "Knowledge Studio Project": undefined,
   "Link Chart": undefined,
   "Map Image Layer": undefined,
-  Markup: undefined,
-  OGCFeatureServer: undefined,
+  "Markup": undefined,
+  "OGCFeatureServer": undefined,
   "Pro Project": undefined,
   "Pro Report Template": undefined,
   "Route Layer": undefined,
   "Scene Layer Package": undefined,
   "Site Initiative": undefined,
   "StoryMap Theme": undefined,
-  Table: undefined,
+  "Table": undefined,
   "Video Service": undefined,
 
   ////////////////////////////////////////////////////////
   // Testing "types"
-  Undefined: undefined,
-  Unsupported: UNSUPPORTED
+  "Undefined": undefined,
+  "Unsupported": UNSUPPORTED,
 };

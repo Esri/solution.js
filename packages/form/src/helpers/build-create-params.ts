@@ -19,7 +19,7 @@ import {
   UserSession,
   getUniqueTitle,
   ISurvey123CreateParams,
-  getPortalDefaultBasemap
+  getPortalDefaultBasemap,
 } from "@esri/solution-common";
 import { encodeSurveyForm } from "./encode-survey-form";
 
@@ -40,67 +40,64 @@ import { encodeSurveyForm } from "./encode-survey-form";
 export function buildCreateParams(
   template: IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: UserSession
+  destinationAuthentication: UserSession,
 ): Promise<ISurvey123CreateParams> {
   const {
     item: { title: originalTitle, description, tags, typeKeywords },
-    properties: { form: unencodedForm }
+    properties: { form: unencodedForm },
   } = template;
   const {
     user: { username },
     portalBaseUrl: portalUrl,
     organization: {
       basemapGalleryGroupQuery,
-      defaultBasemap: { title: basemapTitle }
-    }
+      defaultBasemap: { title: basemapTitle },
+    },
   } = templateDictionary;
   const { token } = destinationAuthentication.toCredential();
-  return getPortalDefaultBasemap(
-    basemapGalleryGroupQuery,
-    basemapTitle,
-    destinationAuthentication
-  ).then(defaultBasemap => {
-    // The S123 API appends "Survey-" to the survey title when computing
-    // the folder name. We need to use the same prefix to successfully
-    // calculate a unique folder name. Afterwards, we can safely remove the
-    // prefix from the title
-    const folderPrefix = "Survey-";
-    const title = getUniqueTitle(
-      `${folderPrefix}${originalTitle}`,
-      templateDictionary,
-      "user.folders"
-    ).replace(folderPrefix, "");
-    // set any map question's basemaps to default org basemap
-    if (unencodedForm.questions) {
-      const updateBasemap = (question: any) => {
-        if (question.maps) {
-          question.maps = question.maps.map((map: any) => ({
-            ...map,
-            itemId: defaultBasemap.id
-          }));
-        }
-        return question;
-      };
-      unencodedForm.questions = unencodedForm.questions.map((question: any) =>
-        !question.questions
-          ? updateBasemap(question)
-          : {
-            ...question,
-            questions: question.questions.map(updateBasemap)
-          }
+  return getPortalDefaultBasemap(basemapGalleryGroupQuery, basemapTitle, destinationAuthentication).then(
+    (defaultBasemap) => {
+      // The S123 API appends "Survey-" to the survey title when computing
+      // the folder name. We need to use the same prefix to successfully
+      // calculate a unique folder name. Afterwards, we can safely remove the
+      // prefix from the title
+      const folderPrefix = "Survey-";
+      const title = getUniqueTitle(`${folderPrefix}${originalTitle}`, templateDictionary, "user.folders").replace(
+        folderPrefix,
+        "",
       );
-    }
-    const form = encodeSurveyForm(unencodedForm);
-    // intentionally undefined, handled downstream by core logic now
-    return {
-      description,
-      form,
-      portalUrl,
-      tags,
-      title,
-      token,
-      typeKeywords,
-      username
-    };
-  });
+      // set any map question's basemaps to default org basemap
+      if (unencodedForm.questions) {
+        const updateBasemap = (question: any) => {
+          if (question.maps) {
+            question.maps = question.maps.map((map: any) => ({
+              ...map,
+              itemId: defaultBasemap.id,
+            }));
+          }
+          return question;
+        };
+        unencodedForm.questions = unencodedForm.questions.map((question: any) =>
+          !question.questions
+            ? updateBasemap(question)
+            : {
+                ...question,
+                questions: question.questions.map(updateBasemap),
+              },
+        );
+      }
+      const form = encodeSurveyForm(unencodedForm);
+      // intentionally undefined, handled downstream by core logic now
+      return {
+        description,
+        form,
+        portalUrl,
+        tags,
+        title,
+        token,
+        typeKeywords,
+        username,
+      };
+    },
+  );
 }

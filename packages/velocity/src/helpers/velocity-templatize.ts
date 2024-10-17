@@ -43,11 +43,7 @@ export function templatizeVelocity(template: IItemTemplate): void {
  *
  * @private
  */
-export function _templatize(
-  template: IItemTemplate,
-  prop: string,
-  fn: (arg: any) => void
-): void {
+export function _templatize(template: IItemTemplate, prop: string, fn: (arg: any) => void): void {
   const obj: any = getProp(template, prop);
   /* istanbul ignore else */
   if (obj) {
@@ -94,9 +90,7 @@ export function _templatizeFeed(feed: any): any {
     /* istanbul ignore else */
     if (id && feed.properties.hasOwnProperty("feature-layer.layerId")) {
       const flId = feed.properties["feature-layer.layerId"];
-      feed.properties[
-        "feature-layer.layerId"
-      ] = `{{${id}.layer${flId}.layerId}}`;
+      feed.properties["feature-layer.layerId"] = `{{${id}.layer${flId}.layerId}}`;
     }
   }
   return feed;

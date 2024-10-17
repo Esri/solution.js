@@ -14,47 +14,43 @@
  * limitations under the License.
  */
 
-import { addItemResource } from "@esri/arcgis-rest-portal";
-import { ArcGISAuthError } from "@esri/arcgis-rest-request";
-import { UserSession } from "../interfaces";
+import { IItemResourceOptions, ArcGISAuthError, updateItemResource, UserSession } from "../arcgisRestJS";
+
 /**
- * Add a resource from a blob
+ * Adds a text resource.
  *
- * @param blob
- * @param itemId
- * @param folder
- * @param filename
- * @param authentication
+ * @param content Text to add as a resource
+ * @param itemId Id of the item to add the resource to
+ * @param folder A prefix string added to the filename in the storage; use null or undefined for no folder
+ * @param filename File name used to rename an existing file resource uploaded, or to be used together with
+ * text as file name for it. File name must have the file resource extension.
+ * @param authentication Credentials for the request
  */
-export function addResourceFromBlob(
-  blob: any,
+export function updateTextResource(
+  content: string,
   itemId: string,
   folder: string,
   filename: string,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<any> {
   // Check that the filename has an extension because it is required by the addResources call
   if (filename && filename.indexOf(".") < 0) {
     return new Promise((resolve, reject) => {
-      reject(
-        new ArcGISAuthError(
-          "Filename must have an extension indicating its type"
-        )
-      );
+      reject(new ArcGISAuthError("Filename must have an extension indicating its type"));
     });
   }
 
-  const addRsrcOptions = {
+  const requestOptions: IItemResourceOptions = {
     id: itemId,
-    resource: blob,
+    content,
     name: filename,
     authentication: authentication,
-    params: {}
+    params: {},
   };
   if (folder) {
-    addRsrcOptions.params = {
-      resourcesPrefix: folder
+    requestOptions.params = {
+      resourcesPrefix: folder,
     };
   }
-  return addItemResource(addRsrcOptions);
+  return updateItemResource(requestOptions);
 }

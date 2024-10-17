@@ -21,45 +21,36 @@
 import * as common from "@esri/solution-common";
 import * as hubCommon from "@esri/hub-common";
 import * as StorymapProcessor from "../src/storymap-processor";
-import * as mockTemplates from "@esri/solution-common/test/mocks/templates";
-import * as utils from "@esri/solution-common/test/mocks/utils";
+import * as utils from "../../common/test/mocks/utils";
 import * as convertToTemplateModule from "../src/helpers/convert-storymap-to-template";
 import * as createFromTemplateModule from "../src/helpers/create-storymap-model-from-template";
 import * as createStoryMapModule from "../src/helpers/create-storymap";
-import * as portalModule from "@esri/arcgis-rest-portal";
 
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `storymap`: ", () => {
+describe("Module `storymap-processor`: ", () => {
   describe("convertItemToTemplate :: ", () => {
-    it("happy path", () => {
-      const getDataSpy = spyOn(portalModule, "getItemData").and.resolveTo({});
+    it("happy path", async () => {
+      const getDataSpy = spyOn(common, "getItemData").and.resolveTo({});
       const tmpl = {
         item: {},
-        data: {}
+        data: {},
       } as common.IItemTemplate;
-      const createTmplSpy = spyOn(
-        convertToTemplateModule,
-        "convertStoryMapToTemplate"
-      ).and.resolveTo(tmpl);
+      const createTmplSpy = spyOn(convertToTemplateModule, "convertStoryMapToTemplate").and.resolveTo(tmpl);
 
-      return StorymapProcessor.convertItemToTemplate(
+      const resp = await StorymapProcessor.convertItemToTemplate(
         {
           type: "StoryMap",
-          id: "bcfake23"
+          id: "bcfake23",
         },
         MOCK_USER_SESSION,
         MOCK_USER_SESSION,
-      ).then(resp => {
-        expect(resp).toBe(tmpl, "should return the template");
-        expect(getDataSpy.calls.count()).toBe(1, "should get the data");
-        expect(createTmplSpy.calls.count()).toBe(
-          1,
-          "should delegate to createTemplate fn"
-        );
-      });
+      );
+      expect(resp).withContext("should return the template").toBe(tmpl);
+      expect(getDataSpy.calls.count()).withContext("should get the data").toBe(1);
+      expect(createTmplSpy.calls.count()).withContext("should delegate to createTemplate fn").toBe(1);
     });
   });
 
@@ -67,122 +58,85 @@ describe("Module `storymap`: ", () => {
     // objects used in following tests
     const fakeStoryMap = {
       item: {
-        id: "FAKE3ef"
-      }
+        id: "FAKE3ef",
+      },
     } as hubCommon.IModel;
     const tmpl = {
       itemId: "bc8",
       type: "StoryMap",
-      item: {}
+      item: {},
     } as common.IItemTemplate;
     const td = {
       organization: {
         id: "somePortalId",
-        portalHostname: "www.arcgis.com"
+        portalHostname: "www.arcgis.com",
       },
       user: {
-        username: "vader"
+        username: "vader",
       },
       solutionItemExtent: "10,10,20,20",
       solution: {
-        title: "Some Title"
-      }
+        title: "Some Title",
+      },
     };
     const cb = () => true;
 
     it("exists", () => {
-      expect(StorymapProcessor.createItemFromTemplate).toBeDefined(
-        "Should have createItemFromTemplate method"
-      );
+      expect(StorymapProcessor.createItemFromTemplate)
+        .withContext("Should have createItemFromTemplate method")
+        .toBeDefined();
     });
 
-    it("happy-path", () => {
-      const createFromTmplSpy = spyOn(
-        createFromTemplateModule,
-        "createStoryMapModelFromTemplate"
-      ).and.resolveTo({ assets: [] });
-
-      const createSpy = spyOn(
-        createStoryMapModule,
-        "createStoryMap"
-      ).and.resolveTo(fakeStoryMap);
-
-      return StorymapProcessor.createItemFromTemplate(
-        tmpl,
-        td,
-        MOCK_USER_SESSION,
-        cb
-      ).then(result => {
-        expect(result.id).toBe("FAKE3ef", "should return the created item id");
-        expect(result.type).toBe("StoryMap", "should return the type");
-        expect(result.postProcess).toBe(false, "should not postProcess");
-        expect(createFromTmplSpy.calls.count()).toBe(
-          1,
-          "should call createFromTemplate"
-        );
-        expect(createSpy.calls.count()).toBe(1, "should call createStoryMap");
+    it("happy-path", async () => {
+      const createFromTmplSpy = spyOn(createFromTemplateModule, "createStoryMapModelFromTemplate").and.resolveTo({
+        assets: [],
       });
-    });
-    it("accepts and empty solution hash", () => {
-      const createFromTmplSpy = spyOn(
-        createFromTemplateModule,
-        "createStoryMapModelFromTemplate"
-      ).and.resolveTo({});
 
-      const createSpy = spyOn(
-        createStoryMapModule,
-        "createStoryMap"
-      ).and.resolveTo(fakeStoryMap);
+      const createSpy = spyOn(createStoryMapModule, "createStoryMap").and.resolveTo(fakeStoryMap);
+
+      const result = await StorymapProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb);
+      expect(result.id).withContext("should return the created item id").toBe("FAKE3ef");
+      expect(result.type).withContext("should return the type").toBe("StoryMap");
+      expect(result.postProcess).withContext("should not postProcess").toBe(false);
+      expect(createFromTmplSpy.calls.count()).withContext("should call createFromTemplate").toBe(1);
+      expect(createSpy.calls.count()).withContext("should call createStoryMap").toBe(1);
+    });
+
+    it("accepts and empty solution hash", async () => {
+      const createFromTmplSpy = spyOn(createFromTemplateModule, "createStoryMapModelFromTemplate").and.resolveTo({});
+
+      const createSpy = spyOn(createStoryMapModule, "createStoryMap").and.resolveTo(fakeStoryMap);
       const myTd = hubCommon.cloneObject(td);
-      delete myTd.solution;
+      delete (myTd as any).solution;
 
-      return StorymapProcessor.createItemFromTemplate(
-        tmpl,
-        myTd,
-        MOCK_USER_SESSION,
-        cb
-      ).then(result => {
-        expect(result.id).toBe("FAKE3ef", "should return the created item id");
-        expect(result.type).toBe("StoryMap", "should return the type");
-        expect(result.postProcess).toBe(false, "should not postProcess");
-        expect(createFromTmplSpy.calls.count()).toBe(
-          1,
-          "should call createFromTemplate"
-        );
-        expect(createSpy.calls.count()).toBe(1, "should call createStoryMap");
-      });
+      const result = await StorymapProcessor.createItemFromTemplate(tmpl, myTd, MOCK_USER_SESSION, cb);
+      expect(result.id).withContext("should return the created item id").toBe("FAKE3ef");
+      expect(result.type).withContext("should return the type").toBe("StoryMap");
+      expect(result.postProcess).withContext("should not postProcess").toBe(false);
+      expect(createFromTmplSpy.calls.count()).withContext("should call createFromTemplate").toBe(1);
+      expect(createSpy.calls.count()).withContext("should call createStoryMap").toBe(1);
     });
-    it("early-exits correctly", () => {
+
+    it("early-exits correctly", async () => {
       const cbFalse = () => false;
-      return StorymapProcessor.createItemFromTemplate(
-        tmpl,
-        td,
-        MOCK_USER_SESSION,
-        cbFalse
-      ).then(result => {
-        expect(result.id).toBe("", "should return empty result");
-        expect(result.postProcess).toBe(
-          false,
-          "should return postProcess false"
-        );
-      });
-    });
-    it("callsback on exception", done => {
-      spyOn(
-        createFromTemplateModule,
-        "createStoryMapModelFromTemplate"
-      ).and.rejectWith("booom");
 
-      StorymapProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb)
-        .then(result => {
-          done.fail();
-        })
-        .catch(ex => {
-          expect(ex).toBe("booom", "should re-throw");
-          done();
+      const result = await StorymapProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cbFalse);
+      expect(result.id).withContext("should return empty result").toBe("");
+      expect(result.postProcess).withContext("should return postProcess false").toBe(false);
+    });
+
+    it("callsback on exception", async () => {
+      spyOn(createFromTemplateModule, "createStoryMapModelFromTemplate").and.rejectWith("booom");
+
+      return StorymapProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, cb)
+        .then(() => fail())
+        .catch((ex) => {
+          expect(ex).withContext("should re-throw").toBe("booom");
+          return Promise.resolve();
         });
     });
-    it("cleans up if job is cancelled late", () => {
+
+    it("cleans up if job is cancelled late", async () => {
       // fn that returns a fn that closes over a counter so that
       // it can return false after the first call
       const createCb = () => {
@@ -192,38 +146,23 @@ describe("Module `storymap`: ", () => {
           return calls < 2;
         };
       };
-      const createFromTmplSpy = spyOn(
-        createFromTemplateModule,
-        "createStoryMapModelFromTemplate"
-      ).and.resolveTo({ assets: [] });
+      const createFromTmplSpy = spyOn(createFromTemplateModule, "createStoryMapModelFromTemplate").and.resolveTo({
+        assets: [],
+      });
 
-      const createSpy = spyOn(
-        createStoryMapModule,
-        "createStoryMap"
-      ).and.resolveTo(fakeStoryMap);
-      const removeSpy = spyOn(portalModule, "removeItem").and.resolveTo({
+      const createSpy = spyOn(createStoryMapModule, "createStoryMap").and.resolveTo(fakeStoryMap);
+      const removeSpy = spyOn(common, "restRemoveItem").and.resolveTo({
         success: true,
-        itemId: "3ef"
+        itemId: "3ef",
       });
-      return StorymapProcessor.createItemFromTemplate(
-        tmpl,
-        td,
-        MOCK_USER_SESSION,
-        createCb()
-      ).then(result => {
-        expect(result.id).toBe("", "should return empty result");
-        expect(result.postProcess).toBe(
-          false,
-          "should return postProcess false"
-        );
-        expect(result.type).toBe("StoryMap", "should return the type");
-        expect(createFromTmplSpy.calls.count()).toBe(
-          1,
-          "should call createFromTemplate"
-        );
-        expect(createSpy.calls.count()).toBe(1, "should call createStoryMap");
-        expect(removeSpy.calls.count()).toBe(1, "should remove the item");
-      });
+
+      const result = await StorymapProcessor.createItemFromTemplate(tmpl, td, MOCK_USER_SESSION, createCb());
+      expect(result.id).withContext("should return empty result").toBe("");
+      expect(result.postProcess).withContext("should return postProcess false").toBe(false);
+      expect(result.type).withContext("should return the type").toBe("StoryMap");
+      expect(createFromTmplSpy.calls.count()).withContext("should call createFromTemplate").toBe(1);
+      expect(createSpy.calls.count()).withContext("should call createStoryMap").toBe(1);
+      expect(removeSpy.calls.count()).withContext("should remove the item").toBe(1);
     });
   });
 

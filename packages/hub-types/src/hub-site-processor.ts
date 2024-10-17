@@ -24,29 +24,25 @@ import {
   IItemTemplate,
   IItemProgressCallback,
   ICreateItemFromTemplateResponse,
+  IUpdateItemOptions,
   EItemProgressStatus,
   UserSession,
   convertIModel,
   createHubRequestOptions,
   dedupe,
   generateEmptyCreationResponse,
-  getProp
+  getProp,
+  restUpdateItem,
 } from "@esri/solution-common";
-import { IUpdateItemOptions, updateItem } from "@esri/arcgis-rest-portal";
 import {
   createSiteModelFromTemplate,
   createSite,
   getSiteById,
   removeSite,
-  convertSiteToTemplate
+  convertSiteToTemplate,
 } from "@esri/hub-sites";
 
-import {
-  IModel,
-  failSafe,
-  IHubUserRequestOptions,
-  without
-} from "@esri/hub-common";
+import { IModel, failSafe, IHubUserRequestOptions, without } from "@esri/hub-common";
 
 import { moveModelToFolder } from "./helpers/move-model-to-folder";
 import { _postProcessSite } from "./helpers/_post-process-site";
@@ -63,29 +59,35 @@ import { replaceItemIds } from "./helpers/replace-item-ids";
 export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: UserSession,
-  srcAuthentication: UserSession = null // eslint-disable-line @typescript-eslint/no-unused-vars
+  srcAuthentication: UserSession = null, // eslint-disable-line @typescript-eslint/no-unused-vars
 ): Promise<IItemTemplate> {
   let created: number = 0;
   let modified: number = 0;
+  let itemTitle: string;
+  let dataTitle: string;
 
   let hubRo: IHubUserRequestOptions;
   // get hubRequestOptions
   return createHubRequestOptions(destAuthentication)
-    .then(ro => {
+    .then((ro) => {
       hubRo = ro;
       return getSiteById(itemInfo.id, hubRo);
     })
-    .then(siteModel => {
+    .then((siteModel) => {
       // We need to save these properties in order to restore them after hub.js deletes them
       created = siteModel.item.created;
       modified = siteModel.item.modified;
+      itemTitle = siteModel.item.title;
+      dataTitle = siteModel.data.values.title;
       return convertSiteToTemplate(siteModel, hubRo);
     })
-    .then(tmpl => {
+    .then((tmpl) => {
       // add in some stuff Hub.js does not yet add
       tmpl.item.created = created;
       tmpl.item.modified = modified;
+      tmpl.item.title = itemTitle;
       tmpl.item.typeKeywords = without(tmpl.item.typeKeywords, "doNotDelete");
+      tmpl.data.values.title = dataTitle;
       tmpl.groups = [];
       tmpl.estimatedDeploymentCostFactor = 2;
       tmpl.resources = [];
@@ -116,14 +118,10 @@ export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: UserSession,
-  itemProgressCallback: IItemProgressCallback
+  itemProgressCallback: IItemProgressCallback,
 ): Promise<ICreateItemFromTemplateResponse> {
   // let the progress system know we've started...
-  const startStatus = itemProgressCallback(
-    template.itemId,
-    EItemProgressStatus.Started,
-    0
-  );
+  const startStatus = itemProgressCallback(template.itemId, EItemProgressStatus.Started, 0);
   // if it returned false, just resolve out
   if (!startStatus) {
     return Promise.resolve(generateEmptyCreationResponse(template.type));
@@ -154,61 +152,52 @@ export function createItemFromTemplate(
   let hubRo: IHubUserRequestOptions;
   const thumbnail: File = template.item.thumbnail; // createSiteModelFromTemplate trashes thumbnail
   return createHubRequestOptions(destinationAuthentication, templateDictionary)
-    .then(ro => {
+    .then((ro) => {
       hubRo = ro;
-      return createSiteModelFromTemplate(
-        template,
-        templateDictionary,
-        transforms,
-        hubRo
-      );
+      return createSiteModelFromTemplate(template, templateDictionary, transforms, hubRo);
     })
-    .then(interpolated => {
+    .then((interpolated) => {
       const options = {
-        assets: interpolated.assets || []
+        assets: interpolated.assets || [],
       };
       // Now create the item, register for oAuth, register domain etc
       return createSite(interpolated, options, hubRo);
     })
-    .then(site => {
+    .then((site) => {
       // hold onto the site
       siteModel = site;
       // Move the site and initiative to the solution folder
       // this is essentially fire and forget. We fail-safe the actual moveItem
       // call since it's not critical to the outcome
-      return moveModelToFolder(
-        site,
-        templateDictionary.folderId,
-        destinationAuthentication
-      );
+      return moveModelToFolder(site, templateDictionary.folderId, destinationAuthentication);
     })
     .then(() => {
       // Fix the thumbnail
       const updateOptions: IUpdateItemOptions = {
         item: {
-          id: siteModel.item.id
+          id: siteModel.item.id,
         },
         params: {
           // Pass thumbnail in via params because item property is serialized, which discards a blob
-          thumbnail
+          thumbnail,
         },
-        authentication: destinationAuthentication
+        authentication: destinationAuthentication,
       };
-      return updateItem(updateOptions);
+      return restUpdateItem(updateOptions);
     })
     .then(() => {
       // Update the template dictionary
       // TODO: This should be done in whatever recieves
       // the outcome of this promise chain
       templateDictionary[template.itemId] = {
-        itemId: siteModel.item.id
+        itemId: siteModel.item.id,
       };
       // call the progress callback, which also mutates templateDictionary
       const finalStatus = itemProgressCallback(
         template.itemId,
         EItemProgressStatus.Finished,
         template.estimatedDeploymentCostFactor || 2,
-        siteModel.item.id
+        siteModel.item.id,
       );
       if (!finalStatus) {
         // clean up the site we just created
@@ -221,17 +210,17 @@ export function createItemFromTemplate(
         const response: ICreateItemFromTemplateResponse = {
           item: {
             ...template,
-            ...convertIModel(siteModel)
+            ...convertIModel(siteModel),
           },
           id: siteModel.item.id,
           type: template.type,
-          postProcess: true
+          postProcess: true,
         };
         response.item.itemId = siteModel.item.id;
         return response;
       }
     })
-    .catch(ex => {
+    .catch((ex) => {
       itemProgressCallback(template.itemId, EItemProgressStatus.Failed, 0);
       throw ex;
     });
@@ -258,16 +247,16 @@ export function postProcess(
   template: any,
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<boolean> {
   let hubRo: IHubUserRequestOptions;
   return createHubRequestOptions(authentication, templateDictionary)
-    .then(ro => {
+    .then((ro) => {
       hubRo = ro;
       // get the site model
       return getSiteById(id, hubRo);
     })
-    .then(siteModel => {
+    .then((siteModel) => {
       // Hub.js does not expect the same structures, so we delegat to a local fn
       return _postProcessSite(siteModel, itemInfos, templateDictionary, hubRo);
     })

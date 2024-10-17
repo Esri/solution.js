@@ -20,22 +20,22 @@ import * as templates from "../../../common/test/mocks/templates";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("isHubFormTemplate", () => {
-  it("should return true for Hub Form templates", function() {
+  it("should return true for Hub Form templates", function () {
     const template = {
       ...templates.getItemTemplate("Form"),
       properties: {
         services: {
           service: {
             serviceInfo: {},
-            layers: [] as any[]
-          }
-        }
-      }
+            layers: [] as any[],
+          },
+        },
+      },
     };
     const result = isHubFormTemplate(template);
     expect(result).toBeTrue();
   });
-  it("should return false for Solutions.js Form templates", function() {
+  it("should return false for Solutions.js Form templates", function () {
     const template = templates.getItemTemplate("Form");
     const result = isHubFormTemplate(template);
     expect(result).toBeFalse();

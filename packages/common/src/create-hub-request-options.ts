@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { UserSession } from "./interfaces";
-
 import { IHubUserRequestOptions, getHubUrlFromPortal } from "@esri/hub-common";
 
-import { getSelf, getUser } from "@esri/arcgis-rest-portal";
+import { getSelf, restGetUser, UserSession } from "./arcgisRestJS";
 
 /**
  * Create a IHubUserRequestOptions object from
@@ -33,7 +31,7 @@ import { getSelf, getUser } from "@esri/arcgis-rest-portal";
  */
 export function createHubRequestOptions(
   authentication: UserSession,
-  templateDictionary: any = {}
+  templateDictionary: any = {},
 ): Promise<IHubUserRequestOptions> {
   // We used to pull the user
   // the template dictionary, but ran into issues
@@ -51,14 +49,14 @@ export function createHubRequestOptions(
     promises.push(getSelf({ authentication }));
   }
   // always get the user
-  promises.push(getUser({ authentication }));
+  promises.push(restGetUser({ authentication }));
 
   return Promise.all(promises).then(([pSelf, user]) => {
     pSelf.user = user;
     const ro = {
       authentication,
       portalSelf: pSelf,
-      isPortal: pSelf.isPortal
+      isPortal: pSelf.isPortal,
     } as IHubUserRequestOptions;
 
     if (!pSelf.isPortal) {

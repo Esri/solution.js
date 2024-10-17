@@ -55,25 +55,22 @@ import {
   IFileMimeTyped,
   ISourceFile,
   ISourceFileCopyPath,
-  UserSession
 } from "./interfaces";
 import {
-  IRemoveItemResourceOptions,
   IItemResourceOptions,
   IItemResourceResponse,
+  IRemoveItemResourceOptions,
   removeItemResource,
-  updateGroup,
-  updateItem,
-  updateItemResource
-} from "@esri/arcgis-rest-portal";
+  restUpdateGroup,
+  restUpdateItem,
+  updateItemResource,
+  UserSession,
+} from "./arcgisRestJS";
 import { appendQueryParam, checkUrlPathTermination } from "./generalHelpers";
 import { convertItemResourceToStorageResource } from "./resources/convert-item-resource-to-storage-resource";
 import { convertStorageResourceToItemResource } from "./resources/convert-storage-resource-to-item-resource";
 import { getThumbnailFile } from "./restHelpersGet";
-import {
-  copyAssociatedFilesByType,
-  copyFilesAsResources
-} from "./resources/copyAssociatedFiles";
+import { copyAssociatedFilesByType, copyFilesAsResources } from "./resources/copyAssociatedFiles";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -81,26 +78,23 @@ export function addThumbnailFromBlob(
   blob: any,
   itemId: string,
   authentication: UserSession,
-  isGroup: boolean = false
+  isGroup: boolean = false,
 ): Promise<any> {
   const updateOptions: any = {
     params: {
       // Pass image in directly because item object is serialized, which discards a blob
-      thumbnail: blob
+      thumbnail: blob,
     },
-    authentication: authentication
+    authentication: authentication,
   };
   updateOptions[isGroup ? "group" : "item"] = {
-    id: itemId
+    id: itemId,
   };
 
-  return isGroup ? updateGroup(updateOptions) : updateItem(updateOptions);
+  return isGroup ? restUpdateGroup(updateOptions) : restUpdateItem(updateOptions);
 }
 
-export function convertBlobToSupportableResource(
-  blob: Blob,
-  filename: string = ""
-): IFileMimeTyped {
+export function convertBlobToSupportableResource(blob: Blob, filename: string = ""): IFileMimeTyped {
   const originalFilename = (blob as File).name || filename;
   let filenameToUse = originalFilename;
   if (filenameToUse && !isSupportedFileType(filenameToUse)) {
@@ -110,7 +104,7 @@ export function convertBlobToSupportableResource(
   return {
     blob: new File([blob], filenameToUse, { type: blob.type }),
     filename: originalFilename,
-    mimeType: blob.type
+    mimeType: blob.type,
   };
 }
 
@@ -136,7 +130,7 @@ export function copyFilesFromStorageItem(
   destinationItemId: string,
   destinationAuthentication: UserSession,
   template: any = {},
-  templateDictionary: any = {}
+  templateDictionary: any = {},
 ): Promise<boolean> {
   // TODO: This is only used in deployer, so move there
   // changed to allow the template to be passed in
@@ -147,7 +141,7 @@ export function copyFilesFromStorageItem(
   // remove the template.itemId from the fileName in the filePaths
   /* istanbul ignore else */
   if (template.itemId) {
-    filePaths = filePaths.map(fp => {
+    filePaths = filePaths.map((fp) => {
       /* istanbul ignore else */
       if (fp.filename.indexOf(template.itemId) === 0 && fp.folder === "") {
         fp.filename = fp.filename.replace(`${template.itemId}-`, "");
@@ -157,14 +151,13 @@ export function copyFilesFromStorageItem(
   }
 
   return new Promise<boolean>((resolve, reject) => {
-    const fileInfos = filePaths.map(path => {
+    const fileInfos = filePaths.map((path) => {
       return {
-        folder:
-          path.type === EFileType.Data ? destinationFolderId : path.folder,
+        folder: path.type === EFileType.Data ? destinationFolderId : path.folder,
         filename: path.filename,
         type: path.type,
         mimeType: mimeTypes ? mimeTypes[path.filename] : "",
-        url: path.url
+        url: path.url,
       } as IAssociatedFileInfo;
     });
 
@@ -175,24 +168,15 @@ export function copyFilesFromStorageItem(
       destinationItemId,
       destinationAuthentication,
       template,
-      templateDictionary
+      templateDictionary,
     ).then((results: IAssociatedFileCopyResults[]) => {
       const allOK: boolean = results
         // Filter out metadata
-        .filter(
-          (result: IAssociatedFileCopyResults) =>
-            result.filename !== "metadata.xml"
-        )
+        .filter((result: IAssociatedFileCopyResults) => result.filename !== "metadata.xml")
         // Extract success
-        .map(
-          (result: IAssociatedFileCopyResults) =>
-            result.fetchedFromSource && result.copiedToDestination
-        )
+        .map((result: IAssociatedFileCopyResults) => result.fetchedFromSource && result.copiedToDestination)
         // Boil it down to a single result
-        .reduce(
-          (success: boolean, currentValue: boolean) => success && currentValue,
-          true
-        );
+        .reduce((success: boolean, currentValue: boolean) => success && currentValue, true);
       if (allOK) {
         resolve(true);
       } else {
@@ -214,26 +198,20 @@ export function copyFilesFromStorageItem(
 export function copyFilesToStorageItem(
   files: ISourceFile[],
   storageItemId: string,
-  storageAuthentication: UserSession
+  storageAuthentication: UserSession,
 ): Promise<string[]> {
-  return new Promise<string[]>(resolve => {
+  return new Promise<string[]>((resolve) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     void copyFilesAsResources(files, storageItemId, storageAuthentication).then(
       (results: IAssociatedFileCopyResults[]) => {
         resolve(
           results
             // Filter out failures
-            .filter(
-              (result: IAssociatedFileCopyResults) =>
-                result.fetchedFromSource && result.copiedToDestination
-            )
+            .filter((result: IAssociatedFileCopyResults) => result.fetchedFromSource && result.copiedToDestination)
             // Return folder and filename in storage item's resources
-            .map(
-              (result: IAssociatedFileCopyResults) =>
-                result.folder + "/" + result.filename
-            )
+            .map((result: IAssociatedFileCopyResults) => result.folder + "/" + result.filename),
         );
-      }
+      },
     );
   });
 }
@@ -245,15 +223,13 @@ export function copyFilesToStorageItem(
  * @returns Folder and filename for storage; folder is the itemID suffixed with "_info_metadata"
  * @see convertStorageResourceToItemResource
  */
-export function generateMetadataStorageFilename(
-  itemId: string
-): {
+export function generateMetadataStorageFilename(itemId: string): {
   folder: string;
   filename: string;
 } {
   return {
     folder: itemId + "_info_metadata",
-    filename: "metadata.xml"
+    filename: "metadata.xml",
   };
 }
 
@@ -275,28 +251,20 @@ export function generateSourceFilePaths(
   thumbnailUrlPart: string,
   resourceFilenames: string[],
   isGroup: boolean = false,
-  storageVersion = 0
+  storageVersion = 0,
 ): ISourceFileCopyPath[] {
-  const filePaths = resourceFilenames.map(resourceFilename => {
+  const filePaths = resourceFilenames.map((resourceFilename) => {
     return {
       itemId,
-      url: generateSourceResourceUrl(
-        portalSharingUrl,
-        itemId,
-        resourceFilename
-      ),
-      ...convertItemResourceToStorageResource(
-        itemId,
-        resourceFilename,
-        storageVersion
-      )
+      url: generateSourceResourceUrl(portalSharingUrl, itemId, resourceFilename),
+      ...convertItemResourceToStorageResource(itemId, resourceFilename, storageVersion),
     };
   });
 
   filePaths.push({
     itemId,
     url: generateSourceMetadataUrl(portalSharingUrl, itemId, isGroup),
-    ...generateMetadataStorageFilename(itemId)
+    ...generateMetadataStorageFilename(itemId),
   });
 
   /* istanbul ignore else */
@@ -320,20 +288,12 @@ export function generateSourceThumbnailPath(
   portalSharingUrl: string,
   itemId: string,
   thumbnailUrlPart: string,
-  isGroup: boolean = false
+  isGroup: boolean = false,
 ): ISourceFileCopyPath {
   return {
     itemId,
-    url: appendQueryParam(
-      generateSourceThumbnailUrl(
-        portalSharingUrl,
-        itemId,
-        thumbnailUrlPart,
-        isGroup
-      ),
-      "w=400"
-    ),
-    ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
+    url: appendQueryParam(generateSourceThumbnailUrl(portalSharingUrl, itemId, thumbnailUrlPart, isGroup), "w=400"),
+    ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart),
   };
 }
 
@@ -345,11 +305,7 @@ export function generateSourceThumbnailPath(
  * @param isGroup Boolean to indicate if the files are associated with a group or item
  * @returns URL string
  */
-export function generateSourceMetadataUrl(
-  sourcePortalSharingUrl: string,
-  itemId: string,
-  isGroup = false
-): string {
+export function generateSourceMetadataUrl(sourcePortalSharingUrl: string, itemId: string, isGroup = false): string {
   return (
     checkUrlPathTermination(sourcePortalSharingUrl) +
     (isGroup ? "community/groups/" : "content/items/") +
@@ -369,14 +325,10 @@ export function generateSourceMetadataUrl(
 export function generateSourceResourceUrl(
   sourcePortalSharingUrl: string,
   itemId: string,
-  sourceResourceFilename: string
+  sourceResourceFilename: string,
 ): string {
   return (
-    checkUrlPathTermination(sourcePortalSharingUrl) +
-    "content/items/" +
-    itemId +
-    "/resources/" +
-    sourceResourceFilename
+    checkUrlPathTermination(sourcePortalSharingUrl) + "content/items/" + itemId + "/resources/" + sourceResourceFilename
   );
 }
 
@@ -393,7 +345,7 @@ export function generateSourceThumbnailUrl(
   sourcePortalSharingUrl: string,
   itemId: string,
   thumbnailUrlPart: string,
-  isGroup = false
+  isGroup = false,
 ): string {
   return (
     checkUrlPathTermination(sourcePortalSharingUrl) +
@@ -418,16 +370,12 @@ export function generateStorageFilePaths(
   portalSharingUrl: string,
   storageItemId: string,
   resourceFilenames: string[] = [],
-  storageVersion = 0
+  storageVersion = 0,
 ): IDeployFileCopyPath[] {
-  return resourceFilenames.map(resourceFilename => {
+  return resourceFilenames.map((resourceFilename) => {
     return {
-      url: generateSourceResourceUrl(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilename
-      ),
-      ...convertStorageResourceToItemResource(resourceFilename, storageVersion)
+      url: generateSourceResourceUrl(portalSharingUrl, storageItemId, resourceFilename),
+      ...convertStorageResourceToItemResource(resourceFilename, storageVersion),
     };
   });
 }
@@ -443,17 +391,14 @@ export function generateStorageFilePaths(
  */
 export function generateThumbnailStorageFilename(
   itemId: string,
-  thumbnailurl: string
+  thumbnailurl: string,
 ): {
   folder: string;
   filename: string;
 } {
   const folder = itemId + "_info_thumbnail";
   const thumbnailUrlParts = thumbnailurl.split("/");
-  const filename =
-    thumbnailUrlParts.length === 1
-      ? thumbnailUrlParts[0]
-      : thumbnailUrlParts[1];
+  const filename = thumbnailUrlParts.length === 1 ? thumbnailUrlParts[0] : thumbnailUrlParts[1];
   return { folder, filename };
 }
 
@@ -461,12 +406,8 @@ export function isSupportedFileType(filename: string): boolean {
   // Supported file formats are: .json, .xml, .txt, .png, .pbf, .zip, .jpeg, .jpg, .gif, .bmp, .gz, .svg,
   // .svgz, .geodatabase (https://developers.arcgis.com/rest/users-groups-and-items/add-resources.htm)
   const filenameExtension = filename.match(/\.([a-z]+)$/i);
-  const supportedExtensions =
-    "|.json|.xml|.txt|.png|.pbf|.zip|.jpeg|.jpg|.gif|.bmp|.gz|.svg|.svgz|.geodatabase|";
-  return (
-    !!filenameExtension &&
-    supportedExtensions.indexOf("|" + filenameExtension[0] + "|") >= 0
-  );
+  const supportedExtensions = "|.json|.xml|.txt|.png|.pbf|.zip|.jpeg|.jpg|.gif|.bmp|.gz|.svg|.svgz|.geodatabase|";
+  return !!filenameExtension && supportedExtensions.indexOf("|" + filenameExtension[0] + "|") >= 0;
 }
 
 /**
@@ -478,11 +419,11 @@ export function isSupportedFileType(filename: string): boolean {
  */
 export function getThumbnailFromStorageItem(
   authentication: UserSession,
-  filePaths: IDeployFileCopyPath[]
+  filePaths: IDeployFileCopyPath[],
 ): Promise<File> {
   let thumbnailUrl: string;
   let thumbnailFilename: string;
-  filePaths.forEach(path => {
+  filePaths.forEach((path) => {
     if (path.type === EFileType.Thumbnail) {
       thumbnailUrl = path.url;
       thumbnailFilename = path.filename;
@@ -507,12 +448,12 @@ export function getThumbnailFromStorageItem(
 export function removeItemResourceFile(
   itemId: string,
   filename: string,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<{ success: boolean }> {
   return removeItemResource({
     id: itemId,
     resource: filename,
-    authentication: authentication
+    authentication: authentication,
   } as IRemoveItemResourceOptions);
 }
 
@@ -529,11 +470,14 @@ export function updateItemResourceFile(
   itemId: string,
   filename: string,
   resource: File,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IItemResourceResponse> {
   // Prefix has to be specified separately
   const prefixedFilenameParts = filename.split("/");
-  const prefix = prefixedFilenameParts.length > 1 ? prefixedFilenameParts.slice(0, prefixedFilenameParts.length - 1).join("/") : undefined;
+  const prefix =
+    prefixedFilenameParts.length > 1
+      ? prefixedFilenameParts.slice(0, prefixedFilenameParts.length - 1).join("/")
+      : undefined;
   const suffix = prefixedFilenameParts[prefixedFilenameParts.length - 1];
 
   return updateItemResource({
@@ -541,6 +485,6 @@ export function updateItemResourceFile(
     prefix: prefix,
     name: suffix,
     resource,
-    authentication: authentication
+    authentication: authentication,
   } as IItemResourceOptions);
 }

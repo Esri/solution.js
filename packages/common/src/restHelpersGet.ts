@@ -20,38 +20,33 @@
  * @module restHelpersGet
  */
 
-import {
-  blobToFile,
-  blobToJson,
-  blobToText,
-  checkUrlPathTermination,
-  getProp
-} from "./generalHelpers";
+import { blobToFile, blobToJson, blobToText, checkUrlPathTermination, getProp } from "./generalHelpers";
 import {
   IGetResourcesResponse,
-  IGroup,
-  IItem,
+  IGroupCategorySchema,
   IItemRelationshipOptionsPaging,
-  IPagingParams,
-  IPortal,
   IRelatedItems,
-  ItemRelationshipType,
-  IUser,
-  UserSession
 } from "./interfaces";
 import {
   IGetGroupContentOptions,
   IGetRelatedItemsResponse,
-  IGroupCategorySchema,
+  IGroup,
+  IItem,
+  IPagingParams,
+  IPortal,
+  ItemRelationshipType,
+  IRequestOptions,
+  IUser,
   getGroup,
-  getGroupCategorySchema as portalGetGroupCategorySchema,
   getGroupContent,
   getItem,
-  getItemResources as portalGetItemResources,
-  getPortal as portalGetPortal,
-  getRelatedItems
-} from "@esri/arcgis-rest-portal";
-import { IRequestOptions, request } from "@esri/arcgis-rest-request";
+  getRelatedItems,
+  request,
+  restGetGroupCategorySchema as portalGetGroupCategorySchema,
+  restGetItemResources as portalGetItemResources,
+  restGetPortal as portalGetPortal,
+  UserSession,
+} from "./arcgisRestJS";
 import { getBlob } from "./resources/get-blob";
 import { searchGroups, searchGroupContents } from "./restHelpers";
 
@@ -63,12 +58,9 @@ export function checkJsonForError(json: any): boolean {
   return typeof json?.error !== "undefined";
 }
 
-export function getPortal(
-  id: string,
-  authentication: UserSession
-): Promise<IPortal> {
+export function getPortal(id: string, authentication: UserSession): Promise<IPortal> {
   const requestOptions = {
-    authentication: authentication
+    authentication: authentication,
   };
   return portalGetPortal(id, requestOptions);
 }
@@ -79,20 +71,21 @@ export function getPortal(
  * @param authentication Credentials for the request to AGO
  * @returns List of http and https helper urls
  */
-export function getPortalUrls(
-  authentication: UserSession
-): Promise<IPortal> {
+export function getPortalUrls(authentication: UserSession): Promise<IPortal> {
   return new Promise<any>((resolve) => {
     const requestOptions = {
       httpMethod: "GET",
       authentication: authentication,
-      rawResponse: false
+      rawResponse: false,
     } as IRequestOptions;
 
     const url: string = `${authentication.portal}/portals/self/urls`;
-    request(url, requestOptions).then((response) => {
-      resolve(response);
-    }, () => resolve({}));
+    request(url, requestOptions).then(
+      (response) => {
+        resolve(response);
+      },
+      () => resolve({}),
+    );
   });
 }
 
@@ -102,10 +95,7 @@ export function getUser(authentication: UserSession): Promise<IUser> {
 
 export function getUsername(authentication: UserSession): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    getUser(authentication).then(
-      (user: IUser) => resolve(user.username),
-      reject
-    );
+    getUser(authentication).then((user: IUser) => resolve(user.username), reject);
   });
 }
 
@@ -114,30 +104,23 @@ export function getFoldersAndGroups(authentication: UserSession): Promise<any> {
     const requestOptions = {
       httpMethod: "GET",
       authentication: authentication,
-      rawResponse: false
+      rawResponse: false,
     } as IRequestOptions;
 
     // Folders
-    const foldersUrl: string = `${
-      authentication.portal
-    }/content/users/${encodeURIComponent(authentication.username)}`;
+    const foldersUrl: string = `${authentication.portal}/content/users/${encodeURIComponent(authentication.username)}`;
 
     // Groups
-    const groupsUrl: string = `${
-      authentication.portal
-    }/community/users/${encodeURIComponent(authentication.username)}`;
+    const groupsUrl: string = `${authentication.portal}/community/users/${encodeURIComponent(authentication.username)}`;
 
-    Promise.all([
-      request(foldersUrl, requestOptions),
-      request(groupsUrl, requestOptions)
-    ]).then(
-      responses => {
+    Promise.all([request(foldersUrl, requestOptions), request(groupsUrl, requestOptions)]).then(
+      (responses) => {
         resolve({
           folders: responses[0].folders || [],
-          groups: responses[1].groups || []
+          groups: responses[1].groups || [],
         });
       },
-      e => reject(e)
+      (e) => reject(e),
     );
   });
 }
@@ -155,14 +138,13 @@ export function getBlobAsFile(
   filename: string,
   authentication: UserSession,
   ignoreErrors: number[] = [],
-  mimeType?: string
+  mimeType?: string,
 ): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     // Get the blob from the URL
     getBlobCheckForError(url, authentication, ignoreErrors).then(
-      blob =>
-        !blob ? resolve(null) : resolve(blobToFile(blob, filename, mimeType)),
-      reject
+      (blob) => (!blob ? resolve(null) : resolve(blobToFile(blob, filename, mimeType))),
+      reject,
     );
   });
 }
@@ -178,13 +160,13 @@ export function getBlobAsFile(
 export function getBlobCheckForError(
   url: string,
   authentication: UserSession,
-  ignoreErrors: number[] = []
+  ignoreErrors: number[] = [],
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
     // Get the blob from the URL
-    getBlob(url, authentication).then(blob => {
+    getBlob(url, authentication).then((blob) => {
       // Reclassify text/plain blobs as needed
-      _fixTextBlobType(blob).then(adjustedBlob => {
+      _fixTextBlobType(blob).then((adjustedBlob) => {
         if (adjustedBlob.type === "application/json") {
           // Blob may be an error
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -216,18 +198,15 @@ export function getBlobCheckForError(
  * @param authentication Credentials for the request to AGO
  * @returns List of servers available on the portal
  */
-export async function getEnterpriseServers(
-  portalRestUrl: string,
-  authentication: UserSession
-): Promise<any[]> {
+export async function getEnterpriseServers(portalRestUrl: string, authentication: UserSession): Promise<any[]> {
   // Get the servers
   const getServersURL = `${portalRestUrl}/portals/self/servers`;
   const serversJSON = await request(getServersURL, {
     authentication,
     httpMethod: "GET",
     params: {
-      f: "json"
-    }
+      f: "json",
+    },
   });
   return serversJSON.servers;
 }
@@ -251,9 +230,7 @@ export function getFilenameFromUrl(url: string): string {
   }
   const iFilenameStart = url.lastIndexOf("/", iParamsStart) + 1;
 
-  return iFilenameStart < iParamsStart
-    ? url.substring(iFilenameStart, iParamsStart)
-    : "";
+  return iFilenameStart < iParamsStart ? url.substring(iFilenameStart, iParamsStart) : "";
 }
 
 /**
@@ -264,12 +241,9 @@ export function getFilenameFromUrl(url: string): string {
  * @returns A promise that will resolve with group's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
  *         or response error code
  */
-export function getGroupBase(
-  groupId: string,
-  authentication: UserSession
-): Promise<IGroup> {
+export function getGroupBase(groupId: string, authentication: UserSession): Promise<IGroup> {
   const requestOptions = {
-    authentication: authentication
+    authentication: authentication,
   };
   return getGroup(groupId, requestOptions);
 }
@@ -282,12 +256,9 @@ export function getGroupBase(
  * @returns A promise that will resolve with JSON of group's category schema
  * @see https://developers.arcgis.com/rest/users-groups-and-items/group-category-schema.htm
  */
-export function getGroupCategorySchema(
-  groupId: string,
-  authentication: UserSession
-): Promise<IGroupCategorySchema> {
+export function getGroupCategorySchema(groupId: string, authentication: UserSession): Promise<IGroupCategorySchema> {
   const requestOptions = {
-    authentication: authentication
+    authentication: authentication,
   };
   return portalGetGroupCategorySchema(groupId, requestOptions);
 }
@@ -299,23 +270,17 @@ export function getGroupCategorySchema(
  * @param authentication Credentials for the request to AGO
  * @returns A promise that will resolve with list of dependent ids or an empty list
  */
-export function getGroupContents(
-  groupId: string,
-  authentication: UserSession
-): Promise<string[]> {
+export function getGroupContents(groupId: string, authentication: UserSession): Promise<string[]> {
   return new Promise((resolve, reject) => {
     const pagingParams: IPagingParams = {
       start: 1,
-      num: 100 // max allowed by REST API
+      num: 100, // max allowed by REST API
     };
 
     // Fetch group items
-    _getGroupContentsTranche(groupId, pagingParams, authentication).then(
-      contents => {
-        resolve(contents);
-      },
-      reject
-    );
+    _getGroupContentsTranche(groupId, pagingParams, authentication).then((contents) => {
+      resolve(contents);
+    }, reject);
   });
 }
 
@@ -327,12 +292,9 @@ export function getGroupContents(
  * @returns A promise that will resolve with item's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
  *         or response error code
  */
-export function getItemBase(
-  itemId: string,
-  authentication: UserSession
-): Promise<IItem> {
+export function getItemBase(itemId: string, authentication: UserSession): Promise<IItem> {
   const itemParam: IRequestOptions = {
-    authentication: authentication
+    authentication: authentication,
   };
   return getItem(itemId, itemParam);
 }
@@ -345,15 +307,11 @@ export function getItemBase(
  * @param authentication Credentials for the request to AGO
  * @returns Promise that will resolve with a File, undefined if the Blob is null, or an AGO-style JSON failure response
  */
-export function getItemDataAsFile(
-  itemId: string,
-  filename: string,
-  authentication: UserSession
-): Promise<File> {
-  return new Promise<File>(resolve => {
+export function getItemDataAsFile(itemId: string, filename: string, authentication: UserSession): Promise<File> {
+  return new Promise<File>((resolve) => {
     getItemDataBlob(itemId, authentication).then(
-      blob => resolve(blobToFile(blob, filename)),
-      () => resolve(null)
+      (blob) => resolve(blobToFile(blob, filename)),
+      () => resolve(null),
     );
   });
 }
@@ -366,14 +324,11 @@ export function getItemDataAsFile(
  * @param authentication Credentials for the request to AGO
  * @returns Promise that will resolve with JSON, or an AGO-style JSON failure response
  */
-export function getItemDataAsJson(
-  itemId: string,
-  authentication: UserSession
-): Promise<any> {
-  return new Promise<any>(resolve => {
+export function getItemDataAsJson(itemId: string, authentication: UserSession): Promise<any> {
+  return new Promise<any>((resolve) => {
     getItemDataBlob(itemId, authentication).then(
-      blob => resolve(blobToJson(blob)),
-      () => resolve(null)
+      (blob) => resolve(blobToJson(blob)),
+      () => resolve(null),
     );
   });
 }
@@ -385,15 +340,12 @@ export function getItemDataAsJson(
  * @param authentication Credentials for the request to AGO
  * @returns A promise that will resolve with the data Blob or null if the item doesn't have a data section
  */
-export function getItemDataBlob(
-  itemId: string,
-  authentication: UserSession
-): Promise<Blob> {
-  return new Promise<Blob>(resolve => {
+export function getItemDataBlob(itemId: string, authentication: UserSession): Promise<Blob> {
+  return new Promise<Blob>((resolve) => {
     const url = getItemDataBlobUrl(itemId, authentication);
     getBlobCheckForError(url, authentication, [400, 500]).then(
-      blob => resolve(_fixTextBlobType(blob)),
-      () => resolve(null)
+      (blob) => resolve(_fixTextBlobType(blob)),
+      () => resolve(null),
     );
   });
 }
@@ -405,13 +357,8 @@ export function getItemDataBlob(
  * @param authentication Credentials for the request to AGO
  * @returns URL string
  */
-export function getItemDataBlobUrl(
-  itemId: string,
-  authentication: UserSession
-): string {
-  return `${getPortalSharingUrlFromAuth(
-    authentication
-  )}/content/items/${itemId}/data`;
+export function getItemDataBlobUrl(itemId: string, authentication: UserSession): string {
+  return `${getPortalSharingUrlFromAuth(authentication)}/content/items/${itemId}/data`;
 }
 
 /**
@@ -421,13 +368,8 @@ export function getItemDataBlobUrl(
  * @param authentication Credentials for the request to AGO
  * @returns URL string
  */
-export function getItemInfoFileUrlPrefix(
-  itemId: string,
-  authentication: UserSession
-): string {
-  return `${getPortalSharingUrlFromAuth(
-    authentication
-  )}/content/items/${itemId}/info/`;
+export function getItemInfoFileUrlPrefix(itemId: string, authentication: UserSession): string {
+  return `${getPortalSharingUrlFromAuth(authentication)}/content/items/${itemId}/info/`;
 }
 
 /**
@@ -437,20 +379,17 @@ export function getItemInfoFileUrlPrefix(
  * @param authentication Credentials for the request to AGO
  * @returns Promise that will resolve with `undefined` or a File containing the metadata
  */
-export function getItemMetadataAsFile(
-  itemId: string,
-  authentication: UserSession
-): Promise<File> {
-  return new Promise<File>(resolve => {
+export function getItemMetadataAsFile(itemId: string, authentication: UserSession): Promise<File> {
+  return new Promise<File>((resolve) => {
     getItemMetadataBlob(itemId, authentication).then(
-      blob => {
+      (blob) => {
         if (!blob || (blob && blob.type.startsWith("application/json"))) {
           resolve(null); // JSON error
         } else {
           resolve(blobToFile(blob, "metadata.xml"));
         }
       },
-      () => resolve(null)
+      () => resolve(null),
     );
   });
 }
@@ -462,10 +401,7 @@ export function getItemMetadataAsFile(
  * @param authentication Credentials for the request to AGO
  * @returns A promise that will resolve with the metadata Blob or null if the item doesn't have a metadata file
  */
-export function getItemMetadataBlob(
-  itemId: string,
-  authentication: UserSession
-): Promise<Blob> {
+export function getItemMetadataBlob(itemId: string, authentication: UserSession): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
     const url = getItemMetadataBlobUrl(itemId, authentication);
 
@@ -480,13 +416,8 @@ export function getItemMetadataBlob(
  * @param authentication Credentials for the request to AGO
  * @returns URL string
  */
-export function getItemMetadataBlobUrl(
-  itemId: string,
-  authentication: UserSession
-): string {
-  return (
-    getItemInfoFileUrlPrefix(itemId, authentication) + "metadata/metadata.xml"
-  );
+export function getItemMetadataBlobUrl(itemId: string, authentication: UserSession): string {
+  return getItemInfoFileUrlPrefix(itemId, authentication) + "metadata/metadata.xml";
 }
 
 /**
@@ -504,9 +435,9 @@ export function getItemRelatedItems(
   relationshipType: ItemRelationshipType | ItemRelationshipType[],
   direction: "forward" | "reverse",
   authentication: UserSession,
-  num = 100
+  num = 100,
 ): Promise<IGetRelatedItemsResponse> {
-  return new Promise<IGetRelatedItemsResponse>(resolve => {
+  return new Promise<IGetRelatedItemsResponse>((resolve) => {
     const itemRelatedItemsParam: IItemRelationshipOptionsPaging = {
       id: itemId,
       relationshipType,
@@ -514,17 +445,15 @@ export function getItemRelatedItems(
       params: {
         direction,
         start: 1,
-        num
-      }
-    }
+        num,
+      },
+    };
 
     // Fetch related items
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    _getItemRelatedItemsTranche(itemRelatedItemsParam).then(
-      response => {
-        resolve(response);
-      }
-    );
+    _getItemRelatedItemsTranche(itemRelatedItemsParam).then((response) => {
+      resolve(response);
+    });
   });
 }
 
@@ -539,9 +468,9 @@ export function getItemRelatedItems(
 export function getItemRelatedItemsInSameDirection(
   itemId: string,
   direction: "forward" | "reverse",
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IRelatedItems[]> {
-  return new Promise<IRelatedItems[]>(resolve => {
+  return new Promise<IRelatedItems[]>((resolve) => {
     const relationshipTypes = [
       // from ItemRelationshipType
       "APIKey2Item",
@@ -569,48 +498,34 @@ export function getItemRelatedItemsInSameDirection(
       "TrackView2Map",
       "WebStyle2DesktopStyle",
       "WMA2Code",
-      "WorkforceMap2FeatureService"
+      "WorkforceMap2FeatureService",
     ];
 
-    const relatedItemDefs: Array<Promise<
-      IGetRelatedItemsResponse
-    >> = relationshipTypes.map(relationshipType =>
-      getItemRelatedItems(
-        itemId,
-        relationshipType as ItemRelationshipType,
-        direction,
-        authentication
-      )
+    const relatedItemDefs: Array<Promise<IGetRelatedItemsResponse>> = relationshipTypes.map((relationshipType) =>
+      getItemRelatedItems(itemId, relationshipType as ItemRelationshipType, direction, authentication),
     );
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.all(relatedItemDefs).then(
-      (relationshipResponses: IGetRelatedItemsResponse[]) => {
-        const relatedItems: IRelatedItems[] = [];
+    Promise.all(relatedItemDefs).then((relationshipResponses: IGetRelatedItemsResponse[]) => {
+      const relatedItems: IRelatedItems[] = [];
 
-        for (let i: number = 0; i < relationshipTypes.length; ++i) {
-          if (relationshipResponses[i].total > 0) {
-            relatedItems.push({
-              relationshipType: relationshipTypes[i],
-              relatedItemIds: relationshipResponses[i].relatedItems.map(
-                item => item.id
-              )
-            });
-          }
+      for (let i: number = 0; i < relationshipTypes.length; ++i) {
+        if (relationshipResponses[i].total > 0) {
+          relatedItems.push({
+            relationshipType: relationshipTypes[i],
+            relatedItemIds: relationshipResponses[i].relatedItems.map((item) => item.id),
+          });
         }
-
-        resolve(relatedItems);
       }
-    );
+
+      resolve(relatedItems);
+    });
   });
 }
 
-export function getItemResources(
-  id: string,
-  authentication: UserSession
-): Promise<any> {
-  return new Promise<any>(resolve => {
+export function getItemResources(id: string, authentication: UserSession): Promise<any> {
+  return new Promise<any>((resolve) => {
     const requestOptions = {
-      authentication: authentication
+      authentication: authentication,
     };
     portalGetItemResources(id, requestOptions).then(resolve, () => {
       resolve({
@@ -618,7 +533,7 @@ export function getItemResources(
         start: 1,
         num: 0,
         nextStart: -1,
-        resources: []
+        resources: [],
       } as IGetResourcesResponse);
     });
   });
@@ -631,23 +546,17 @@ export function getItemResources(
  * @param authentication Credentials for the request to AGO
  * @returns Promise that will resolve with a list of Files or an AGO-style JSON failure response
  */
-export function getItemResourcesFiles(
-  itemId: string,
-  authentication: UserSession
-): Promise<File[]> {
+export function getItemResourcesFiles(itemId: string, authentication: UserSession): Promise<File[]> {
   return new Promise<File[]>((resolve, reject) => {
     const pagingParams: IPagingParams = {
       start: 1,
-      num: 100 // max allowed by REST API
+      num: 100, // max allowed by REST API
     };
 
     // Fetch resources
-    _getItemResourcesTranche(itemId, pagingParams, authentication).then(
-      itemResourcesDef => {
-        Promise.all(itemResourcesDef).then(resolve, reject);
-      },
-      reject
-    );
+    _getItemResourcesTranche(itemId, pagingParams, authentication).then((itemResourcesDef) => {
+      Promise.all(itemResourcesDef).then(resolve, reject);
+    }, reject);
   });
 }
 
@@ -658,19 +567,13 @@ export function getItemResourcesFiles(
  * @param authentication Credentials for the request
  * @returns Promise resolving to a list of detailed item information
  */
-export function getItemsRelatedToASolution(
-  solutionItemId: string,
-  authentication: UserSession
-): Promise<IItem[]> {
+export function getItemsRelatedToASolution(solutionItemId: string, authentication: UserSession): Promise<IItem[]> {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  return getItemRelatedItems(
-    solutionItemId,
-    "Solution2Item",
-    "forward",
-    authentication
-  ).then((relationshipResponse: IGetRelatedItemsResponse) => {
-    return relationshipResponse.relatedItems;
-  });
+  return getItemRelatedItems(solutionItemId, "Solution2Item", "forward", authentication).then(
+    (relationshipResponse: IGetRelatedItemsResponse) => {
+      return relationshipResponse.relatedItems;
+    },
+  );
 }
 
 /**
@@ -687,7 +590,7 @@ export function getItemThumbnail(
   itemId: string,
   thumbnailUrlPart: string | null,
   isGroup: boolean,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
     if (!thumbnailUrlPart) {
@@ -695,17 +598,9 @@ export function getItemThumbnail(
       return;
     }
 
-    const url = getItemThumbnailUrl(
-      itemId,
-      thumbnailUrlPart,
-      isGroup,
-      authentication
-    );
+    const url = getItemThumbnailUrl(itemId, thumbnailUrlPart, isGroup, authentication);
 
-    getBlobCheckForError(url, authentication, [500]).then(
-      blob => resolve(_fixTextBlobType(blob)),
-      reject
-    );
+    getBlobCheckForError(url, authentication, [500]).then((blob) => resolve(_fixTextBlobType(blob)), reject);
   });
 }
 
@@ -723,7 +618,7 @@ export function getItemThumbnailAsFile(
   itemId: string,
   thumbnailUrlPart: string | null,
   isGroup: boolean,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     /* istanbul ignore else */
@@ -732,20 +627,12 @@ export function getItemThumbnailAsFile(
       return;
     }
 
-    const url = getItemThumbnailUrl(
-      itemId,
-      thumbnailUrlPart,
-      isGroup,
-      authentication
-    );
+    const url = getItemThumbnailUrl(itemId, thumbnailUrlPart, isGroup, authentication);
 
     const iFilenameStart = thumbnailUrlPart.lastIndexOf("/") + 1;
     const filename = thumbnailUrlPart.substring(iFilenameStart);
 
-    getBlobAsFile(url, filename, authentication, [400, 500]).then(
-      resolve,
-      reject
-    );
+    getBlobAsFile(url, filename, authentication, [400, 500]).then(resolve, reject);
   });
 }
 
@@ -763,7 +650,7 @@ export function getItemThumbnailUrl(
   itemId: string,
   thumbnailUrlPart: string,
   isGroup: boolean,
-  authentication: UserSession
+  authentication: UserSession,
 ): string {
   return (
     checkUrlPathTermination(getPortalSharingUrlFromAuth(authentication)) +
@@ -781,18 +668,15 @@ export function getItemThumbnailUrl(
  * @param authentication Credentials for the request
  * @returns Promise that will resolve with JSON
  */
-export function getJson(
-  url: string,
-  authentication?: UserSession
-): Promise<any> {
+export function getJson(url: string, authentication?: UserSession): Promise<any> {
   // Get the blob from the URL
   const requestOptions: IRequestOptions = { httpMethod: "GET" };
   return getBlob(url, authentication, requestOptions)
-    .then(blob => {
+    .then((blob) => {
       // Reclassify text/plain blobs as needed
       return _fixTextBlobType(blob);
     })
-    .then(adjustedBlob => {
+    .then((adjustedBlob) => {
       if (adjustedBlob.type === "application/json") {
         // Blob may be an error
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -809,9 +693,7 @@ export function getJson(
  * @param authentication Credentials for the request to AGO
  * @returns Portal sharing url to be used in API requests, defaulting to `https://www.arcgis.com/sharing/rest`
  */
-export function getPortalSharingUrlFromAuth(
-  authentication: UserSession | undefined
-): string {
+export function getPortalSharingUrlFromAuth(authentication: UserSession | undefined): string {
   // If auth was passed, use that portal
   return getProp(authentication, "portal") || "https://www.arcgis.com/sharing/rest";
 }
@@ -823,10 +705,7 @@ export function getPortalSharingUrlFromAuth(
  * @returns Portal url to be used in API requests, defaulting to `https://www.arcgis.com`
  */
 export function getPortalUrlFromAuth(authentication: UserSession): string {
-  return getPortalSharingUrlFromAuth(authentication).replace(
-    "/sharing/rest",
-    ""
-  );
+  return getPortalSharingUrlFromAuth(authentication).replace("/sharing/rest", "");
 }
 
 /**
@@ -836,30 +715,18 @@ export function getPortalUrlFromAuth(authentication: UserSession): string {
  * @param authentication Credentials for the request
  * @returns Promise resolving to a list of Solution item ids
  */
-export function getSolutionsRelatedToAnItem(
-  itemId: string,
-  authentication: UserSession
-): Promise<string[]> {
+export function getSolutionsRelatedToAnItem(itemId: string, authentication: UserSession): Promise<string[]> {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  return getItemRelatedItems(
-    itemId,
-    "Solution2Item",
-    "reverse",
-    authentication
-  ).then((relationshipResponse: IGetRelatedItemsResponse) => {
-    return relationshipResponse.relatedItems.map(item => item.id);
-  });
+  return getItemRelatedItems(itemId, "Solution2Item", "reverse", authentication).then(
+    (relationshipResponse: IGetRelatedItemsResponse) => {
+      return relationshipResponse.relatedItems.map((item) => item.id);
+    },
+  );
 }
 
-export function getThumbnailFile(
-  url: string,
-  filename: string,
-  authentication: UserSession
-): Promise<File> {
-  return new Promise<File>(resolve => {
-    getBlobAsFile(url, filename, authentication, [500]).then(resolve, () =>
-      resolve(null)
-    );
+export function getThumbnailFile(url: string, filename: string, authentication: UserSession): Promise<File> {
+  return new Promise<File>((resolve) => {
+    getBlobAsFile(url, filename, authentication, [500]).then(resolve, () => resolve(null));
   });
 }
 
@@ -875,14 +742,9 @@ export function getThumbnailFile(
  */
 export function _fixTextBlobType(blob: Blob): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
-    if (
-      blob &&
-      blob.size > 0 &&
-      (blob.type.startsWith("text/plain") ||
-        blob.type.startsWith("application/json"))
-    ) {
+    if (blob && blob.size > 0 && (blob.type.startsWith("text/plain") || blob.type.startsWith("application/json"))) {
       blobToText(blob).then(
-        blobText => {
+        (blobText) => {
           // Convertible to JSON?
           try {
             JSON.parse(blobText);
@@ -890,10 +752,7 @@ export function _fixTextBlobType(blob: Blob): Promise<Blob> {
             resolve(new Blob([blob], { type: "application/json" }));
           } catch (ignored) {
             // Nope; test for ZIP file
-            if (
-              blobText.length > 4 &&
-              blobText.substr(0, 4) === ZIP_FILE_HEADER_SIGNATURE
-            ) {
+            if (blobText.length > 4 && blobText.substr(0, 4) === ZIP_FILE_HEADER_SIGNATURE) {
               // Yes; reclassify as ZIP
               resolve(new Blob([blob], { type: "application/zip" }));
             } else if (blobText.startsWith("<")) {
@@ -907,7 +766,7 @@ export function _fixTextBlobType(blob: Blob): Promise<Blob> {
           }
         },
         // Faulty blob
-        reject
+        reject,
       );
     } else {
       // Empty or not typed as plain text, so simply return
@@ -932,16 +791,16 @@ export function _fixTextBlobType(blob: Blob): Promise<Blob> {
 export function _getGroupContentsTranche(
   groupId: string,
   pagingParams: IPagingParams,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     // Fetch group items
     const pagingRequest: IGetGroupContentOptions = {
       paging: pagingParams,
-      authentication: authentication
+      authentication: authentication,
     };
 
-    getGroupContent(groupId, pagingRequest).then(contents => {
+    getGroupContent(groupId, pagingRequest).then((contents) => {
       if (contents.num > 0) {
         // Extract the list of content ids from the JSON returned
         const trancheIds: string[] = contents.items.map((item: any) => item.id);
@@ -949,13 +808,10 @@ export function _getGroupContentsTranche(
         // Are there more contents to fetch?
         if (contents.nextStart > 0) {
           pagingRequest.paging.start = contents.nextStart;
-          _getGroupContentsTranche(groupId, pagingParams, authentication).then(
-            (allSubsequentTrancheIds: string[]) => {
-              // Append all of the following tranches to the current tranche and return it
-              resolve(trancheIds.concat(allSubsequentTrancheIds));
-            },
-            reject
-          );
+          _getGroupContentsTranche(groupId, pagingParams, authentication).then((allSubsequentTrancheIds: string[]) => {
+            // Append all of the following tranches to the current tranche and return it
+            resolve(trancheIds.concat(allSubsequentTrancheIds));
+          }, reject);
         } else {
           resolve(trancheIds);
         }
@@ -974,17 +830,18 @@ export function _getGroupContentsTranche(
  * @private
  */
 function _getItemRelatedItemsTranche(
-  requestOptions: IItemRelationshipOptionsPaging
+  requestOptions: IItemRelationshipOptionsPaging,
 ): Promise<IGetRelatedItemsResponse> {
-  return new Promise<IGetRelatedItemsResponse>(resolve => {
+  return new Promise<IGetRelatedItemsResponse>((resolve) => {
     const response: IGetRelatedItemsResponse = {
       total: 0,
-      relatedItems: []
+      relatedItems: [],
     };
 
     getRelatedItems(requestOptions).then(
       // Have to use `any` because `IGetRelatedItemsResponse` doesn't include all of the response properties
-      (results: any) => {  // IGetRelatedItemsResponseFull
+      (results: any) => {
+        // IGetRelatedItemsResponseFull
         // Are there any results?
         if (results.aggregations.total.count > 0) {
           response.total = results.aggregations.total.count;
@@ -996,14 +853,12 @@ function _getItemRelatedItemsTranche(
             requestOptions.params.nextkey = results.nextkey;
 
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            _getItemRelatedItemsTranche(requestOptions).then(
-              (allSubsequentResults: IGetRelatedItemsResponse) => {
-                // Append all of the following tranches to the current tranche and return it
-                response.total += allSubsequentResults.total;
-                response.relatedItems = response.relatedItems.concat(allSubsequentResults.relatedItems);
-                resolve(response);
-              }
-            );
+            _getItemRelatedItemsTranche(requestOptions).then((allSubsequentResults: IGetRelatedItemsResponse) => {
+              // Append all of the following tranches to the current tranche and return it
+              response.total += allSubsequentResults.total;
+              response.relatedItems = response.relatedItems.concat(allSubsequentResults.relatedItems);
+              resolve(response);
+            });
           } else {
             resolve(response);
           }
@@ -1013,7 +868,7 @@ function _getItemRelatedItemsTranche(
       },
       () => {
         resolve(response);
-      }
+      },
     );
   });
 }
@@ -1030,7 +885,7 @@ function _getItemRelatedItemsTranche(
 export function _getItemResourcesTranche(
   itemId: string,
   pagingParams: IPagingParams,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<Array<Promise<File>>> {
   return new Promise<Array<Promise<File>>>((resolve, reject) => {
     // Fetch resources
@@ -1040,19 +895,17 @@ export function _getItemResourcesTranche(
 
     const options: IRequestOptions = {
       params: {
-        ...pagingParams
+        ...pagingParams,
       },
-      authentication: authentication
+      authentication: authentication,
     };
 
-    request(trancheUrl, options).then(contents => {
+    request(trancheUrl, options).then((contents) => {
       if (contents.num > 0) {
         // Extract the list of resource filenames from the JSON returned
         contents.resources.forEach((resource: any) => {
           const itemResourceUrl = `${portalSharingUrl}/content/items/${itemId}/resources/${resource.resource}`;
-          itemResourcesDef.push(
-            getBlobAsFile(itemResourceUrl, resource.resource, authentication)
-          );
+          itemResourcesDef.push(getBlobAsFile(itemResourceUrl, resource.resource, authentication));
         });
 
         // Are there more resources to fetch?
@@ -1063,7 +916,7 @@ export function _getItemResourcesTranche(
               // Append all of the following tranches to the current tranche and return it
               resolve(itemResourcesDef.concat(allSubsequentTrancheDefs));
             },
-            reject
+            reject,
           );
         } else {
           resolve(itemResourcesDef);
@@ -1086,19 +939,14 @@ export function _getItemResourcesTranche(
 export function getPortalDefaultBasemap(
   basemapGalleryGroupQuery: string,
   basemapTitle: string,
-  authentication: UserSession
+  authentication: UserSession,
 ) {
   return searchGroups(basemapGalleryGroupQuery, authentication, { num: 1 })
     .then(({ results: [basemapGroup] }) => {
       if (!basemapGroup) {
         throw new Error("No basemap group found");
       }
-      return searchGroupContents(
-        basemapGroup.id,
-        `title:${basemapTitle}`,
-        authentication,
-        { num: 1 }
-      );
+      return searchGroupContents(basemapGroup.id, `title:${basemapTitle}`, authentication, { num: 1 });
     })
     .then(({ results: [defaultBasemap] }) => {
       if (!defaultBasemap) {

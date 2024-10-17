@@ -1,0 +1,32 @@
+name: Code Coverage
+
+on:
+  push:
+    branches: [ develop, master ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ develop, master ]
+
+jobs:
+  steps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      - name: Install Node.js dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build
+        run: npm run build
+
+      - name: Test in Chrome
+        run: npm run test:chrome:ci
+
+      - uses: codecov/codecov-action@v4
+        with:
+          directory: ./coverage
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

@@ -21,11 +21,10 @@
 import * as common from "@esri/solution-common";
 import * as createHelper from "../src/helpers/create-item-from-template";
 import * as convertHelper from "../src/helpers/convert-item-to-template";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require("fetch-mock");
 import * as quickcapture from "../src/quickcapture";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as utils from "../../common/test/mocks/utils";
-import * as templates from "../../common/test/mocks/templates";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
@@ -43,79 +42,57 @@ afterEach(() => {
 
 describe("Module `quick capture`: manages the creation and deployment of quick capture project item types", () => {
   describe("createItemFromTemplate :: ", () => {
-    it("delegated to helper", () => {
-      const createSpy = spyOn(
-        createHelper,
-        "createItemFromTemplate"
-      ).and.resolveTo();
+    it("delegated to helper", async () => {
+      const createSpy = spyOn(createHelper, "createItemFromTemplate").and.resolveTo();
       const cb = (): boolean => {
         return true;
       };
-      return quickcapture
-        .createItemFromTemplate(
-          {} as common.IItemTemplate,
-          {},
-          MOCK_USER_SESSION,
-          cb
-        )
-        .then(() => {
-          expect(createSpy.calls.count()).toBe(1, "should delegate");
-        });
+
+      await quickcapture.createItemFromTemplate({} as common.IItemTemplate, {}, MOCK_USER_SESSION, cb);
+      expect(createSpy.calls.count()).withContext("should delegate").toBe(1);
     });
   });
+
   describe("convertItemToTemplate :: ", () => {
-    it("delegated to helper", () => {
-      const convertSpy = spyOn(
-        convertHelper,
-        "convertItemToTemplate"
-      ).and.resolveTo();
-      return quickcapture
-        .convertItemToTemplate({}, MOCK_USER_SESSION, MOCK_USER_SESSION, {})
-        .then(() => {
-          expect(convertSpy.calls.count()).toBe(1, "should delegate");
-        });
+    it("delegated to helper", async () => {
+      const convertSpy = spyOn(convertHelper, "convertItemToTemplate").and.resolveTo();
+      await quickcapture.convertItemToTemplate({}, MOCK_USER_SESSION, MOCK_USER_SESSION, {});
+      expect(convertSpy.calls.count()).withContext("should delegate").toBe(1);
     });
   });
 
   describe("convertQuickCaptureToTemplate", () => {
     it("templatize application data", () => {
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "QuickCapture Project",
-        undefined
-      );
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("QuickCapture Project", undefined);
       itemTemplate.dependencies = [];
       itemTemplate.data = mockItems.getAGOLItemData("QuickCapture Project");
 
-      const expectedDependencies: string[] = [
-        "4efe5f693de34620934787ead6693f10"
-      ];
+      const expectedDependencies: string[] = ["4efe5f693de34620934787ead6693f10"];
 
       const expectedData: any = {
         application: {
           basemap: {},
           dataSources: [
             {
-              featureServiceItemId:
-                "{{4efe5f693de34620934787ead6693f10.itemId}}",
+              featureServiceItemId: "{{4efe5f693de34620934787ead6693f10.itemId}}",
               dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
-              url: "{{4efe5f693de34620934787ead6693f10.layer0.url}}"
+              url: "{{4efe5f693de34620934787ead6693f10.layer0.url}}",
             },
             {
-              featureServiceItemId:
-                "{{4efe5f693de34620934787ead6693f10.itemId}}",
+              featureServiceItemId: "{{4efe5f693de34620934787ead6693f10.itemId}}",
               dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
-              url: "{{4efe5f693de34620934787ead6693f10.layer1.url}}"
-            }
+              url: "{{4efe5f693de34620934787ead6693f10.layer1.url}}",
+            },
           ],
           itemId: "{{9da79c91fc7642ebb4c0bbacfbacd510.itemId}}",
           preferences: {
-            adminEmail: "{{user.email}}"
+            adminEmail: "{{user.email}}",
           },
           templateGroups: [],
           userInputs: [],
-          version: 0.1
+          version: 0.1,
         },
-        name: "qc.project.json"
+        name: "qc.project.json",
       };
 
       const updatedTemplate = quickcapture.convertQuickCaptureToTemplate(itemTemplate);
@@ -124,10 +101,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
     });
 
     it("will not fail with empty data", () => {
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "QuickCapture Project",
-        undefined
-      );
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("QuickCapture Project", undefined);
       itemTemplate.data = {};
       const updatedTemplate = quickcapture.convertQuickCaptureToTemplate(itemTemplate);
       expect(updatedTemplate).toEqual(itemTemplate);
@@ -135,10 +109,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
   });
 
   it("will not fail with missing JSON", () => {
-    const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-      "QuickCapture Project",
-      undefined
-    );
+    const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem("QuickCapture Project", undefined);
     itemTemplate.dependencies = [];
     itemTemplate.data = mockItems.getAGOLItemData("QuickCapture Project");
 
@@ -163,9 +134,9 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
         dataSources: [
           {
             dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
-            url: "{{4efe5f693de34620934787ead6693f10.layer0.url}}"
-          }
-        ]
+            url: "{{4efe5f693de34620934787ead6693f10.layer0.url}}",
+          },
+        ],
       };
       const expectedUpdatedData = common.cloneObject(data);
 
@@ -180,13 +151,11 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
       const obj = {
         featureServiceItemId: "4efe5f693de34620934787ead6693f10",
         dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
-        url:
-          "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1"
+        url: "https://services7.arcgis.com/org1234567890/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1",
       };
       const idPath = "featureServiceItemId";
       const urlPath = "url";
-      const expectedUpdatedUrl =
-        "{{4efe5f693de34620934787ead6693f10.layer1.url}}";
+      const expectedUpdatedUrl = "{{4efe5f693de34620934787ead6693f10.layer1.url}}";
 
       quickcapture._templatizeUrl(obj, idPath, urlPath);
 
@@ -196,7 +165,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
     it("will not fail with missing datasource URL", () => {
       const obj = {
         featureServiceItemId: "4efe5f693de34620934787ead6693f10",
-        dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74"
+        dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
       };
       const idPath = "featureServiceItemId";
       const urlPath = "url";
@@ -208,7 +177,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
     });
 
     /* TODO: migrate to removal of postProcess function
-    it("postProcess QuickCapture projects--no changes needed", done => {
+    it("postProcess QuickCapture projects--no changes needed", Promise.resolve => {
       const qcTemplate: common.IItemTemplate = templates.getItemTemplate(
         "QuickCapture Project"
       );
@@ -326,13 +295,13 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
           expect(args[0]).toBe(newItemId);
           expect(args[1]).toBe(qcTemplate.data.name);
           expect(args[2]).toBe(expectedData);
-          done();
-        }, done.fail);
+          Promise.resolve();
+        }, fail);
     });
     */
 
     /* TODO: migrate to removal of postProcess function
-    it("postProcess QuickCapture projects--changes needed", done => {
+    it("postProcess QuickCapture projects--changes needed", Promise.resolve => {
       const qcTemplate: common.IItemTemplate = templates.getItemTemplate(
         "QuickCapture Project"
       );
@@ -458,8 +427,8 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
           expect(args[0]).toBe(newItemId);
           expect(args[1]).toBe(qcTemplate.data.name);
           expect(args[2]).toBe(expectedData);
-          done();
-        }, done.fail);
+          Promise.resolve();
+        }, fail);
     });
     */
   });

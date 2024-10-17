@@ -82,7 +82,7 @@ interface IDashboardDatasource {
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  templateDictionary: any
+  templateDictionary: any,
 ): common.IItemTemplate {
   return _extractDependencies(itemTemplate, templateDictionary);
 }
@@ -97,7 +97,7 @@ export function convertItemToTemplate(
  */
 export function _extractDependencies(
   itemTemplate: common.IItemTemplate,
-  templateDictionary: any
+  templateDictionary: any,
 ): common.IItemTemplate {
   // get dependencies from any
   const updatePaths: string[] = [
@@ -118,13 +118,13 @@ export function _extractDependencies(
     "data.mobileView.widgets",
     "data.sidebar",
     "data.urlParameters",
-    "data.widgets"
+    "data.widgets",
   ];
 
-  updatePaths.forEach(path => {
+  updatePaths.forEach((path) => {
     const objs: IDashboardWidget[] = common.getProp(itemTemplate, path);
     if (Array.isArray(objs)) {
-      objs.forEach(obj => {
+      objs.forEach((obj) => {
         /* istanbul ignore else */
         if (obj.type === "mapWidget") {
           /* istanbul ignore else */
@@ -155,7 +155,7 @@ export function _extractDependencies(
 export function _getDatasourceDependencies(
   obj: any,
   itemTemplate: common.IItemTemplate,
-  templateDictionary: any
+  templateDictionary: any,
 ): void {
   obj.datasets.forEach((dataset: IDashboardDataset) => {
     // when the datasource has an itemId it's an external datasource except if the datasource type is "arcadeDataSource"
@@ -168,11 +168,7 @@ export function _getDatasourceDependencies(
         }
         const layerId: number = common.getProp(dataset, "dataSource.layerId");
         common.cacheLayerInfo(layerId?.toString(), itemId, "", templateDictionary);
-        dataset.dataSource.itemId = common.templatizeTerm(
-          itemId,
-          itemId,
-          ".itemId"
-        );
+        dataset.dataSource.itemId = common.templatizeTerm(itemId, itemId, ".itemId");
       }
     }
   });
@@ -187,7 +183,7 @@ export function _getDatasourceDependencies(
  */
 export function postProcessFieldReferences(
   solutionTemplate: common.IItemTemplate,
-  datasourceInfos: common.IDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[],
 ): common.IItemTemplate {
   const updatePaths: string[] = [
     "data.desktopView.header",
@@ -207,18 +203,18 @@ export function postProcessFieldReferences(
     "data.mobileView.widgets",
     "data.sidebar",
     "data.urlParameters",
-    "data.widgets"
+    "data.widgets",
   ];
 
   // dashboards reference datasets from other widgets
   // add reference IDs to the appropriate datasourceInfos
-  updatePaths.forEach(path => {
+  updatePaths.forEach((path) => {
     const objs: any = common.getProp(solutionTemplate, path);
     _updateDatasourceReferences(objs, datasourceInfos);
   });
 
   // after we know the potential references go ahead and templatize
-  updatePaths.forEach(path => {
+  updatePaths.forEach((path) => {
     _templatize(solutionTemplate, path, datasourceInfos);
   });
 
@@ -232,25 +228,18 @@ export function postProcessFieldReferences(
  * @param datasourceInfos A list of objects that contain key details about the datasources from the application
  * @private
  */
-export function _updateDatasourceReferences(
-  objs: any,
-  datasourceInfos: common.IDatasourceInfo[]
-) {
+export function _updateDatasourceReferences(objs: any, datasourceInfos: common.IDatasourceInfo[]) {
   // objects can be events or widgets
   /* istanbul ignore else */
   if (objs && Array.isArray(objs)) {
-    objs.forEach(obj => {
+    objs.forEach((obj) => {
       if (Array.isArray(obj.datasets)) {
         obj.datasets.forEach((dataset: IDashboardDataset) => {
           // when the datasource has an itemId it's an external datasource
-          const itemId: string = common.cleanItemId(
-            common.getProp(dataset, "dataSource.itemId")
-          );
+          const itemId: string = common.cleanItemId(common.getProp(dataset, "dataSource.itemId"));
           if (itemId) {
-            const layerId: number = common.cleanLayerId(
-              common.getProp(dataset, "dataSource.layerId")
-            );
-            datasourceInfos.some(ds => {
+            const layerId: number = common.cleanLayerId(common.getProp(dataset, "dataSource.layerId"));
+            datasourceInfos.some((ds) => {
               if (ds.itemId === itemId && ds.layerId === layerId) {
                 _updateReferences(ds, obj.id);
                 return true;
@@ -264,7 +253,7 @@ export function _updateDatasourceReferences(
             const id: any = common.getProp(dataset, "dataSource.id");
             if (id) {
               const dashboardLayerId: string = id.split("#")[1];
-              datasourceInfos.some(ds => {
+              datasourceInfos.some((ds) => {
                 if (ds.ids.indexOf(dashboardLayerId) > -1) {
                   _updateReferences(ds, obj.id);
                   return true;
@@ -291,16 +280,12 @@ export function _updateDatasourceReferences(
 export function _templatize(
   itemTemplate: common.IItemTemplate,
   path: string,
-  datasourceInfos: common.IDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[],
 ) {
   const obj: any[] = common.getProp(itemTemplate, path);
   /* istanbul ignore else */
   if (obj) {
-    common.setProp(
-      itemTemplate,
-      path,
-      _templatizeByDatasource(obj, datasourceInfos)
-    );
+    common.setProp(itemTemplate, path, _templatizeByDatasource(obj, datasourceInfos));
   }
 }
 
@@ -312,12 +297,9 @@ export function _templatize(
  * @returns An updated list of objects with templatized field references
  * @private
  */
-export function _templatizeByDatasource(
-  objs: any[],
-  datasourceInfos: common.IDatasourceInfo[]
-): any {
+export function _templatizeByDatasource(objs: any[], datasourceInfos: common.IDatasourceInfo[]): any {
   if (Array.isArray(objs)) {
-    return objs.map(obj => {
+    return objs.map((obj) => {
       let _obj: any = obj;
       if (Array.isArray(_obj.events)) {
         // Events can be associated with datasets but they can also be associated with a target
@@ -329,34 +311,17 @@ export function _templatizeByDatasource(
           if (Array.isArray(_event.actions)) {
             _event.actions = _event.actions.map((action: any) => {
               const _action: any = action;
-              if (
-                _action.fieldMap &&
-                _action.targetId &&
-                _action.targetId.indexOf("#") > -1
-              ) {
-                const datasourceInfo = _getDatasourceInfo(
-                  _action,
-                  datasourceInfos
-                );
+              if (_action.fieldMap && _action.targetId && _action.targetId.indexOf("#") > -1) {
+                const datasourceInfo = _getDatasourceInfo(_action, datasourceInfos);
                 /* istanbul ignore else */
                 if (datasourceInfo) {
-                  const fields: any[] = common.getProp(
-                    datasourceInfo,
-                    "fields"
-                  );
-                  const basePath: string = common.getProp(
-                    datasourceInfo,
-                    "basePath"
-                  );
+                  const fields: any[] = common.getProp(datasourceInfo, "fields");
+                  const basePath: string = common.getProp(datasourceInfo, "basePath");
                   /* istanbul ignore else */
                   if (Array.isArray(fields) && basePath) {
                     _action.fieldMap = _action.fieldMap.map((m: any) => {
                       const _m: any = m;
-                      _m.targetName = common.templatizeFieldReferences(
-                        _m.targetName,
-                        fields,
-                        basePath
-                      );
+                      _m.targetName = common.templatizeFieldReferences(_m.targetName, fields, basePath);
                       return _m;
                     });
                   }
@@ -376,18 +341,11 @@ export function _templatizeByDatasource(
             /* istanbul ignore else */
             if (datasourceInfo) {
               const fields: any[] = common.getProp(datasourceInfo, "fields");
-              const basePath: string = common.getProp(
-                datasourceInfo,
-                "basePath"
-              );
+              const basePath: string = common.getProp(datasourceInfo, "basePath");
               /* istanbul ignore else */
               if (Array.isArray(fields) && basePath) {
                 _obj = common.templatizeFieldReferences(_obj, fields, basePath);
-                _dataset = common.templatizeFieldReferences(
-                  _dataset,
-                  fields,
-                  basePath
-                );
+                _dataset = common.templatizeFieldReferences(_dataset, fields, basePath);
               }
             }
           }
@@ -409,19 +367,15 @@ export function _templatizeByDatasource(
  * @returns The supporting datasource info for the given object
  * @private
  */
-export function _getDatasourceInfo(
-  obj: any,
-  datasourceInfos: common.IDatasourceInfo[]
-): any {
+export function _getDatasourceInfo(obj: any, datasourceInfos: common.IDatasourceInfo[]): any {
   let info: any;
   // the datasource will have an id property when it's referencing a map layer
   // the fields collection will already be defined
-  const id: string =
-    common.getProp(obj, "dataSource.id") || common.getProp(obj, "targetId");
+  const id: string = common.getProp(obj, "dataSource.id") || common.getProp(obj, "targetId");
   if (id) {
     const dashboardLayerId: string = id.split("#")[1];
     if (
-      !datasourceInfos.some(di => {
+      !datasourceInfos.some((di) => {
         info = di.ids.indexOf(dashboardLayerId) > -1 ? di : info;
         return di.ids.indexOf(dashboardLayerId) > -1;
       })
@@ -429,7 +383,7 @@ export function _getDatasourceInfo(
       // in some cases the id will not contain a layer name...it will have the dashboard id for another widget
       // in that case lookup the datasource from referenced widget
       const dashboardWidgetId: string = id.split("#")[0];
-      datasourceInfos.some(di => {
+      datasourceInfos.some((di) => {
         const references: string[] = di.references || [];
         const hasRef: boolean = references.indexOf(dashboardWidgetId) > -1;
         info = hasRef ? di : info;
@@ -438,15 +392,11 @@ export function _getDatasourceInfo(
     }
   } else {
     // otherwise match the itemId and the layerId to get the correct fields and path
-    const itemId: any = common.cleanItemId(
-      common.getProp(obj, "dataSource.itemId")
-    );
-    const layerId: any = common.cleanLayerId(
-      common.getProp(obj, "dataSource.layerId")
-    );
+    const itemId: any = common.cleanItemId(common.getProp(obj, "dataSource.itemId"));
+    const layerId: any = common.cleanLayerId(common.getProp(obj, "dataSource.layerId"));
     /* istanbul ignore else */
     if (itemId) {
-      datasourceInfos.some(di => {
+      datasourceInfos.some((di) => {
         const matches: boolean = itemId === di.itemId && layerId === di.layerId;
         info = matches ? di : info;
         return matches;
@@ -463,10 +413,7 @@ export function _getDatasourceInfo(
  * @param id The id from dashboard object, commonly another widget
  * @private
  */
-export function _updateReferences(
-  ds: common.IDatasourceInfo,
-  id: string
-): void {
+export function _updateReferences(ds: common.IDatasourceInfo, id: string): void {
   ds.references = Array.isArray(ds.references) ? ds.references : [];
   if (ds.references.indexOf(id) < 0) {
     ds.references.push(id);

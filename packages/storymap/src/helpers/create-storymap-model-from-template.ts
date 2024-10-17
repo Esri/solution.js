@@ -28,7 +28,7 @@ export function createStoryMapModelFromTemplate(
   templateModel: IModelTemplate,
   settings: any,
   transforms: any,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<any> {
   const timestamp = new Date().getTime();
   // Keep these around in case we encounter some old templates

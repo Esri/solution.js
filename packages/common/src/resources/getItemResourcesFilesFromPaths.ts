@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ISourceFile, ISourceFileCopyPath, UserSession } from "../interfaces";
+import { UserSession } from "../arcgisRestJS";
+import { ISourceFile, ISourceFileCopyPath } from "../interfaces";
 import { getBlobAsFile } from "../restHelpersGet";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -28,29 +29,29 @@ import { getBlobAsFile } from "../restHelpersGet";
  */
 export function getItemResourcesFilesFromPaths(
   resourceItemFilePaths: ISourceFileCopyPath[],
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<ISourceFile[]> {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   return Promise.all(
-    resourceItemFilePaths.map(fileInfo => {
-      return new Promise<ISourceFile>(resolve => {
+    resourceItemFilePaths.map((fileInfo) => {
+      return new Promise<ISourceFile>((resolve) => {
         getBlobAsFile(fileInfo.url, fileInfo.filename, authentication).then(
-          file => {
+          (file) => {
             resolve({
               itemId: fileInfo.itemId,
               file,
               folder: fileInfo.folder,
-              filename: fileInfo.filename
+              filename: fileInfo.filename,
             } as ISourceFile);
           },
           () => {
             resolve(null);
-          }
+          },
         );
       });
-    })
+    }),
   ).then((files: ISourceFile[]) => {
     // Discard failures
-    return files.filter(file => !!file);
+    return files.filter((file) => !!file);
   });
 }

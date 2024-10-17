@@ -20,9 +20,9 @@
  * @module deleteSolutionItem
  */
 
-import { IStatusResponse, UserSession } from "../interfaces";
-import * as portal from "@esri/arcgis-rest-portal";
-import * as restHelpers from "../restHelpers";
+import { IStatusResponse } from "../interfaces";
+import { unprotectItem, IUserItemOptions, UserSession } from "../arcgisRestJS";
+import { removeItem } from "../restHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -34,27 +34,23 @@ import * as restHelpers from "../restHelpers";
  * @param authentication Credentials for the request
  * @returns Promise that will resolve with the status of deleting the item
  */
-export function deleteSolutionItem(
-  solutionItemId: string,
-  authentication: UserSession
-): Promise<IStatusResponse> {
-  const protectOptions: portal.IUserItemOptions = {
+export function deleteSolutionItem(solutionItemId: string, authentication: UserSession): Promise<IStatusResponse> {
+  const protectOptions: IUserItemOptions = {
     id: solutionItemId,
-    authentication
+    authentication,
   };
-  return portal
-    .unprotectItem(protectOptions)
-    .then(result => {
+  return unprotectItem(protectOptions)
+    .then((result) => {
       if (result.success) {
-        return restHelpers.removeItem(solutionItemId, authentication);
+        return removeItem(solutionItemId, authentication);
       } else {
         return Promise.resolve(result);
       }
     })
-    .then(result => {
+    .then((result) => {
       return Promise.resolve({
         success: result.success,
-        itemId: solutionItemId
+        itemId: solutionItemId,
       });
     });
 }

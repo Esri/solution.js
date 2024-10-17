@@ -17,9 +17,9 @@ import {
   UserSession,
   IItemTemplate,
   ICreateItemFromTemplateResponse,
-  getTemplateById
+  getTemplateById,
+  addItemRelationship,
 } from "@esri/solution-common";
-import { addItemRelationship } from "@esri/arcgis-rest-portal";
 import { moduleMap } from "../module-map";
 import { shareTemplatesToGroups } from "./share-templates-to-groups";
 
@@ -40,30 +40,26 @@ export function postProcess(
   templates: IItemTemplate[],
   clonedSolutions: ICreateItemFromTemplateResponse[],
   authentication: UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<any> {
   // connect the solution with its items; groups cannot be connected
   const relationshipPromises = clonedSolutions
-    .filter(entry => entry.type !== "Group")
+    .filter((entry) => entry.type !== "Group")
     .map(
-      entry =>
+      (entry) =>
         addItemRelationship({
           originItemId: deployedSolutionId,
           destinationItemId: entry.id,
           relationshipType: "Solution2Item",
-          authentication: authentication
-        } as any) // TODO: remove `as any`, which is here until arcgis-rest-js' ItemRelationshipType defn catches up
+          authentication: authentication,
+        } as any), // TODO: remove `as any`, which is here until arcgis-rest-js' ItemRelationshipType defn catches up
     );
 
   // delegate sharing to groups
-  const sharePromises = shareTemplatesToGroups(
-    templates,
-    templateDictionary,
-    authentication
-  );
+  const sharePromises = shareTemplatesToGroups(templates, templateDictionary, authentication);
 
   // what needs post processing?
-  const itemsToProcess = clonedSolutions.filter(entry => entry.postProcess);
+  const itemsToProcess = clonedSolutions.filter((entry) => entry.postProcess);
 
   // map over these items
   const postProcessPromises = itemsToProcess.reduce((acc, entry) => {
@@ -78,14 +74,12 @@ export function postProcess(
           getTemplateById(templates, entry.id),
           templates,
           templateDictionary,
-          authentication
-        )
+          authentication,
+        ),
       );
     }
     return acc;
   }, []);
 
-  return Promise.all(
-    [sharePromises].concat(postProcessPromises, relationshipPromises)
-  );
+  return Promise.all([sharePromises].concat(postProcessPromises, relationshipPromises));
 }

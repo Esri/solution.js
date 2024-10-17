@@ -35,44 +35,36 @@ import * as common from "@esri/solution-common";
 export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: common.UserSession,
-  srcAuthentication: common.UserSession
+  srcAuthentication: common.UserSession,
 ): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>(resolve => {
+  return new Promise<common.IItemTemplate>((resolve) => {
     // Init template
-    const itemTemplate: common.IItemTemplate = common.createInitializedGroupTemplate(
-      itemInfo
-    );
+    const itemTemplate: common.IItemTemplate = common.createInitializedGroupTemplate(itemInfo);
 
     // Templatize item info property values
-    itemTemplate.item.id = common.templatizeTerm(
-      itemTemplate.item.id,
-      itemTemplate.item.id,
-      ".itemId"
-    );
+    itemTemplate.item.id = common.templatizeTerm(itemTemplate.item.id, itemTemplate.item.id, ".itemId");
 
     // Get the group's items--its dependencies
     common.getGroupContents(itemInfo.id, srcAuthentication).then(
-      groupContents => {
+      (groupContents) => {
         itemTemplate.type = "Group";
         common.getGroupBase(itemInfo.id, srcAuthentication).then(
-          groupResponse => {
+          (groupResponse) => {
             groupResponse.id = itemTemplate.item.id;
             itemTemplate.item = {
               ...groupResponse,
-              type: "Group"
+              type: "Group",
             };
 
             // Does the group contain groups?
-            itemTemplate.dependencies = groupContents.concat(
-              common.getSubgroupIds(groupResponse.tags)
-            );
+            itemTemplate.dependencies = groupContents.concat(common.getSubgroupIds(groupResponse.tags));
 
             resolve(itemTemplate);
           },
-          () => resolve(itemTemplate)
+          () => resolve(itemTemplate),
         );
       },
-      () => resolve(itemTemplate)
+      () => resolve(itemTemplate),
     );
   });
 }
@@ -81,32 +73,19 @@ export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  itemProgressCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback,
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
+  return new Promise<common.ICreateItemFromTemplateResponse>((resolve) => {
     // Interrupt process if progress callback returns `false`
-    if (
-      !itemProgressCallback(
-        template.itemId,
-        common.EItemProgressStatus.Started,
-        0
-      )
-    ) {
-      itemProgressCallback(
-        template.itemId,
-        common.EItemProgressStatus.Ignored,
-        0
-      );
+    if (!itemProgressCallback(template.itemId, common.EItemProgressStatus.Started, 0)) {
+      itemProgressCallback(template.itemId, common.EItemProgressStatus.Ignored, 0);
       resolve(common.generateEmptyCreationResponse(template.type));
       return;
     }
 
     // Replace the templatized symbols in a copy of the template
     let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
-    newItemTemplate = common.replaceInTemplate(
-      newItemTemplate,
-      templateDictionary
-    );
+    newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
     // Need to manually reset thumbnail because adlib in replaceInTemplate breaks it
     newItemTemplate.item.thumbnail = template.item.thumbnail;
 
@@ -123,7 +102,7 @@ export function createItemFromTemplate(
         newGroup,
         templateDictionary,
         destinationAuthentication,
-        common.isTrackingViewGroup(newItemTemplate) ? templateDictionary.locationTracking.owner : undefined
+        common.isTrackingViewGroup(newItemTemplate) ? templateDictionary.locationTracking.owner : undefined,
       )
       .then(
         (createResponse: common.IAddGroupResponse) => {
@@ -134,40 +113,26 @@ export function createItemFromTemplate(
                 template.itemId,
                 common.EItemProgressStatus.Created,
                 template.estimatedDeploymentCostFactor / 2,
-                createResponse.group.id
+                createResponse.group.id,
               )
             ) {
-              itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Cancelled,
-                0
-              );
+              itemProgressCallback(template.itemId, common.EItemProgressStatus.Cancelled, 0);
               // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              common
-                .removeGroup(createResponse.group.id, destinationAuthentication)
-                .then(
-                  () =>
-                    resolve(
-                      common.generateEmptyCreationResponse(template.type)
-                    ),
-                  () =>
-                    resolve(common.generateEmptyCreationResponse(template.type))
-                );
+              common.removeGroup(createResponse.group.id, destinationAuthentication).then(
+                () => resolve(common.generateEmptyCreationResponse(template.type)),
+                () => resolve(common.generateEmptyCreationResponse(template.type)),
+              );
             } else {
               newItemTemplate.itemId = createResponse.group.id;
               templateDictionary[template.itemId] = {
-                itemId: createResponse.group.id
+                itemId: createResponse.group.id,
               };
 
               // Update the template again now that we have the new item id
-              newItemTemplate = common.replaceInTemplate(
-                newItemTemplate,
-                templateDictionary
-              );
+              newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
 
               // Update the template dictionary with the new id
-              templateDictionary[template.itemId].itemId =
-                createResponse.group.id;
+              templateDictionary[template.itemId].itemId = createResponse.group.id;
 
               // Interrupt process if progress callback returns `false`
               if (
@@ -175,154 +140,99 @@ export function createItemFromTemplate(
                   template.itemId,
                   common.EItemProgressStatus.Finished,
                   template.estimatedDeploymentCostFactor / 2,
-                  createResponse.group.id
+                  createResponse.group.id,
                 )
               ) {
-                itemProgressCallback(
-                  template.itemId,
-                  common.EItemProgressStatus.Cancelled,
-                  0
-                );
+                itemProgressCallback(template.itemId, common.EItemProgressStatus.Cancelled, 0);
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                common
-                  .removeGroup(
-                    createResponse.group.id,
-                    destinationAuthentication
-                  )
-                  .then(
-                    () =>
-                      resolve(
-                        common.generateEmptyCreationResponse(template.type)
-                      ),
-                    () =>
-                      resolve(
-                        common.generateEmptyCreationResponse(template.type)
-                      )
-                  );
+                common.removeGroup(createResponse.group.id, destinationAuthentication).then(
+                  () => resolve(common.generateEmptyCreationResponse(template.type)),
+                  () => resolve(common.generateEmptyCreationResponse(template.type)),
+                );
               } else {
                 if (common.isTrackingViewGroup(newItemTemplate)) {
                   const owner: string = templateDictionary.locationTracking.owner;
                   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  common.reassignGroup(
-                    createResponse.group.id,
-                    owner,
-                    destinationAuthentication
-                  ).then(assignResults => {
-                    if (assignResults.success) {
-                      if (
-                        !itemProgressCallback(
-                          template.itemId,
-                          common.EItemProgressStatus.Created,
-                          template.estimatedDeploymentCostFactor / 2,
-                          createResponse.group.id
-                        )
-                      ) {
-                        itemProgressCallback(
-                          template.itemId,
-                          common.EItemProgressStatus.Cancelled,
-                          0
-                        );
-                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                        common
-                          .removeGroup(createResponse.group.id, destinationAuthentication)
-                          .then(
-                            () =>
-                              resolve(
-                                common.generateEmptyCreationResponse(template.type)
-                              ),
-                            () =>
-                              resolve(common.generateEmptyCreationResponse(template.type))
+                  common
+                    .reassignGroup(createResponse.group.id, owner, destinationAuthentication)
+                    .then((assignResults) => {
+                      if (assignResults.success) {
+                        if (
+                          !itemProgressCallback(
+                            template.itemId,
+                            common.EItemProgressStatus.Created,
+                            template.estimatedDeploymentCostFactor / 2,
+                            createResponse.group.id,
+                          )
+                        ) {
+                          itemProgressCallback(template.itemId, common.EItemProgressStatus.Cancelled, 0);
+                          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                          common.removeGroup(createResponse.group.id, destinationAuthentication).then(
+                            () => resolve(common.generateEmptyCreationResponse(template.type)),
+                            () => resolve(common.generateEmptyCreationResponse(template.type)),
                           );
+                        } else {
+                          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                          common
+                            .removeUsers(
+                              createResponse.group.id,
+                              [destinationAuthentication.username],
+                              destinationAuthentication,
+                            )
+                            .then((removeResults) => {
+                              if (Array.isArray(removeResults.notRemoved) && removeResults.notRemoved.length === 0) {
+                                if (
+                                  !itemProgressCallback(
+                                    template.itemId,
+                                    common.EItemProgressStatus.Created,
+                                    template.estimatedDeploymentCostFactor / 2,
+                                    createResponse.group.id,
+                                  )
+                                ) {
+                                  itemProgressCallback(template.itemId, common.EItemProgressStatus.Cancelled, 0);
+                                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                                  common.removeGroup(createResponse.group.id, destinationAuthentication).then(
+                                    () => resolve(common.generateEmptyCreationResponse(template.type)),
+                                    () => resolve(common.generateEmptyCreationResponse(template.type)),
+                                  );
+                                } else {
+                                  resolve({
+                                    item: newItemTemplate,
+                                    id: createResponse.group.id,
+                                    type: newItemTemplate.type,
+                                    postProcess: common.hasUnresolvedVariables(newItemTemplate),
+                                  });
+                                }
+                              } else {
+                                itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
+                                resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
+                              }
+                            });
+                        }
                       } else {
-                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                        common.removeUsers(
-                          createResponse.group.id,
-                          [destinationAuthentication.username],
-                          destinationAuthentication
-                        ).then(removeResults => {
-                          if (Array.isArray(removeResults.notRemoved) && removeResults.notRemoved.length === 0) {
-                            if (
-                              !itemProgressCallback(
-                                template.itemId,
-                                common.EItemProgressStatus.Created,
-                                template.estimatedDeploymentCostFactor / 2,
-                                createResponse.group.id
-                              )
-                            ) {
-                              itemProgressCallback(
-                                template.itemId,
-                                common.EItemProgressStatus.Cancelled,
-                                0
-                              );
-                              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                              common
-                                .removeGroup(createResponse.group.id, destinationAuthentication)
-                                .then(
-                                  () =>
-                                    resolve(
-                                      common.generateEmptyCreationResponse(template.type)
-                                    ),
-                                  () =>
-                                    resolve(common.generateEmptyCreationResponse(template.type))
-                                );
-                            } else {
-                              resolve({
-                                item: newItemTemplate,
-                                id: createResponse.group.id,
-                                type: newItemTemplate.type,
-                                postProcess: common.hasUnresolvedVariables(
-                                  newItemTemplate
-                                )
-                              });
-                            }
-                          } else {
-                            itemProgressCallback(
-                              template.itemId,
-                              common.EItemProgressStatus.Failed,
-                              0
-                            );
-                            resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
-                          }
-                        });
+                        itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
+                        resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
                       }
-                    } else {
-                      itemProgressCallback(
-                        template.itemId,
-                        common.EItemProgressStatus.Failed,
-                        0
-                      );
-                      resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
-                    }
-                  })
+                    });
                 } else {
                   resolve({
                     item: newItemTemplate,
                     id: createResponse.group.id,
                     type: newItemTemplate.type,
-                    postProcess: common.hasUnresolvedVariables(
-                      newItemTemplate
-                    )
+                    postProcess: common.hasUnresolvedVariables(newItemTemplate),
                   });
                 }
               }
             }
           } else {
-            itemProgressCallback(
-              template.itemId,
-              common.EItemProgressStatus.Failed,
-              0
-            );
+            itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
             resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
           }
         },
         () => {
-          itemProgressCallback(
-            template.itemId,
-            common.EItemProgressStatus.Failed,
-            0
-          );
+          itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
           resolve(common.generateEmptyCreationResponse(template.type)); // fails to create item
-        }
+        },
       );
   });
 }
@@ -346,10 +256,10 @@ export function postProcess(
   template: common.IItemTemplate,
   templates: common.IItemTemplate[],
   templateDictionary: any,
-  authentication: any
+  authentication: any,
 ): Promise<any> {
-  let promise = Promise.resolve({success: true});
-  itemInfos.some(t => {
+  let promise = Promise.resolve({ success: true });
+  itemInfos.some((t) => {
     /* istanbul ignore else */
     if (t.id === id) {
       let group = t.item.item;
@@ -365,9 +275,7 @@ export function postProcess(
   return promise;
 }
 
-export function _initializeNewGroup(
-  sourceGroup: common.IItemGeneralized
-): common.IGroupAdd {
+export function _initializeNewGroup(sourceGroup: common.IItemGeneralized): common.IGroupAdd {
   // Set up properties needed to create group
   const newGroup: common.IGroupAdd = {
     access: "private",
@@ -377,7 +285,7 @@ export function _initializeNewGroup(
     tags: sourceGroup.tags,
     thumbnail: sourceGroup.thumbnail,
     title: sourceGroup.title || "",
-    typeKeywords: sourceGroup.typeKeywords
+    typeKeywords: sourceGroup.typeKeywords,
   };
 
   const props: string[] = [
@@ -389,14 +297,14 @@ export function _initializeNewGroup(
     "membershipAccess",
     "properties",
     "sortField",
-    "sortOrder"
+    "sortOrder",
   ];
-  props.forEach(p => {
+  props.forEach((p) => {
     /* istanbul ignore else */
     if (sourceGroup.hasOwnProperty(p)) {
       newGroup[p] = sourceGroup[p];
     }
-  })
+  });
 
   return newGroup;
 }

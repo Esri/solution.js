@@ -20,20 +20,19 @@ import {
   serializeModel,
   interpolateItemId,
   stringToBlob,
-  objectToJsonBlob
+  objectToJsonBlob,
 } from "@esri/hub-common";
 
-import { UserSession } from "@esri/solution-common";
-
 import {
-  createItem,
-  updateItem,
-  addItemResource,
   ICreateItemOptions,
   ICreateItemResponse,
   IUpdateItemOptions,
-  moveItem
-} from "@esri/arcgis-rest-portal";
+  addItemResource,
+  createItem,
+  moveItem,
+  restUpdateItem,
+  UserSession,
+} from "@esri/solution-common";
 
 /**
  * Given a Model for a Web Experience, create the item in the Portal API
@@ -46,7 +45,7 @@ export function createWebExperience(
   model: IModel,
   folderId: string,
   options: any,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IModel> {
   const resources: any[] = [];
 
@@ -55,14 +54,14 @@ export function createWebExperience(
   const createOptions: ICreateItemOptions = {
     // need to serialize
     item: serializeModel(model),
-    authentication
+    authentication,
   };
 
   /* istanbul ignore else */
   if (model.item.thumbnail) {
     createOptions.params = {
       // Pass thumbnail file in via params because item property is serialized, which discards a blob
-      thumbnail: model.item.thumbnail
+      thumbnail: model.item.thumbnail,
     };
     delete createOptions.item.thumbnail;
   }
@@ -84,7 +83,7 @@ export function createWebExperience(
         resources.push({
           name: "config.json",
           prefix: "config",
-          file: objectToJsonBlob(draftResourceModel)
+          file: objectToJsonBlob(draftResourceModel),
         });
         // there may also be this image resources list
         const imageListModel = cloneObject(model.properties.imageResourcesList);
@@ -92,7 +91,7 @@ export function createWebExperience(
           resources.push({
             name: "image-resources-list.json",
             prefix: "images",
-            file: stringToBlob(JSON.stringify(imageListModel))
+            file: stringToBlob(JSON.stringify(imageListModel)),
           });
         }
 
@@ -100,36 +99,33 @@ export function createWebExperience(
         // update the experience with the newly interpolated model
         const updateOptions: IUpdateItemOptions = {
           item: serializeModel(model),
-          authentication
+          authentication,
         };
         if (model.item.thumbnail) {
           updateOptions.params = {
             // Pass thumbnail file in via params because item property is serialized, which discards a blob
-            thumbnail: model.item.thumbnail
+            thumbnail: model.item.thumbnail,
           };
           delete updateOptions.item.thumbnail;
         }
 
-        return Promise.all([
-          updateItem(updateOptions),
-          authentication.getUsername()
-        ]);
+        return Promise.all([restUpdateItem(updateOptions), authentication.getUsername()]);
       })
       .then((responses: any[]) => {
         const username = responses[1];
         const failSafeAddItemResource = failSafe(addItemResource, {
-          success: true
+          success: true,
         });
         // upload the data and oembed resources
-        const resourceUploadPromises = resources.map(resource =>
+        const resourceUploadPromises = resources.map((resource) =>
           failSafeAddItemResource({
             id: model.item.id,
             owner: username,
             resource: resource.file,
             name: resource.name,
             prefix: resource.prefix,
-            authentication
-          })
+            authentication,
+          }),
         );
         // fire and forget
         return Promise.all(resourceUploadPromises);
@@ -143,7 +139,7 @@ export function createWebExperience(
         return moveItem({
           itemId: model.item.id,
           folderId,
-          authentication
+          authentication,
         });
       })
       .then(() => {

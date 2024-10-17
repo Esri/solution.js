@@ -14,60 +14,13 @@
  * limitations under the License.
  */
 
-import * as generalHelpers from "./generalHelpers";
-import * as interfaces from "./interfaces";
+import { UserSession } from "./arcgisRestJS";
 import * as zipUtils from "./zip-utils";
 import { updateItem } from "./restHelpers";
-import { IItemUpdate, UserSession } from "./interfaces";
+import { IItemUpdate } from "./interfaces";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Gets the webhooks from a Form zip object's *.info file.
- *
- * @param zipObject Zip file object from which to get the webhooks
- * @returns Promise that resolves to an array of webhooks
- */
-export async function getWebHooksFromZipObject(
-  zipObject: JSZip
-): Promise<string[]> {
-  const zipObjectContents: interfaces.IZipObjectContentItem[] = await zipUtils.getZipObjectContents(zipObject);
-  let webhooks: string[] = [];
-  zipObjectContents.forEach(
-    (zipFile: interfaces.IZipObjectContentItem) => {
-      if (zipFile.file.endsWith(".info")) {
-        const infoFileJson = JSON.parse(zipFile.content as string);
-        webhooks = generalHelpers.getProp(infoFileJson, "notificationsInfo.webhooks") || [];
-      }
-    }
-  );
-  return Promise.resolve(webhooks);
-}
-
-/**
- * Sets the webhooks in a Form zip object's *.info file.
- *
- * @param zipObject Zip file object in which to set the webhooks
- * @param webHooks Array of webhooks to set
- * @returns Promise that resolves to the updated zip object
- */
-export async function setWebHooksInZipObject(
-  zipObject: JSZip,
-  webHooks: any[]
-): Promise<JSZip> {
-  const zipObjectContents: interfaces.IZipObjectContentItem[] = await zipUtils.getZipObjectContents(zipObject);
-  zipObjectContents.forEach(
-    (zipFile: interfaces.IZipObjectContentItem) => {
-      if (zipFile.file.endsWith(".info")) {
-        const infoFileJson = JSON.parse(zipFile.content as string);
-        generalHelpers.setProp(infoFileJson, "notificationsInfo.webhooks", webHooks);
-        zipObject.file(zipFile.file, JSON.stringify(infoFileJson));
-      }
-    }
-  );
-  return Promise.resolve(zipObject);
-}
 
 /**
  * Updates an item with a zip object, including any webhooks.
@@ -80,13 +33,13 @@ export async function setWebHooksInZipObject(
 export async function updateItemWithZipObject(
   zipObject: JSZip,
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: UserSession,
 ): Promise<any> {
   // Update the item with the zip object
   const update: IItemUpdate = {
     id: destinationItemId,
-    data:  await zipUtils.zipObjectToZipFile(zipObject, `${destinationItemId}.zip`)
-  }
+    data: await zipUtils.zipObjectToZipFile(zipObject, `${destinationItemId}.zip`),
+  };
 
   return updateItem(update, destinationAuthentication);
 }

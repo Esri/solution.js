@@ -29,11 +29,11 @@ import { IAssociatedFileCopyResults, IZipCopyResults } from "../interfaces";
 export function createCopyResults(
   fileInfo: any,
   fetchedFromSource: boolean,
-  copiedToDestination?: boolean
+  copiedToDestination?: boolean,
 ): IAssociatedFileCopyResults | IZipCopyResults {
   return {
     ...fileInfo,
     fetchedFromSource,
-    copiedToDestination
+    copiedToDestination,
   };
 }

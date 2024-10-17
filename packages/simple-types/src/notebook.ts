@@ -31,17 +31,12 @@ export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: common.UserSession,
   srcAuthentication: common.UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<common.IItemTemplate> {
   // Delegate back to simple-types, which will in-turn delegate
   // to convertNotebookToTemplate at the correct point in the process
   // This is a temporary refactor step
-  return notebookHelpers.convertItemToTemplate(
-    itemInfo,
-    destAuthentication,
-    srcAuthentication,
-    templateDictionary
-  );
+  return notebookHelpers.convertItemToTemplate(itemInfo, destAuthentication, srcAuthentication, templateDictionary);
 }
 
 // Delegate back to simple-types
@@ -50,13 +45,13 @@ export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  itemProgressCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback,
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return notebookHelpers.createItemFromTemplate(
     template,
     templateDictionary,
     destinationAuthentication,
-    itemProgressCallback
+    itemProgressCallback,
   );
 }
 
@@ -66,37 +61,67 @@ export function createItemFromTemplate(
  * @param itemTemplate template for the Python Notebook
  * @returns templatized itemTemplate
  */
-export function convertNotebookToTemplate(
-  itemTemplate: common.IItemTemplate
-): common.IItemTemplate {
-  // The templates data to process
-  const data: any = itemTemplate.data;
-  deleteProps(data);
-  let dataString: string = JSON.stringify(data);
+export function convertNotebookToTemplate(itemTemplate: common.IItemTemplate): Promise<common.IItemTemplate> {
+  return new Promise<common.IItemTemplate>((resolve) => {
+    deleteProps(itemTemplate.data);
+    resolve(itemTemplate);
+  });
+}
 
-  const idTest: RegExp = /[0-9A-F]{32}/gim;
+/**
+ * Swap any ids found in the items data section with itemId variables
+ *
+ * @param templates IItemTemplate[] all templates for the current solution
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @returns templatized IItemTemplate[]
+ */
+export function postProcessNotebookTemplates(
+  templates: common.IItemTemplate[],
+  templateDictionary: any,
+): common.IItemTemplate[] {
+  const hasNotebook = templates.some((t) => {
+    return t.type === "Notebook";
+  });
+  if (hasNotebook) {
+    const fsUrlKeys = Object.keys(templateDictionary)
+      .filter((k) => k.indexOf("FeatureServer") > -1)
+      .sort()
+      .reverse();
 
-  if (data && idTest.test(dataString)) {
-    const ids: string[] = dataString.match(idTest) as string[];
-    const verifiedIds: string[] = [];
-    ids.forEach(id => {
-      if (verifiedIds.indexOf(id) === -1) {
-        verifiedIds.push(id);
-
-        // templatize the itemId--but only once per unique id
-        const regEx = new RegExp(id, "gm");
-        dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
-
-        // update the dependencies
-        if (itemTemplate.dependencies.indexOf(id) === -1) {
-          itemTemplate.dependencies.push(id);
-        }
+    const ids = templates.reduce((prev, cur: common.IItemTemplate) => {
+      prev = [...new Set([...prev, ...cur.dependencies, cur.itemId])];
+      return prev;
+    }, []);
+    templates = templates.map((t) => {
+      if (t.type === "Notebook") {
+        let dataString: string = t.data && JSON.stringify(t.data);
+        ids.forEach((id) => {
+          const idTest = new RegExp(id, "gim");
+          if (idTest.test(dataString)) {
+            dataString = dataString.replace(id, "{{" + id + ".itemId}}");
+            if (t.dependencies.indexOf(id) < 0) {
+              t.dependencies.push(id);
+            }
+          }
+        });
+        fsUrlKeys.forEach((url) => {
+          const urlTest = new RegExp(url, "gim");
+          if (urlTest.test(dataString)) {
+            const urlVar = templateDictionary[url];
+            dataString = dataString.replace(urlTest, urlVar);
+            const idTest: RegExp = /[0-9A-F]{32}/gim;
+            const id = urlVar.match(idTest)[0];
+            if (t.dependencies.indexOf(id) < 0) {
+              t.dependencies.push(id);
+            }
+          }
+        });
+        t.data = JSON.parse(dataString);
+        return t;
       }
     });
-    itemTemplate.data = JSON.parse(dataString);
   }
-
-  return itemTemplate;
+  return templates;
 }
 
 /**
@@ -107,9 +132,7 @@ export function convertNotebookToTemplate(
  * @param data The notebooks data object
  *
  */
-export function deleteProps(
-  data:any
-): void {
+export function deleteProps(data: any): void {
   /* istanbul ignore else */
   if (data) {
     const props: string[] = ["metadata.interpreter", "metadata.papermill"];
@@ -134,20 +157,15 @@ export function fineTuneCreatedItem(
   originalTemplate: common.IItemTemplate,
   newlyCreatedItem: common.IItemTemplate,
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const updateOptions: common.IItemUpdate = {
       id: newlyCreatedItem.itemId,
       url: newlyCreatedItem.item.url,
-      data: common.jsonToFile(
-        newlyCreatedItem.data,
-        newlyCreatedItem.itemId + ".ipynb"
-      )
+      data: common.jsonToFile(newlyCreatedItem.data, newlyCreatedItem.itemId + ".ipynb"),
     };
-    common
-      .updateItem(updateOptions, authentication)
-      .then(() => resolve(null), reject);
+    common.updateItem(updateOptions, authentication).then(() => resolve(null), reject);
   });
 }
 
@@ -168,11 +186,7 @@ export function postProcess(
   template: common.IItemTemplate,
   templates: common.IItemTemplate[],
   templateDictionary: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<any> {
-  return common.updateItemTemplateFromDictionary(
-    itemId,
-    templateDictionary,
-    authentication
-  );
+  return common.updateItemTemplateFromDictionary(itemId, templateDictionary, authentication);
 }

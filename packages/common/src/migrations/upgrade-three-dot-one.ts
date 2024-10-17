@@ -25,7 +25,6 @@ import { transformResourcePathsToSolutionResources } from "../resources/transfor
  * If it is a legacy hub solution, it will apply the transforms
  *
  * @param model ISolutionItem
- * @param authentication UserSession
  * @private
  */
 export function _upgradeThreeDotOne(model: ISolutionItem): ISolutionItem {

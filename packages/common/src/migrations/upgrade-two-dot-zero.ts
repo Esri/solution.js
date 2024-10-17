@@ -30,9 +30,7 @@ export function _upgradeTwoDotZero(model: any): any {
   const clone = cloneObject(model);
   const configSettings = getProp(clone, "data.configurationSettings") || [];
 
-  const indicatorsHash = configSettings.find(
-    (e: any) => e.category === "Indicators"
-  );
+  const indicatorsHash = configSettings.find((e: any) => e.category === "Indicators");
   clone.data.indicators = _convertIndicatorsToDefinitions(indicatorsHash);
   // remove CAS structure
   delete clone.data.configurationSettings;
@@ -63,7 +61,7 @@ export function _convertIndicatorsToDefinitions(indicatorsHash: any = {}) {
  *
  * @private
  */
-export const _convertIndicatorToDefinition = function(ind: any) {
+export const _convertIndicatorToDefinition = function (ind: any) {
   const def = {
     id: ind.fieldName,
     type: "Data",
@@ -73,8 +71,8 @@ export const _convertIndicatorToDefinition = function(ind: any) {
       description: ind.label || ind.fieldName,
       supportedTypes: [].concat(ind.layerOptions.supportedTypes),
       geometryTypes: [].concat(ind.layerOptions.geometryTypes),
-      fields: ind.fields.map(_convertIndicatorField)
-    }
+      fields: ind.fields.map(_convertIndicatorField),
+    },
   };
   return def;
 };
@@ -84,12 +82,12 @@ export const _convertIndicatorToDefinition = function(ind: any) {
  *
  * @private
  */
-export const _convertIndicatorField = function(field: any) {
+export const _convertIndicatorField = function (field: any) {
   return {
     id: field.fieldName,
     name: field.label,
     optional: field.optional || false,
     description: field.tooltip,
-    supportedTypes: [].concat(field.supportedTypes)
+    supportedTypes: [].concat(field.supportedTypes),
   };
 };

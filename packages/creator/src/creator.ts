@@ -36,7 +36,7 @@ import {
   getSubgroupIds,
   getUser,
   getVelocityUrlBase,
-  getWorkflowURL,
+  getWorkflowBaseURL,
   ICreateSolutionOptions,
   ISolutionItemData,
   IGroup,
@@ -44,7 +44,7 @@ import {
   removeItem,
   sanitizeJSON,
   setLocationTrackingEnabled,
-  UserSession
+  UserSession,
 } from "@esri/solution-common";
 import { failSafe, IModel } from "@esri/hub-common";
 import { addContentToSolution } from "./helpers/add-content-to-solution";
@@ -65,14 +65,11 @@ export async function createSolution(
   sourceId: string,
   srcAuthentication: UserSession,
   destAuthentication: UserSession,
-  options?: ICreateSolutionOptions
+  options?: ICreateSolutionOptions,
 ): Promise<string> {
   const createOptions: ICreateSolutionOptions = options || {};
   const progressCb = createOptions.progressCallback || noOp;
-  createOptions.templateDictionary = Object.assign(
-    {},
-    createOptions.templateDictionary
-  );
+  createOptions.templateDictionary = Object.assign({}, createOptions.templateDictionary);
 
   progressCb(1); // let the caller know that we've started
 
@@ -81,90 +78,72 @@ export async function createSolution(
     let updatedCreateOptions: ICreateSolutionOptions = await Promise.all([
       getGroupBase(sourceId, srcAuthentication),
       getGroupContents(sourceId, srcAuthentication),
-      getVelocityUrlBase(srcAuthentication, createOptions.templateDictionary)
-    ])
-      .then(
-        // Group fetches worked; assumption was correct
-        responses => {
-          createOptions.itemIds = responses[1];
-          progressCb(15);
+      getVelocityUrlBase(srcAuthentication, createOptions.templateDictionary),
+    ]).then(
+      // Group fetches worked; assumption was correct
+      (responses) => {
+        createOptions.itemIds = responses[1];
+        progressCb(15);
 
-          return new Promise<ICreateSolutionOptions>(resolve => {
-            // Update the createOptions with values from the group
-            resolve(
-              _applySourceToCreateOptions(
-                createOptions,
-                responses[0],
-                srcAuthentication,
-                true
-              )
-            );
-          });
-        },
+        return new Promise<ICreateSolutionOptions>((resolve) => {
+          // Update the createOptions with values from the group
+          resolve(_applySourceToCreateOptions(createOptions, responses[0], srcAuthentication, true));
+        });
+      },
 
-        // Assumption incorrect; try source as an item
-        () => {
-          return new Promise<ICreateSolutionOptions>((resolve, reject) => {
-            createOptions.itemIds = [sourceId];
-            getItemBase(sourceId, srcAuthentication).then(
-              // Update the createOptions with values from the item
-              itemBase =>
-                resolve(
-                  _applySourceToCreateOptions(
-                    createOptions,
-                    itemBase,
-                    srcAuthentication,
-                    false
-                  )
-                ),
-              reject
-            );
-          });
-        }
-      )
+      // Assumption incorrect; try source as an item
+      () => {
+        return new Promise<ICreateSolutionOptions>((resolve, reject) => {
+          createOptions.itemIds = [sourceId];
+          getItemBase(sourceId, srcAuthentication).then(
+            // Update the createOptions with values from the item
+            (itemBase) => resolve(_applySourceToCreateOptions(createOptions, itemBase, srcAuthentication, false)),
+            reject,
+          );
+        });
+      },
+    );
 
-      const userInfoResponses = await Promise.all([
-        getPortal("", srcAuthentication),
-        getUser(srcAuthentication)
-      ]);
-      const [portalResponse, userResponse] = userInfoResponses;
+    const userInfoResponses = await Promise.all([getPortal("", srcAuthentication), getUser(srcAuthentication)]);
+    const [portalResponse, userResponse] = userInfoResponses;
 
-      // check tracking
-      setLocationTrackingEnabled(
-        portalResponse,
-        userResponse,
-        createOptions.templateDictionary
-      );
+    // check tracking
+    setLocationTrackingEnabled(portalResponse, userResponse, updatedCreateOptions.templateDictionary);
 
-      // Add information needed for workflow manager
-      const user = await getUser(srcAuthentication);
-      createOptions.templateDictionary.orgId = user.orgId;
-      createOptions.templateDictionary.workflowURL = await getWorkflowURL(
-        createOptions.templateDictionary.workflowURL, portalResponse, srcAuthentication);
+    // Add information needed for workflow manager
+    const user = await getUser(srcAuthentication);
+    updatedCreateOptions.templateDictionary.workflowBaseUrl = await getWorkflowBaseURL(
+      srcAuthentication,
+      portalResponse,
+      user.orgId,
+    );
 
-      // Use a copy of the thumbnail rather than a URL to it
-      updatedCreateOptions = await _addThumbnailFileToCreateOptions(
-        updatedCreateOptions,
-        srcAuthentication
-      );
-
-      // Create a solution
-      const createdSolutionId = _createSolutionFromItemIds(
-        updatedCreateOptions,
-        srcAuthentication,
-        destAuthentication
-      );
-
-      // Successfully created solution
-        progressCb(100); // finished
-        return createdSolutionId;
-
-    } catch (error) {
-    // Error fetching group, group contents, or item, or error creating solution from ids
-      progressCb(1);
-      console.error(error);
-      throw error;
+    const portal = await srcAuthentication.getPortal();
+    let portalBaseUrl;
+    if (portal.urlKey) {
+      portalBaseUrl = `https://${portal.urlKey}.maps.arcgis.com`;
+    } else if (portal.portalHostname) {
+      portalBaseUrl = `https://${portal.portalHostname}`;
     }
+    if (portalBaseUrl) {
+      updatedCreateOptions.templateDictionary["portalBaseUrl"] = portalBaseUrl;
+    }
+
+    // Use a copy of the thumbnail rather than a URL to it
+    updatedCreateOptions = await _addThumbnailFileToCreateOptions(updatedCreateOptions, srcAuthentication);
+
+    // Create a solution
+    const createdSolutionId = _createSolutionFromItemIds(updatedCreateOptions, srcAuthentication, destAuthentication);
+
+    // Successfully created solution
+    progressCb(100); // finished
+    return createdSolutionId;
+  } catch (error) {
+    // Error fetching group, group contents, or item, or error creating solution from ids
+    progressCb(1);
+    console.error(error);
+    throw error;
+  }
 }
 
 /**
@@ -180,11 +159,11 @@ export function _applySourceToCreateOptions(
   createOptions: ICreateSolutionOptions,
   sourceInfo: IGroup | IItem,
   srcAuthentication: UserSession,
-  isGroup = false
+  isGroup = false,
 ): ICreateSolutionOptions {
   // Create a solution from the group's or item's contents,
   // using the group's or item's information as defaults for the solution item
-  ["title", "snippet", "description", "tags"].forEach(prop => {
+  ["title", "snippet", "description", "tags"].forEach((prop) => {
     createOptions[prop] = createOptions[prop] ?? sourceInfo[prop];
   });
 
@@ -194,7 +173,7 @@ export function _applySourceToCreateOptions(
       srcAuthentication.portal,
       sourceInfo.id,
       sourceInfo.thumbnail,
-      isGroup
+      isGroup,
     );
     delete sourceInfo.thumbnail;
   }
@@ -202,10 +181,7 @@ export function _applySourceToCreateOptions(
   if (isGroup) {
     // Does the group contain groups?
     const groupIdsViaOptions: string[] = createOptions.subgroupIds || [];
-    createOptions.itemIds = groupIdsViaOptions.concat(
-      createOptions.itemIds || [],
-      getSubgroupIds(sourceInfo.tags)
-    );
+    createOptions.itemIds = groupIdsViaOptions.concat(createOptions.itemIds || [], getSubgroupIds(sourceInfo.tags));
   }
 
   return createOptions;
@@ -220,28 +196,24 @@ export function _applySourceToCreateOptions(
  */
 export function _addThumbnailFileToCreateOptions(
   createOptions: ICreateSolutionOptions,
-  srcAuthentication: UserSession
+  srcAuthentication: UserSession,
 ): Promise<ICreateSolutionOptions> {
-  return new Promise<ICreateSolutionOptions>(resolve => {
+  return new Promise<ICreateSolutionOptions>((resolve) => {
     if (!createOptions.thumbnail && createOptions.thumbnailurl) {
       // Figure out the thumbnail's filename
-      const filename =
-        getFilenameFromUrl(createOptions.thumbnailurl) || "thumbnail";
-      const thumbnailurl = appendQueryParam(
-        createOptions.thumbnailurl,
-        "w=400"
-      );
+      const filename = getFilenameFromUrl(createOptions.thumbnailurl) || "thumbnail";
+      const thumbnailurl = appendQueryParam(createOptions.thumbnailurl, "w=400");
       delete createOptions.thumbnailurl;
 
       // Fetch the thumbnail
       getBlobAsFile(thumbnailurl, filename, srcAuthentication).then(
-        thumbnail => {
+        (thumbnail) => {
           createOptions.thumbnail = thumbnail;
           resolve(createOptions);
         },
         () => {
           resolve(createOptions);
-        }
+        },
       );
     } else {
       resolve(createOptions);
@@ -262,22 +234,17 @@ export function _addThumbnailFileToCreateOptions(
 export function _createSolutionFromItemIds(
   options: ICreateSolutionOptions,
   srcAuthentication: UserSession,
-  destAuthentication: UserSession
+  destAuthentication: UserSession,
 ): Promise<string> {
   let solutionId = "";
   // Create a solution from the list of items
   return _createSolutionItem(destAuthentication, options)
-    .then(id => {
+    .then((id) => {
       solutionId = id;
       // Add list of items to the new solution
-      return addContentToSolution(
-        solutionId,
-        options,
-        srcAuthentication,
-        destAuthentication
-      );
+      return addContentToSolution(solutionId, options, srcAuthentication, destAuthentication);
     })
-    .catch(addError => {
+    .catch((addError) => {
       // If the solution item got created, delete it
       if (solutionId) {
         const failSafeRemove = failSafe(removeItem, { success: true });
@@ -299,21 +266,13 @@ export function _createSolutionFromItemIds(
  * there is a problem updating its thumbnail
  * @private
  */
-export function _createSolutionItem(
-  authentication: UserSession,
-  options?: ICreateSolutionOptions
-): Promise<string> {
+export function _createSolutionItem(authentication: UserSession, options?: ICreateSolutionOptions): Promise<string> {
   const model = _createSolutionItemModel(options);
 
   // Create new solution item
   delete model.item.thumbnailurl;
   model.item.thumbnail = options?.thumbnail;
-  return createItemWithData(
-    model.item,
-    model.data,
-    authentication,
-    options?.folderId
-  ).then(createResponse => {
+  return createItemWithData(model.item, model.data, authentication, options?.folderId).then((createResponse) => {
     return Promise.resolve(createResponse.id);
   });
 }
@@ -335,31 +294,26 @@ export function _createSolutionItemModel(options: any): IModel {
     snippet: options?.snippet ?? "",
     description: options?.description ?? "",
     properties: {
-      schemaVersion: CURRENT_SCHEMA_VERSION
+      schemaVersion: CURRENT_SCHEMA_VERSION,
     },
     thumbnailurl: options?.thumbnailurl ?? "",
     tags: creationTags.filter((tag: any) => !tag.startsWith("deploy.")),
-    typeKeywords: ["Solution", "Template"].concat(
-      _getDeploymentProperties(creationTags)
-    )
+    typeKeywords: ["Solution", "Template"].concat(_getDeploymentProperties(creationTags)),
   };
 
   // ensure that snippet and description are not nefarious
   const sanitizedItem = sanitizeJSON(solutionItem);
 
   const addlKeywords = options?.additionalTypeKeywords || [];
-  sanitizedItem.typeKeywords = [].concat(
-    solutionItem.typeKeywords,
-    addlKeywords
-  );
+  sanitizedItem.typeKeywords = [].concat(solutionItem.typeKeywords, addlKeywords);
 
   const solutionData: ISolutionItemData = {
     metadata: {},
-    templates: []
+    templates: [],
   };
   return {
     item: sanitizedItem,
-    data: solutionData
+    data: solutionData,
   };
 }
 
@@ -373,10 +327,8 @@ export function _createSolutionItemModel(options: any): IModel {
  */
 export function _getDeploymentProperties(tags: string[]): string[] {
   return [
-    "solutionid-" +
-      (_getDeploymentProperty("deploy.id.", tags) ?? createLongId()),
-    "solutionversion-" +
-      (_getDeploymentProperty("deploy.version.", tags) ?? "1.0")
+    "solutionid-" + (_getDeploymentProperty("deploy.id.", tags) ?? createLongId()),
+    "solutionversion-" + (_getDeploymentProperty("deploy.version.", tags) ?? "1.0"),
   ];
 }
 
@@ -388,11 +340,8 @@ export function _getDeploymentProperties(tags: string[]): string[] {
  * @returns The extracted value of the first matching tag or null if a tag with the specified prefix is not found
  * @private
  */
-export function _getDeploymentProperty(
-  desiredTagPrefix: string,
-  tags: string[]
-): string | null {
-  const foundTagAsList = tags.filter(tag => tag.startsWith(desiredTagPrefix));
+export function _getDeploymentProperty(desiredTagPrefix: string, tags: string[]): string | null {
+  const foundTagAsList = tags.filter((tag) => tag.startsWith(desiredTagPrefix));
   if (foundTagAsList.length > 0) {
     return foundTagAsList[0].substr(desiredTagPrefix.length);
   } else {

@@ -35,20 +35,18 @@ export function _postProcessSite(
   siteModel: IModel,
   itemInfos: any[],
   templateDictionary: any,
-  hubRequestOptions: IHubUserRequestOptions
+  hubRequestOptions: IHubUserRequestOptions,
 ): Promise<boolean> {
-  const infosWithoutSite = itemInfos.filter(
-    info => info.id !== siteModel.item.id
-  );
+  const infosWithoutSite = itemInfos.filter((info) => info.id !== siteModel.item.id);
 
   // convert the itemInfo's into things that look enough like a model
   // that we can call shareItemsToSiteGroups
-  const pseudoModels = infosWithoutSite.map(e => {
+  const pseudoModels = infosWithoutSite.map((e) => {
     return {
       item: {
         id: e.id,
-        type: e.type
-      }
+        type: e.type,
+      },
     };
   });
 
@@ -56,22 +54,16 @@ export function _postProcessSite(
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   secondPassPromises = secondPassPromises.concat(
-    shareItemsToSiteGroups(
-      siteModel,
-      (pseudoModels as unknown) as IModel[],
-      hubRequestOptions
-    )
+    shareItemsToSiteGroups(siteModel, pseudoModels as unknown as IModel[], hubRequestOptions),
   );
 
   // we can't use that same trick w/ the page sharing
   // because we really need the models themselves
   // so we delegate to a local function
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  secondPassPromises = secondPassPromises.concat(
-    _updateSitePages(siteModel, infosWithoutSite, hubRequestOptions)
-  );
+  secondPassPromises = secondPassPromises.concat(_updateSitePages(siteModel, infosWithoutSite, hubRequestOptions));
   // need to get all the child items and add into site.item.properties.children
-  const childItemIds = infosWithoutSite.map(i => i.id);
+  const childItemIds = infosWithoutSite.map((i) => i.id);
 
   siteModel.item.properties.children = childItemIds;
 
@@ -81,8 +73,8 @@ export function _postProcessSite(
   secondPassPromises.push(
     updateSite(siteModel, {
       ...hubRequestOptions,
-      allowList: null
-    })
+      allowList: undefined,
+    }),
   );
 
   return Promise.all(secondPassPromises).then(() => {

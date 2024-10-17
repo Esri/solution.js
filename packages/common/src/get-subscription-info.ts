@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { request, IRequestOptions } from "@esri/arcgis-rest-request";
-import { getPortalUrl } from "@esri/arcgis-rest-portal";
+import { IRequestOptions, getPortalUrl, request } from "./arcgisRestJS";
 
 export interface ISubscriptionInfo {
   id: string;
@@ -28,16 +27,14 @@ export interface ISubscriptionInfo {
  *
  * @param requestOptions
  */
-export function getSubscriptionInfo(
-  requestOptions: IRequestOptions
-): Promise<ISubscriptionInfo> {
+export function getSubscriptionInfo(requestOptions: IRequestOptions): Promise<ISubscriptionInfo> {
   // construct the search url
   const url = `${getPortalUrl(requestOptions)}/portals/self/subscriptioninfo`;
 
   // default to a GET request
   const options: IRequestOptions = {
     ...{ httpMethod: "GET" },
-    ...requestOptions
+    ...requestOptions,
   };
 
   // send the request

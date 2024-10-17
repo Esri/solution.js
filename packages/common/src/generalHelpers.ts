@@ -21,12 +21,7 @@
  */
 
 import { IModel, createId, unique } from "@esri/hub-common";
-import {
-  ICreateItemFromTemplateResponse,
-  IDatasourceInfo,
-  IItemTemplate,
-  IStringValuePair
-} from "./interfaces";
+import { ICreateItemFromTemplateResponse, IDatasourceInfo, IItemTemplate, IStringValuePair } from "./interfaces";
 import { Sanitizer, sanitizeJSON } from "./libConnectors";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -49,16 +44,16 @@ export function appendQueryParam(url: string, parameter: string): string {
  * @returns A promise that will resolve with JSON or null
  */
 export function blobToJson(blob: Blob): Promise<any> {
-  return new Promise<any>(resolve => {
+  return new Promise<any>((resolve) => {
     blobToText(blob).then(
-      blobContents => {
+      (blobContents) => {
         try {
           resolve(JSON.parse(blobContents));
         } catch (err) {
           resolve(null);
         }
       },
-      () => resolve(null)
+      () => resolve(null),
     );
   });
 }
@@ -71,13 +66,9 @@ export function blobToJson(blob: Blob): Promise<any> {
  * @param mimeType MIME type to override blob's MIME type
  * @returns File created out of Blob and filename
  */
-export function blobToFile(
-  blob: Blob,
-  filename: string,
-  mimeType?: string
-): File {
+export function blobToFile(blob: Blob, filename: string, mimeType?: string): File {
   return new File([blob], filename ? filename : "", {
-    type: mimeType ?? blob.type  // Blobs default to type=""
+    type: mimeType ?? blob.type, // Blobs default to type=""
   });
 }
 
@@ -88,9 +79,9 @@ export function blobToFile(
  * @returns A promise that will resolve with text read from blob
  */
 export function blobToText(blob: Blob): Promise<string> {
-  return new Promise<string>(resolve => {
+  return new Promise<string>((resolve) => {
     const reader = new FileReader();
-    reader.onload = function(evt) {
+    reader.onload = function (evt) {
       // Disable needed because Node requires cast
       const blobContents = evt.target.result;
       resolve(blobContents ? (blobContents as string) : ""); // not handling ArrayContents variant
@@ -115,11 +106,9 @@ export function checkUrlPathTermination(url: string): string {
  * @param hubModel Hub-style item
  * @return solutions-style item
  */
-export function convertIModel(
-  hubModel: IModel | undefined
-): IItemTemplate {
+export function convertIModel(hubModel: IModel | undefined): IItemTemplate {
   const item: any = {
-    ...hubModel
+    ...hubModel,
   };
   item.resources = hubModel?.resources ? Object.values(hubModel.resources) : [];
 
@@ -148,10 +137,7 @@ export function createShortId(): string {
   // i.e. node ids, process ids, etc.
   const min = 0.2777777777777778; // 0.a in base 36
   const max = 0.9999999999996456; // 0.zzzzzzzz in base 36
-  return (_getRandomNumberInRange(min, max).toString(36) + "0000000").substr(
-    2,
-    8
-  );
+  return (_getRandomNumberInRange(min, max).toString(36) + "0000000").substr(2, 8);
 }
 
 /**
@@ -176,10 +162,8 @@ export function dedupe(input: string[] = []): string[] {
  * @param ms Milliseconds to delay
  * @returns Promise when delay is complete
  */
-export function delay(
-  ms: number
-) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+export function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -189,15 +173,12 @@ export function delay(
  * @param id Item id to include in response
  * @returns Empty creation response
  */
-export function generateEmptyCreationResponse(
-  itemType: string,
-  id = ""
-): ICreateItemFromTemplateResponse {
+export function generateEmptyCreationResponse(itemType: string, id = ""): ICreateItemFromTemplateResponse {
   return {
     item: null,
     id,
     type: itemType,
-    postProcess: false
+    postProcess: false,
   };
 }
 
@@ -206,8 +187,7 @@ export function generateEmptyCreationResponse(
  *
  * @returns Regular expression
  */
-export function getAgoIdRegEx(
-): RegExp {
+export function getAgoIdRegEx(): RegExp {
   return /\b([0-9A-Fa-f]){32}\b/g;
 }
 
@@ -216,8 +196,7 @@ export function getAgoIdRegEx(
  *
  * @returns Regular expression
  */
-export function getAgoIdTemplateRegEx(
-): RegExp {
+export function getAgoIdTemplateRegEx(): RegExp {
   return /{{\b([0-9A-Fa-f]){32}\b}}/g;
 }
 
@@ -227,10 +206,25 @@ export function getAgoIdTemplateRegEx(
  * @param word Word to search for, bounded by regular expression word boundaries (\b)
  * @returns Regular expression
  */
-export function getSpecifiedWordRegEx(
-  word: string
-): RegExp {
+export function getSpecifiedWordRegEx(word: string): RegExp {
   return new RegExp(`\\b${word}\\b`, "g");
+}
+
+/**
+ * Extracts templated ids from a block of text.
+ *
+ * @param text Text to scan for the pattern "{{[0-9A-F]{32}.itemId}}"
+ * @returns List of ids found in the text; braces and ".itemId" are removed; returns empty list if no matches
+ */
+export function getTemplatedIds(text: string): string[] {
+  const idTest: RegExp = /{{[0-9A-F]{32}.itemId}}/gi;
+
+  let ids: string[] = [];
+  const matches = text.match(idTest);
+  if (matches) {
+    ids = matches.map((id) => id.replace("{{", "").replace(".itemId}}", ""));
+  }
+  return ids;
 }
 
 /**
@@ -253,11 +247,7 @@ export function jsonToBlob(json: any): Blob {
  * @param mimeType MIME type to override blob's MIME type
  * @returns File created out of JSON and filename
  */
-export function jsonToFile(
-  json: any,
-  filename: string,
-  mimeType = "application/json"
-): File {
+export function jsonToFile(json: any, filename: string, mimeType = "application/json"): File {
   return blobToFile(jsonToBlob(json), filename, mimeType);
 }
 
@@ -267,9 +257,7 @@ export function jsonToFile(
  * @param json JSON to use as source
  * @returns A JSON object from the source JSON
  */
-export function jsonToJson(
-  json: any
-): any {
+export function jsonToJson(json: any): any {
   return JSON.parse(JSON.stringify(json));
 }
 
@@ -283,7 +271,7 @@ export function jsonToJson(
 // Function is only used for live testing, so excluding it from coverage for now
 /* istanbul ignore next */
 export function saveBlobAsFile(filename: string, blob: Blob): Promise<void> {
-  return new Promise<void>(resolve => {
+  return new Promise<void>((resolve) => {
     const dataUrl = URL.createObjectURL(blob);
     const linkElement = document.createElement("a");
     linkElement.setAttribute("href", dataUrl);
@@ -377,10 +365,7 @@ export function compareJSONProperties(json1: any, json2: any): string[] {
   if (type1 !== type2) {
     // Ignore "undefined" vs. "null" and vice versa
     /* istanbul ignore else */
-    if (
-      (type1 !== "undefined" && type1 !== "null") ||
-      (type2 !== "null" && type2 !== "undefined")
-    ) {
+    if ((type1 !== "undefined" && type1 !== "null") || (type2 !== "null" && type2 !== "undefined")) {
       mismatches.push("Type difference: " + type1 + " vs. " + type2);
     }
   } else {
@@ -393,39 +378,20 @@ export function compareJSONProperties(json1: any, json2: any): string[] {
           mismatches.push("Value difference: " + json1 + " vs. " + json2);
           break;
         case "string":
-          mismatches.push(
-            'String difference: "' + json1 + '" vs. "' + json2 + '"'
-          );
+          mismatches.push('String difference: "' + json1 + '" vs. "' + json2 + '"');
           break;
         case "object":
           const keys1 = Object.keys(json1);
           const keys2 = Object.keys(json2);
-          if (
-            keys1.length !== keys2.length ||
-            JSON.stringify(keys1) !== JSON.stringify(keys2)
-          ) {
+          if (keys1.length !== keys2.length || JSON.stringify(keys1) !== JSON.stringify(keys2)) {
             if (Array.isArray(json1) && Array.isArray(json2)) {
-              mismatches.push(
-                "Array length difference: [" +
-                  keys1.length +
-                  "] vs. [" +
-                  keys2.length +
-                  "]"
-              );
+              mismatches.push("Array length difference: [" + keys1.length + "] vs. [" + keys2.length + "]");
             } else {
-              mismatches.push(
-                "Props difference: " +
-                  JSON.stringify(keys1) +
-                  " vs. " +
-                  JSON.stringify(keys2)
-              );
+              mismatches.push("Props difference: " + JSON.stringify(keys1) + " vs. " + JSON.stringify(keys2));
             }
           } else {
             for (let k = 0; k < keys1.length; ++k) {
-              const submismatches = compareJSONProperties(
-                json1[keys1[k]],
-                json2[keys2[k]]
-              );
+              const submismatches = compareJSONProperties(json1[keys1[k]], json2[keys2[k]]);
               if (submismatches.length > 0) {
                 mismatches = mismatches.concat(submismatches);
               }
@@ -447,20 +413,13 @@ export function compareJSONProperties(json1: any, json2: any): string[] {
  * @returns Sanitized version of `json`
  * @see https://github.com/esri/arcgis-html-sanitizer#sanitize-json
  */
-export function sanitizeJSONAndReportChanges(
-  json: any,
-  sanitizer?: Sanitizer
-): any {
+export function sanitizeJSONAndReportChanges(json: any, sanitizer?: Sanitizer): any {
   const sanitizedJSON = sanitizeJSON(json, sanitizer);
 
   const mismatches = compareJSONProperties(json, sanitizedJSON);
   if (mismatches.length > 0) {
-    console.warn(
-      "Changed " +
-        mismatches.length +
-        (mismatches.length === 1 ? " property" : " properties")
-    );
-    mismatches.forEach(mismatch => console.warn("    " + mismatch));
+    console.warn("Changed " + mismatches.length + (mismatches.length === 1 ? " property" : " properties"));
+    mismatches.forEach((mismatch) => console.warn("    " + mismatch));
   }
 
   return sanitizedJSON;
@@ -492,11 +451,9 @@ export function deleteItemProps(itemTemplate: any): any {
     "title",
     "type",
     "typeKeywords",
-    "url"
+    "url",
   ];
-  const propsToDelete: string[] = Object.keys(itemTemplate).filter(
-    k => propsToRetain.indexOf(k) < 0
-  );
+  const propsToDelete: string[] = Object.keys(itemTemplate).filter((k) => propsToRetain.indexOf(k) < 0);
   deleteProps(itemTemplate, propsToDelete);
   return itemTemplate;
 }
@@ -532,7 +489,7 @@ export function deleteProp(obj: any, path: string): void {
  * @param props Array of properties on object that should be deleted
  */
 export function deleteProps(obj: any, props: string[]): void {
-  props.forEach(prop => {
+  props.forEach((prop) => {
     deleteProp(obj, prop);
   });
 }
@@ -573,14 +530,12 @@ export function failWithIds(itemIds: string[], e?: any): any {
  * @returns List of subgroup ids; subgroups are identified using tags that begin with "group." and end with a group id,
  * e.g., "group.8d515625ee9f49d7b4f6c6cb2a389151"; non-matching tags are ignored
  */
-export function getSubgroupIds(
-  tags: string[]
-): string[] {
+export function getSubgroupIds(tags: string[]): string[] {
   if (tags) {
     const containedGroupPrefix = "group.";
     return tags
-      .filter(tag => tag.startsWith(containedGroupPrefix))
-      .map(tag => tag.substring(containedGroupPrefix.length));
+      .filter((tag) => tag.startsWith(containedGroupPrefix))
+      .map((tag) => tag.substring(containedGroupPrefix.length));
   } else {
     return [];
   }
@@ -606,7 +561,7 @@ export function getIDs(v: string): string[] {
   // cannot use /(?<!_)(?<!{{)\b[0-9A-F]{32}/gi
 
   // use groups and filter out the ids that start with {{
-  return regExTest(v, /({*)(\b[0-9A-F]{32}\b)/gi).reduce(function(acc, _v) {
+  return regExTest(v, /({*)(\b[0-9A-F]{32}\b)/gi).reduce(function (acc, _v) {
     /* istanbul ignore else */
     if (_v.indexOf("{{") < 0) {
       acc.push(_v.replace("{", ""));
@@ -625,7 +580,7 @@ export function getIDs(v: string): string[] {
  * @returns Value at end of path
  */
 export function getProp(obj: { [index: string]: any }, path: string): any {
-  return path.split(".").reduce(function(prev, curr) {
+  return path.split(".").reduce(function (prev, curr) {
     /* istanbul ignore next no need to test undefined scenario */
     return prev ? prev[curr] : undefined;
   }, obj);
@@ -658,11 +613,7 @@ export function getProps(obj: any, props: string[]): any {
  * @param defaultV Optional value to use if any part of path--including final value--is undefined
  * @returns Value at end of path
  */
-export function getPropWithDefault(
-  obj: IStringValuePair,
-  path: string,
-  defaultV?: any
-): any {
+export function getPropWithDefault(obj: IStringValuePair, path: string, defaultV?: any): any {
   const value = path.split(".").reduce(function (prev, curr) {
     /* istanbul ignore next no need to test undefined scenario */
     return prev ? prev[curr] : undefined;
@@ -683,7 +634,7 @@ export function getPropWithDefault(
  */
 export function idTest(v: any, deps: string[]): void {
   const ids: any[] = getIDs(v);
-  ids.forEach(id => {
+  ids.forEach((id) => {
     /* istanbul ignore else */
     if (deps.indexOf(id) === -1) {
       deps.push(id);
@@ -766,8 +717,7 @@ export function getUTCTimestamp(): string {
  * @returns Boolean indicating result
  */
 export function hasAnyKeyword(jsonObj: any, keywords: string[]): boolean {
-  const typeKeywords =
-    getProp(jsonObj, "item.typeKeywords") || jsonObj.typeKeywords || [];
+  const typeKeywords = getProp(jsonObj, "item.typeKeywords") || jsonObj.typeKeywords || [];
   return keywords.reduce((a, kw) => {
     if (!a) {
       a = typeKeywords.includes(kw);
@@ -784,8 +734,7 @@ export function hasAnyKeyword(jsonObj: any, keywords: string[]): boolean {
  * @returns Boolean indicating result
  */
 export function hasTypeKeyword(jsonObj: any, keyword: string): boolean {
-  const typeKeywords =
-    getProp(jsonObj, "item.typeKeywords") || jsonObj.typeKeywords || [];
+  const typeKeywords = getProp(jsonObj, "item.typeKeywords") || jsonObj.typeKeywords || [];
   return typeKeywords.includes(keyword);
 }
 
@@ -799,14 +748,10 @@ export function hasTypeKeyword(jsonObj: any, keyword: string): boolean {
  * @param path to the objects to evaluate for potantial name clashes
  * @returns string The unique title to use
  */
-export function getUniqueTitle(
-  title: string,
-  templateDictionary: any,
-  path: string
-): string {
+export function getUniqueTitle(title: string, templateDictionary: any, path: string): string {
   title = title ? title.trim() : "_";
   const objs: any[] = getProp(templateDictionary, path) || [];
-  const titles: string[] = objs.map(obj => {
+  const titles: string[] = objs.map((obj) => {
     return obj.title;
   });
   let newTitle: string = title;
@@ -826,13 +771,9 @@ export function getUniqueTitle(
  * @param replacement Replacement for matches to search pattern
  * @returns Modified obj is returned
  */
-export function globalStringReplace(
-  obj: any,
-  pattern: RegExp,
-  replacement: string
-): any {
+export function globalStringReplace(obj: any, pattern: RegExp, replacement: string): any {
   if (obj) {
-    Object.keys(obj).forEach(prop => {
+    Object.keys(obj).forEach((prop) => {
       const propObj = obj[prop];
       if (propObj) {
         /* istanbul ignore else */
@@ -855,14 +796,8 @@ export function globalStringReplace(
  * @param layerId The layers id to check for
  * @returns Boolean indicating result
  */
-export function hasDatasource(
-  datasourceInfos: IDatasourceInfo[],
-  itemId: string,
-  layerId: number
-): boolean {
-  return datasourceInfos.some(
-    ds => ds.itemId === itemId && ds.layerId === layerId
-  );
+export function hasDatasource(datasourceInfos: IDatasourceInfo[], itemId: string, layerId: number): boolean {
+  return datasourceInfos.some((ds) => ds.itemId === itemId && ds.layerId === layerId);
 }
 
 /**
@@ -884,11 +819,7 @@ export function cleanItemId(id: any): any {
  * returns 934a9ef8efa7448fa8ddf7b13cef0240
  */
 export function cleanLayerBasedItemId(id: any): any {
-  return id
-    ? id
-        .replace("{{", "")
-        .replace(/([.]layer([0-9]|[1-9][0-9])[.](item|layer)Id)[}]{2}/, "")
-    : id;
+  return id ? id.replace("{{", "").replace(/([.]layer([0-9]|[1-9][0-9])[.](item|layer)Id)[}]{2}/, "") : id;
 }
 
 /**
@@ -905,7 +836,7 @@ export function cleanLayerId(id: any) {
           .toString()
           .replace(/[{]{2}.{32}[.]layer/, "")
           .replace(/[.]layerId[}]{2}/, ""),
-        10
+        10,
       )
     : id;
 }
@@ -918,12 +849,9 @@ export function cleanLayerId(id: any) {
  *
  * @returns Template associated with the user provided id argument
  */
-export function getTemplateById(
-  templates: IItemTemplate[],
-  id: string
-): any {
+export function getTemplateById(templates: IItemTemplate[], id: string): any {
   let template;
-  templates.some(_template => {
+  templates.some((_template) => {
     if (_template.itemId === id) {
       template = _template;
       return true;
@@ -950,9 +878,7 @@ export function regExTest(v: any, ex: RegExp): any[] {
  * @param list List to be de-duped
  * @returns List of unique strings
  */
-export function uniqueStringList(
-  list: string[]
-): string[] {
+export function uniqueStringList(list: string[]): string[] {
   return list.filter(unique);
 }
 

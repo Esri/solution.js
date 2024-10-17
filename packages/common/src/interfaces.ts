@@ -19,48 +19,17 @@
  */
 
 import {
+  IExtent,
   IGetRelatedItemsResponse,
   IGroup,
   IItem,
-  IItemRelationshipOptions
-} from "@esri/arcgis-rest-portal";
-import { IExtent, ISpatialReference } from "@esri/arcgis-rest-service-admin";
-import { UserSession } from "@esri/arcgis-rest-auth";
+  IItemRelationshipOptions,
+  ISpatialReference,
+  UserSession,
+} from "./arcgisRestJS";
 
 //#region Re-exports -------------------------------------------------------------------------------------------------//
 
-export {
-  IUserRequestOptions,
-  IUserSessionOptions,
-  UserSession
-} from "@esri/arcgis-rest-auth";
-export {
-  IFeature,
-  IQueryRelatedOptions,
-  IQueryRelatedResponse,
-  IRelatedRecordGroup,
-  queryRelated
-} from "@esri/arcgis-rest-feature-layer";
-export {
-  IAddFolderResponse,
-  ICreateItemResponse,
-  IGetRelatedItemsResponse,
-  IGroup,
-  IGroupAdd,
-  IItem,
-  IMoveItemResponse,
-  IPagingParams,
-  IPortal,
-  ISearchResult,
-  ItemRelationshipType,
-  IUpdateItemResponse,
-  IUser
-} from "@esri/arcgis-rest-portal";
-export {
-  ICreateServiceResult,
-  IExtent,
-  ISpatialReference
-} from "@esri/arcgis-rest-service-admin";
 import JSZip from "jszip";
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
@@ -79,7 +48,7 @@ export enum EFileType {
   Info,
   Metadata,
   Resource,
-  Thumbnail
+  Thumbnail,
 }
 
 /**
@@ -90,7 +59,7 @@ export enum SFileType {
   "Info",
   "Metadata",
   "Resource",
-  "Thumbnail"
+  "Thumbnail",
 }
 
 /**
@@ -103,7 +72,7 @@ export enum EItemProgressStatus {
   Finished,
   Ignored,
   Failed,
-  Unknown
+  Unknown,
 }
 
 /**
@@ -116,7 +85,7 @@ export const SItemProgressStatus = [
   "3 Finished",
   "3 Ignored",
   "3 Failed",
-  "Unknown"
+  "Unknown",
 ];
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
@@ -146,7 +115,7 @@ export type IItemProgressCallback = (
   /**
    * Id of created item, which is supplied when status is EItemProgressStatus.Created or .Finished
    */
-  createdItemId?: string
+  createdItemId?: string,
 ) => boolean;
 
 /**
@@ -167,7 +136,7 @@ export type ISolutionProgressCallback = (
    * Packet of supplemental information provided from certain progress states, e.g., Finished deleting an item
    * or deploying a Solution item
    */
-  progressEvent?: ISolutionProgressEvent
+  progressEvent?: ISolutionProgressEvent,
 ) => void;
 
 export type INoArgFunction = () => any;
@@ -237,9 +206,7 @@ export interface IAdditionalGroupSearchOptions {
 /**
  * Results of fetching and copying a file associated with an item.
  */
-export interface IAssociatedFileCopyResults
-  extends IAssociatedFileInfo,
-  ICopyResults { }
+export interface IAssociatedFileCopyResults extends IAssociatedFileInfo, ICopyResults {}
 
 /**
  *  Information for working with a file associated with an item.
@@ -344,7 +311,7 @@ export interface ICompleteItem {
   /**
    * Additional workflow-only info
    */
-  workflowConfiguration?: any
+  workflowConfiguration?: any;
 }
 
 /**
@@ -970,23 +937,23 @@ export interface IItemRelationshipOptionsPaging extends IItemRelationshipOptions
     /**
      * Relationship direction sought
      */
-    direction: "forward" | "reverse",
+    direction: "forward" | "reverse";
 
     /**
      * One-based index of start of next batch to fetch
      */
-    start: number,
+    start: number;
 
     /**
      * Number of items requested; maximum value is 100
      */
-    num: number,
+    num: number;
 
     /**
      * Key needed by related records search for second and subsequent batches; value comes from previous fetch
      */
-    nextkey?: string
-  }
+    nextkey?: string;
+  };
 }
 
 /**
@@ -1066,7 +1033,7 @@ export interface IItemTemplateConversions {
     itemInfo: any,
     destAuthentication: UserSession,
     srcAuthentication: UserSession,
-    templateDictionary?: any
+    templateDictionary?: any,
   ): Promise<IItemTemplate>;
 
   /**
@@ -1076,7 +1043,7 @@ export interface IItemTemplateConversions {
     template: IItemTemplate,
     templateDictionary: any,
     destinationAuthentication: UserSession,
-    itemProgressCallback: IItemProgressCallback
+    itemProgressCallback: IItemProgressCallback,
   ): Promise<ICreateItemFromTemplateResponse>;
 }
 
@@ -1272,9 +1239,56 @@ export interface ISolutionItemData {
   metadata: any;
 
   /**
+   * Supplemental information about the solution, e.g., its default spatial reference
+   */
+  params?: ISolutionItemDataParams;
+
+  /**
    * The collection of templates
    */
   templates: IItemTemplate[];
+}
+
+/**
+ * Supplemental information about the solution, e.g., its default spatial reference
+ */
+export interface ISolutionItemDataParams {
+  /**
+   * Information about the default spatial reference for a solution item.
+   */
+  wkid: ISolutionItemDataWkidParams;
+}
+
+/**
+ * Information about the default spatial reference for a solution item.
+ */
+export interface ISolutionItemDataWkidParams {
+  /**
+   * A label for the wkid, e.g., "Spatial Reference".
+   */
+  label: string;
+
+  /**
+   * The default wkid, e.g., "102100"
+   */
+  default: string;
+
+  /**
+   * A value flag, e.g., "spatialReference"
+   */
+  valueType: string;
+
+  /**
+   * Attributes of the default spatial reference for a solution item.
+   */
+  attributes: ISolutionItemDataWkidAttrsParams;
+}
+
+/**
+ * Attributes of the default spatial reference for a solution item.
+ */
+export interface ISolutionItemDataWkidAttrsParams {
+  required: string;
 }
 
 /**
@@ -1377,6 +1391,8 @@ export interface ISourceFile {
    */
   filename: string;
 }
+
+export type TPossibleSourceFile = ISourceFile | undefined;
 
 /**
  *  Information for storing a resource in a storage item.
@@ -1618,7 +1634,7 @@ export interface IWebmapDependencies {
 /**
  * Results of sending a zip to an item.
  */
-export interface IZipCopyResults extends IZipInfo, ICopyResults { }
+export interface IZipCopyResults extends IZipInfo, ICopyResults {}
 
 /**
  * Information about a zipped file.
@@ -1656,6 +1672,21 @@ export interface IVelocityTitle {
 }
 
 /**
+ * Key info about Velocity subscription
+ */
+export interface IVelocityInfo {
+  /**
+   * The organizations velocity url
+   */
+  velocityUrl: string;
+
+  /**
+   * When true the organizations subscriptionInfo contains Velocity
+   */
+  hasVelocity: boolean;
+}
+
+/**
  * Relative path and string contents of a file in a zip object.
  */
 export interface IZipObjectContentItem {
@@ -1679,5 +1710,14 @@ export interface IDefaultSpatialReferenceAndExtent {
 }
 
 export type TZipObjectContent = string | Blob | File;
+
+/**
+ * Contains an array of templates that should use standard depolyment as well as
+ * templates that will leverage some specific handeling for workflow
+ */
+export interface IPreProcessWorkflowTemplatesResponse {
+  deployTemplates: IItemTemplate[];
+  workflowManagedTemplates: IItemTemplate[];
+}
 
 //#endregion ---------------------------------------------------------------------------------------------------------//

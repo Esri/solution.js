@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  IModel,
-  normalizeSolutionTemplateItem,
-  cloneObject,
-  propifyString,
-  createId
-} from "@esri/hub-common";
+import { IModel, normalizeSolutionTemplateItem, cloneObject, propifyString, createId } from "@esri/hub-common";
 
-import {
-  IItemTemplate,
-  createPlaceholderTemplate
-} from "@esri/solution-common";
-import { IItem } from "@esri/arcgis-rest-portal";
+import { IItem, IItemTemplate, createPlaceholderTemplate } from "@esri/solution-common";
 import { getWebExperienceDependencies } from "./get-web-experience-dependencies";
 
 /**
@@ -38,9 +28,7 @@ import { getWebExperienceDependencies } from "./get-web-experience-dependencies"
  * @param model
  * @param authentication
  */
-export function convertWebExperienceToTemplate(
-  model: IModel
-): Promise<IItemTemplate> {
+export function convertWebExperienceToTemplate(model: IModel): Promise<IItemTemplate> {
   const tmpl = createPlaceholderTemplate(model.item.id, model.item.type);
   tmpl.key = `${propifyString(model.item.title)}_${createId("i")}`;
 
@@ -61,9 +49,7 @@ export function convertWebExperienceToTemplate(
   // use typeKeyword to mark item as published (we decided to discard unpublished drafts)
   const typeKeywords = tmpl.item.typeKeywords;
   if (typeKeywords.indexOf(changedTypeKW) !== -1) {
-    tmpl.item.typeKeywords = [publishedTypeKW].concat(
-      tmpl.item.typeKeywords.filter(word => word !== changedTypeKW)
-    );
+    tmpl.item.typeKeywords = [publishedTypeKW].concat(tmpl.item.typeKeywords.filter((word) => word !== changedTypeKW));
   }
 
   tmpl.dependencies = getWebExperienceDependencies(model);

@@ -33,23 +33,19 @@ export function _upgradeTwoDotFour(model: ISolutionItem): ISolutionItem {
     const clone = cloneObject(model);
 
     // create the swaps for all the templates
-    const swaps = clone.data.templates.map(tmpl => {
+    const swaps = clone.data.templates.map((tmpl) => {
       return {
         src: `{{${tmpl.key}.item.id}}`,
-        val: `{{${tmpl.itemId}.itemId}}`
+        val: `{{${tmpl.itemId}.itemId}}`,
       };
     });
     // apply them all
-    swaps.forEach(swap => {
-      clone.data = deepStringReplace(
-        clone.data,
-        swap.src,
-        swap.val
-      ) as ISolutionItemData;
+    swaps.forEach((swap) => {
+      clone.data = deepStringReplace(clone.data, swap.src, swap.val) as ISolutionItemData;
     });
     // TODO: Unify Hub Solution Editor and Solution.js handling of resources
     // convert assets back to resources that include the templateId
-    clone.data.templates = clone.data.templates.map(tmpl => {
+    clone.data.templates = clone.data.templates.map((tmpl) => {
       if (tmpl.assets) {
         tmpl.resources = tmpl.assets.map((a: any) => {
           // asset names can be like thumbnail/filename.ext

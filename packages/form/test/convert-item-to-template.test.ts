@@ -29,34 +29,12 @@ describe("convertItemToTemplate", () => {
     MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
     template = templates.getItemTemplate("Form");
   });
-  it("should delegate to simple types template creation", done => {
-    const simpleTypesSpy = spyOn(
-      simpleTypes,
-      "convertItemToTemplate"
-    ).and.resolveTo(template);
+  it("should delegate to simple types template creation", async () => {
+    const simpleTypesSpy = spyOn(simpleTypes, "convertItemToTemplate").and.resolveTo(template);
     const formBase = mockItems.getAGOLItem("Form");
-    convertProcessor
-      .convertItemToTemplate(
-        formBase,
-        MOCK_USER_SESSION,
-        MOCK_USER_SESSION,
-        {}
-      )
-      .then(
-        results => {
-          expect(simpleTypesSpy.calls.count()).toBe(1);
-          expect(simpleTypesSpy.calls.first().args).toEqual([
-            formBase,
-            MOCK_USER_SESSION,
-            MOCK_USER_SESSION,
-            {}
-          ]);
-          expect(results).toEqual(template);
-          done();
-        },
-        e => {
-          done.fail(e);
-        }
-      );
+    const results = await convertProcessor.convertItemToTemplate(formBase, MOCK_USER_SESSION, MOCK_USER_SESSION, {});
+    expect(simpleTypesSpy.calls.count()).toBe(1);
+    expect(simpleTypesSpy.calls.first().args).toEqual([formBase, MOCK_USER_SESSION, MOCK_USER_SESSION, {}]);
+    expect(results).toEqual(template);
   });
 });

@@ -20,10 +20,8 @@
  * @module completeItem
  */
 
-import {
-  ICompleteItem,
-  UserSession
-} from "./interfaces";
+import { UserSession } from "./arcgisRestJS";
+import { ICompleteItem } from "./interfaces";
 import * as restHelpers from "./restHelpers";
 import * as restHelpersGet from "./restHelpersGet";
 import * as workflowHelpers from "./workflowHelpers";
@@ -37,42 +35,19 @@ import * as workflowHelpers from "./workflowHelpers";
  * @param authentication Credentials for the request
  * @returns Promise that will resolve with everything known about the item
  */
-export async function getCompleteItem(
-  itemId: string,
-  authentication: UserSession
-): Promise<ICompleteItem> {
+export async function getCompleteItem(itemId: string, authentication: UserSession): Promise<ICompleteItem> {
   const itemBase: any = await restHelpersGet.getItemBase(itemId, authentication);
 
   const responses = await Promise.all([
     restHelpersGet.getItemDataAsFile(itemId, itemBase.name, authentication),
-    restHelpersGet.getItemThumbnailAsFile(
-      itemId,
-      itemBase.thumbnail,
-      false,
-      authentication
-    ),
+    restHelpersGet.getItemThumbnailAsFile(itemId, itemBase.thumbnail, false, authentication),
     restHelpersGet.getItemMetadataAsFile(itemId, authentication),
     restHelpersGet.getItemResourcesFiles(itemId, authentication),
-    restHelpersGet.getItemRelatedItemsInSameDirection(
-      itemId,
-      "forward",
-      authentication
-    ),
-    restHelpersGet.getItemRelatedItemsInSameDirection(
-      itemId,
-      "reverse",
-      authentication
-    )
+    restHelpersGet.getItemRelatedItemsInSameDirection(itemId, "forward", authentication),
+    restHelpersGet.getItemRelatedItemsInSameDirection(itemId, "reverse", authentication),
   ]);
 
-  const [
-    itemData,
-    itemThumbnail,
-    itemMetadata,
-    itemResources,
-    itemFwdRelatedItems,
-    itemRevRelatedItems
-  ] = responses;
+  const [itemData, itemThumbnail, itemMetadata, itemResources, itemFwdRelatedItems, itemRevRelatedItems] = responses;
   // Summarize what we have
   // ----------------------
   // (itemBase: IItem)  text/plain JSON
@@ -89,24 +64,19 @@ export async function getCompleteItem(
     metadata: itemMetadata,
     resources: itemResources,
     fwdRelatedItems: itemFwdRelatedItems,
-    revRelatedItems: itemRevRelatedItems
+    revRelatedItems: itemRevRelatedItems,
   };
 
   if (itemBase.type === "Feature Service") {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    completeItem.featureServiceProperties = await restHelpers.getFeatureServiceProperties(
-      itemBase.url,
-      authentication
-    );
-
+    completeItem.featureServiceProperties = await restHelpers.getFeatureServiceProperties(itemBase.url, authentication);
   } else if (itemBase.type === "Workflow") {
-    const user = await restHelpersGet.getUser(authentication);
-    let server;
-    const portal = new URL(authentication.portal);
-    if (!portal.origin.endsWith(".arcgis.com") && !portal.origin.endsWith(".esri.com")) {
-      server = authentication.portal.replace("/sharing/rest", "");
-    }
-    const workflowConfigZip = await restHelpers.getWorkflowConfigurationZip(itemBase.id, authentication, user.orgId, server);
+    const workflowBaseUrl = await workflowHelpers.getWorkflowBaseURL(authentication);
+    const workflowConfigZip = await restHelpers.getWorkflowConfigurationZip(
+      itemBase.id,
+      workflowBaseUrl,
+      authentication,
+    );
     completeItem.workflowConfiguration = await workflowHelpers.extractWorkflowFromZipFile(workflowConfigZip);
   }
 

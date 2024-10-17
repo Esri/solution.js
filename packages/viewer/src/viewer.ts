@@ -31,10 +31,7 @@ import * as common from "@esri/solution-common";
  * @param authentication Credentials for the request to AGO
  * @returns List of results of checks of Solution
  */
-export function checkSolution(
-  itemId: string,
-  authentication: common.UserSession = null
-): Promise<string[]> {
+export function checkSolution(itemId: string, authentication: common.UserSession = null): Promise<string[]> {
   const resultsHtml: string[] = [`Item ${itemId}`];
   let item: common.ICompleteItem;
   let isTemplate = true;
@@ -61,9 +58,7 @@ export function checkSolution(
           isTemplate = false;
           resultsHtml.push(`&#x2714; item is a Deployed Solution`);
         } else {
-          throw new Error(
-            `item is neither a Template Solution nor a Deployed Solution`
-          );
+          throw new Error(`item is neither a Template Solution nor a Deployed Solution`);
         }
 
         // base: IItem; text/plain JSON
@@ -77,51 +72,29 @@ export function checkSolution(
       })
 
       // ---------- Check the Solution2Item relationship from a Deployed Solution to each deployed item --------------//
-      .then(itemDataJson => {
+      .then((itemDataJson) => {
         templateItems = itemDataJson?.templates;
         /* istanbul ignore else */
         if (!templateItems || templateItems.length === 0) {
-          throw new Error(
-            `Solution's data are not valid JSON or the Solution contains no items`
-          );
+          throw new Error(`Solution's data are not valid JSON or the Solution contains no items`);
         }
 
-        templateItemIds = templateItems
-          .map((template: common.IItemTemplate) => template.itemId)
-          .sort();
+        templateItemIds = templateItems.map((template: common.IItemTemplate) => template.itemId).sort();
 
         if (!isTemplate) {
           // Make sure that there's a Solution2Item relationship to each deployed item
           const fwdRelatedItemIds = item.fwdRelatedItems
-            .filter(
-              relationshipSet =>
-                relationshipSet.relationshipType === "Solution2Item"
-            )
-            .reduce(
-              (flatSet, relationshipSet) =>
-                flatSet.concat(relationshipSet.relatedItemIds),
-              []
-            )
+            .filter((relationshipSet) => relationshipSet.relationshipType === "Solution2Item")
+            .reduce((flatSet, relationshipSet) => flatSet.concat(relationshipSet.relatedItemIds), [])
             .sort();
           if (templateItemIds.length < fwdRelatedItemIds.length) {
-            resultsHtml.push(
-              "&#x2716; there are forward Solution2Item relationship(s) to unknown item(s)"
-            );
+            resultsHtml.push("&#x2716; there are forward Solution2Item relationship(s) to unknown item(s)");
           } else if (templateItemIds.length > fwdRelatedItemIds.length) {
-            resultsHtml.push(
-              "&#x2716; missing forward Solution2Item relationship(s)"
-            );
-          } else if (
-            JSON.stringify(templateItemIds) !==
-            JSON.stringify(fwdRelatedItemIds)
-          ) {
-            resultsHtml.push(
-              "&#x2716; mismatching forward Solution2Item relationship(s)"
-            );
+            resultsHtml.push("&#x2716; missing forward Solution2Item relationship(s)");
+          } else if (JSON.stringify(templateItemIds) !== JSON.stringify(fwdRelatedItemIds)) {
+            resultsHtml.push("&#x2716; mismatching forward Solution2Item relationship(s)");
           } else {
-            resultsHtml.push(
-              "&#x2714; matching forward Solution2Item relationship(s)"
-            );
+            resultsHtml.push("&#x2714; matching forward Solution2Item relationship(s)");
           }
         }
         return resultsHtml;
@@ -130,10 +103,7 @@ export function checkSolution(
       // ---------- Check that all dependency references are items in Solution ---------------------------------------//
       .then(() => {
         const dependencyIds = templateItems
-          .reduce(
-            (flatSet, template) => flatSet.concat(template.dependencies),
-            []
-          )
+          .reduce((flatSet, template) => flatSet.concat(template.dependencies), [])
           .reduce((noDupSet, dependency) => {
             /* istanbul ignore else */
             if (!noDupSet.includes(dependency)) noDupSet.push(dependency);
@@ -141,17 +111,12 @@ export function checkSolution(
           }, [])
           .sort();
 
-        const missingItems = dependencyIds.filter(
-          (dependencyId: string) => !templateItemIds.includes(dependencyId)
-        );
+        const missingItems = dependencyIds.filter((dependencyId: string) => !templateItemIds.includes(dependencyId));
 
         if (missingItems.length === 0) {
           resultsHtml.push("&#x2714; all dependencies are in Solution");
         } else {
-          resultsHtml.push(
-            "&#x2716; dependencies that aren't in Solution: " +
-              JSON.stringify(missingItems)
-          );
+          resultsHtml.push("&#x2716; dependencies that aren't in Solution: " + JSON.stringify(missingItems));
         }
 
         return resultsHtml;
@@ -163,7 +128,7 @@ export function checkSolution(
       })
 
       // ---------- Fatal error --------------------------------------------------------------------------------------//
-      .catch(error => {
+      .catch((error) => {
         resultsHtml.push(`&#x2716; error${currentAction}: ${error.message}`);
         return resultsHtml;
       })
@@ -179,11 +144,7 @@ export function checkSolution(
  * @returns True if objects are the same
  * @see Only comparable properties are compared; see deleteItemProps() in the `common` package
  */
-export function compareItems(
-  item1: any,
-  item2: any,
-  authentication: common.UserSession = null
-): Promise<boolean> {
+export function compareItems(item1: any, item2: any, authentication: common.UserSession = null): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     // If an input is a string, fetch the item; otherwise, clone the input because we will modify the
     // item base to remove incomparable properties
@@ -202,7 +163,7 @@ export function compareItems(
     }
 
     Promise.all([itemBaseDef1, itemBaseDef2]).then(
-      responses => {
+      (responses) => {
         const [itemBase1, itemBase2] = responses;
 
         common.deleteItemProps(itemBase1);
@@ -222,7 +183,7 @@ export function compareItems(
 
         resolve(common.compareJSONNoEmptyStrings(itemBase1, itemBase2));
       },
-      e => reject(e)
+      (e) => reject(e),
     );
   });
 }
@@ -233,9 +194,7 @@ export function compareItems(
  * @param templates Array of templates from a Solution
  * @returns List of top-level items, each containing a recursive list of its dependencies
  */
-export function getItemHierarchy(
-  templates: common.IItemTemplate[]
-): common.IHierarchyElement[] {
+export function getItemHierarchy(templates: common.IItemTemplate[]): common.IHierarchyElement[] {
   const hierarchy = [] as common.IHierarchyElement[];
 
   // Get the template specified by id out of a list of templates
@@ -252,7 +211,7 @@ export function getItemHierarchy(
     if (template) {
       const templateEntry = {
         id,
-        dependencies: [] as common.IHierarchyElement[]
+        dependencies: [] as common.IHierarchyElement[],
       };
 
       // Visit each dependency, but only if this template is not in the alreadyVisitedIds list to avoid infinite loops
@@ -260,17 +219,15 @@ export function getItemHierarchy(
         // Add dependency to alreadyVisitedIds list
         alreadyVisitedIds.push(id);
 
-        template.dependencies.forEach(
-          dependencyId => {
-            // Remove dependency from list of templates to visit in the top-level loop
-            const iDependencyTemplate = templateItemIds.indexOf(dependencyId);
-            if (iDependencyTemplate >= 0) {
-              templateItemIds.splice(iDependencyTemplate, 1);
-            }
-
-            traceItemId(dependencyId, templateEntry.dependencies, alreadyVisitedIds);
+        template.dependencies.forEach((dependencyId) => {
+          // Remove dependency from list of templates to visit in the top-level loop
+          const iDependencyTemplate = templateItemIds.indexOf(dependencyId);
+          if (iDependencyTemplate >= 0) {
+            templateItemIds.splice(iDependencyTemplate, 1);
           }
-        );
+
+          traceItemId(dependencyId, templateEntry.dependencies, alreadyVisitedIds);
+        });
       }
       accumulatedHierarchy.push(templateEntry);
     }
@@ -280,10 +237,10 @@ export function getItemHierarchy(
   let templateItemIds: string[] = _getTopLevelItemIds(templates);
 
   const otherItems: common.IItemTemplate[] = templates
-    .filter(template => templateItemIds.indexOf(template.itemId) < 0)  // only keep non-top-level nodes
-    .sort((a, b) => b.dependencies.length - a.dependencies.length);  // sort so that nodes with more dependencies come first--reduces stubs
+    .filter((template) => templateItemIds.indexOf(template.itemId) < 0) // only keep non-top-level nodes
+    .sort((a, b) => b.dependencies.length - a.dependencies.length); // sort so that nodes with more dependencies come first--reduces stubs
 
-  templateItemIds = templateItemIds.concat(otherItems.map(template => template.itemId));
+  templateItemIds = templateItemIds.concat(otherItems.map((template) => template.itemId));
 
   // Step through the list of nodes; we'll also remove nodes as we visit them
   let itemId = templateItemIds.shift();
@@ -304,11 +261,11 @@ export function getItemHierarchy(
  * @returns List of top-level item ids
  * @private
  */
-export function _getTopLevelItemIds(
-  templates: common.IItemTemplate[]
-): string[] {
+export function _getTopLevelItemIds(templates: common.IItemTemplate[]): string[] {
   // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-  const topLevelItemCandidateIds = templates.map(function (template) { return template.itemId; });
+  const topLevelItemCandidateIds = templates.map(function (template) {
+    return template.itemId;
+  });
 
   templates.forEach(function (template) {
     (template.dependencies || []).forEach(function (dependencyId) {
@@ -324,4 +281,4 @@ export function _getTopLevelItemIds(
   });
 
   return topLevelItemCandidateIds;
-};
+}

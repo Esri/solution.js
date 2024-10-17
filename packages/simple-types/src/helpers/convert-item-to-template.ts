@@ -22,8 +22,6 @@ import * as quickcapture from "../quickcapture";
 import * as webmap from "../webmap";
 import * as webmappingapplication from "../webmappingapplication";
 import * as workforce from "../workforce";
-import * as formHelpers from "./formHelpers";
-import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -41,27 +39,17 @@ export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: common.UserSession,
   srcAuthentication: common.UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Init template
-    const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(
-      itemInfo
-    );
+    const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(itemInfo);
 
     // Templatize item info property values
-    itemTemplate.item.id = common.templatizeTerm(
-      itemTemplate.item.id,
-      itemTemplate.item.id,
-      ".itemId"
-    );
+    itemTemplate.item.id = common.templatizeTerm(itemTemplate.item.id, itemTemplate.item.id, ".itemId");
 
     // Request related items
-    const relatedPromise = common.getItemRelatedItemsInSameDirection(
-      itemTemplate.itemId,
-      "forward",
-      srcAuthentication
-    );
+    const relatedPromise = common.getItemRelatedItemsInSameDirection(itemTemplate.itemId, "forward", srcAuthentication);
 
     // Perform type-specific handling
     let dataPromise = Promise.resolve({});
@@ -82,51 +70,40 @@ export function convertItemToTemplate(
       case "Web Mapping Application":
       case "Web Scene":
       case "Notebook":
-        dataPromise = new Promise(resolveJSON => {
+        dataPromise = new Promise((resolveJSON) => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          common
-            .getItemDataAsJson(itemTemplate.itemId, srcAuthentication)
-            .then(json => resolveJSON(json));
+          common.getItemDataAsJson(itemTemplate.itemId, srcAuthentication).then((json) => resolveJSON(json));
         });
         break;
       case "Form":
-        dataPromise = common.getItemDataAsFile(
-          itemTemplate.itemId,
-          itemTemplate.item.name,
-          srcAuthentication
-        );
+        dataPromise = common.getItemDataAsFile(itemTemplate.itemId, itemTemplate.item.name, srcAuthentication);
         break;
       case "QuickCapture Project":
         // Fetch all of the resources to get the config
-        resourcesPromise = common.getItemResourcesFiles(
-          itemTemplate.itemId,
-          srcAuthentication
-        );
+        resourcesPromise = common.getItemResourcesFiles(itemTemplate.itemId, srcAuthentication);
         break;
     }
 
     // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.all([dataPromise, relatedPromise, resourcesPromise]).then(responses => {
+    Promise.all([dataPromise, relatedPromise, resourcesPromise]).then((responses) => {
       const [itemDataResponse, relatedItemsResponse, resourcesResponse] = responses;
 
+      common.preProcessWebTool(itemTemplate, templateDictionary);
+
       // need to pre-process for velocity urls before they could be templatized by other processors
-      itemTemplate.data = common.updateVelocityReferences(
-        itemDataResponse,
-        itemInfo.type,
-        templateDictionary
-      );
+      itemTemplate.data = common.updateVelocityReferences(itemDataResponse, itemInfo.type, templateDictionary);
       const relationships = relatedItemsResponse;
 
       // Save the mappings to related items & add those items to the dependencies, but not WMA Code Attachments
       itemTemplate.dependencies = [] as string[];
       itemTemplate.relatedItems = [] as common.IRelatedItems[];
 
-      relationships.forEach(relationship => {
+      relationships.forEach((relationship) => {
         /* istanbul ignore else */
         if (relationship.relationshipType !== "WMA2Code") {
           itemTemplate.relatedItems.push(relationship);
-          relationship.relatedItemIds.forEach(relatedItemId => {
+          relationship.relatedItemIds.forEach((relatedItemId) => {
             if (itemTemplate.dependencies.indexOf(relatedItemId) < 0) {
               itemTemplate.dependencies.push(relatedItemId);
             }
@@ -145,69 +122,11 @@ export function convertItemToTemplate(
         case "Dashboard":
           dashboard.convertItemToTemplate(itemTemplate, templateDictionary);
           break;
-        case "Form":
-          // Store the form's data in the solution resources, not in template
-          itemTemplate.data = null;
-
-          // Add the form data to the template for a post-process resource upload
-          if (itemDataResponse) {
-            templateModifyingPromise = new Promise(
-              // eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
-              async (resolve) => {
-                let zipObject: JSZip = await common.blobToZipObject(itemDataResponse as File);
-
-                // Templatize the form's webhooks
-                const portal = await srcAuthentication.getPortal();
-                let sourceOrgUrl;
-                if (portal.urlKey) {
-                  sourceOrgUrl = `https://${portal.urlKey}.maps.arcgis.com`;
-                } else if (portal.portalHostname) {
-                  sourceOrgUrl = `https://${portal.portalHostname}`;
-                }
-                if (sourceOrgUrl) {
-                  zipObject = await formHelpers.templatizeFormWebHooks(zipObject, sourceOrgUrl);
-                }
-
-                itemTemplate.item.name = _getFormDataFilename(
-                  itemTemplate.item.name, (itemDataResponse as File).name, `${itemTemplate.itemId}.zip`
-                );
-                const templatizedFormData: File = await common.zipObjectToZipFile(zipObject, itemTemplate.item.name);
-
-                // Add the data file to the template so that it can be uploaded with the other resources in the solution
-                const storageName = common.convertItemResourceToStorageResource(
-                  itemTemplate.itemId,
-                  itemTemplate.item.name,
-                  common.SolutionTemplateFormatVersion,
-                  common.SolutionResourceType.data
-                );
-
-                const dataFile: common.ISourceFile = {
-                  itemId: itemTemplate.itemId,
-                  file: templatizedFormData,
-                  folder: storageName.folder,
-                  filename: itemTemplate.item.name
-                }
-                itemTemplate.dataFile = dataFile;
-
-                // Update the template's resources
-                itemTemplate.resources.push(
-                  storageName.folder + "/" + storageName.filename
-                );
-
-                resolve(itemTemplate);
-              }
-            );
-          }
-          break;
         case "Notebook":
-          notebook.convertNotebookToTemplate(itemTemplate);
+          templateModifyingPromise = notebook.convertNotebookToTemplate(itemTemplate);
           break;
         case "Oriented Imagery Catalog":
-          templateModifyingPromise = oic.convertItemToTemplate(
-            itemTemplate,
-            destAuthentication,
-            srcAuthentication
-          );
+          templateModifyingPromise = oic.convertItemToTemplate(itemTemplate, destAuthentication, srcAuthentication);
           break;
         case "QuickCapture Project":
           // Save all of the resources that we've fetched so as to not fetch them again
@@ -221,16 +140,14 @@ export function convertItemToTemplate(
               let qcProjectFile: File = null;
               let iQcProjectFile: number = -1;
               if (resourcesResponse) {
-                resourcesResponse.some(
-                  (file: File, i: number) => {
-                    const haveConfigFile = file.name === "qc.project.json";
-                    if (haveConfigFile) {
-                      qcProjectFile = file;
-                      iQcProjectFile = i;
-                    }
-                    return haveConfigFile;
+                resourcesResponse.some((file: File, i: number) => {
+                  const haveConfigFile = file.name === "qc.project.json";
+                  if (haveConfigFile) {
+                    qcProjectFile = file;
+                    iQcProjectFile = i;
                   }
-                );
+                  return haveConfigFile;
+                });
 
                 // Discard the qc.project.json file
                 if (iQcProjectFile >= 0) {
@@ -242,10 +159,10 @@ export function convertItemToTemplate(
               if (qcProjectFile) {
                 itemTemplate.data = {
                   application: {
-                    ...await common.blobToJson(qcProjectFile),
+                    ...(await common.blobToJson(qcProjectFile)),
                   },
-                  name: "qc.project.json"
-                }
+                  name: "qc.project.json",
+                };
               }
 
               // Save the basemap dependency
@@ -256,7 +173,7 @@ export function convertItemToTemplate(
               // Create the template
               const updatedTemplate = quickcapture.convertQuickCaptureToTemplate(itemTemplate);
               qcResolve(updatedTemplate);
-            }
+            },
           );
           break;
         case "Vector Tile Service":
@@ -266,7 +183,7 @@ export function convertItemToTemplate(
             itemTemplate,
             destAuthentication,
             srcAuthentication,
-            templateDictionary
+            templateDictionary,
           );
           break;
         case "Web Mapping Application":
@@ -275,7 +192,7 @@ export function convertItemToTemplate(
               itemTemplate,
               destAuthentication,
               srcAuthentication,
-              templateDictionary
+              templateDictionary,
             );
           }
           break;
@@ -284,15 +201,12 @@ export function convertItemToTemplate(
             itemTemplate,
             destAuthentication,
             srcAuthentication,
-            templateDictionary
+            templateDictionary,
           );
           break;
       }
 
-      templateModifyingPromise.then(
-        resolve,
-        err => reject(common.fail(err))
-      );
+      templateModifyingPromise.then(resolve, (err) => reject(common.fail(err)));
     });
   });
 }
@@ -303,45 +217,18 @@ export function convertItemToTemplate(
  * @param itemData Data Pipeline's data section
  * @return List of feature layer ids or an empty list if there are no sources or sinks in the pipeline
  */
-export function _getDataPipelineSourcesAndSinks(
-  itemData: any
-): string[] {
+export function _getDataPipelineSourcesAndSinks(itemData: any): string[] {
   const dependencies = [] as string[];
   const sourcesAndSinks = (itemData?.inputs ?? []).concat(itemData?.outputs ?? []);
 
-  sourcesAndSinks.forEach(
-    sourceOrSink => {
-      if (sourceOrSink.type === "FeatureServiceSource" || sourceOrSink.type === "FeatureServiceSink") {
-        const featureServiceId = common.getProp(sourceOrSink, "parameters.layer.value.itemId")
-        if (featureServiceId) {
-          dependencies.push(featureServiceId);
-        }
+  sourcesAndSinks.forEach((sourceOrSink) => {
+    if (sourceOrSink.type === "FeatureServiceSource" || sourceOrSink.type === "FeatureServiceSink") {
+      const featureServiceId = common.getProp(sourceOrSink, "parameters.layer.value.itemId");
+      if (featureServiceId) {
+        dependencies.push(featureServiceId);
       }
     }
-  );
+  });
 
   return dependencies;
-}
-
-/**
- * Encapsulates the rules for naming a form's data file.
- * Chooses the first parameter that's defined and is not the string "undefined".
- *
- * @param itemName Template's item name
- * @param dataFilename The data file name
- * @param itemIdAsName A name constructed from the template's id suffixed with ".zip"
- *
- * @return A name for the data file
- */
-export function _getFormDataFilename(
-  itemName: string,
-  dataFilename: string,
-  itemIdAsName: string
-): string {
-  const originalFilename = itemName || dataFilename;
-  const filename =
-    originalFilename && originalFilename !== "undefined"
-      ? originalFilename
-      : itemIdAsName;
-  return filename;
 }

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { UserSession } from "../arcgisRestJS";
 import { getItemResources } from "../restHelpersGet";
 import { generateSourceFilePaths } from "../resourceHelpers";
-import { IItemTemplate, ISourceFileCopyPath, UserSession } from "../interfaces";
+import { IItemTemplate, ISourceFileCopyPath } from "../interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -33,61 +34,64 @@ export function getItemResourcesPaths(
   itemTemplate: IItemTemplate,
   solutionItemId: string,
   authentication: UserSession,
-  storageVersion = 0
+  storageVersion = 0,
 ): Promise<ISourceFileCopyPath[]> {
   // get the resources for the item
-  return getItemResources(itemTemplate.itemId, authentication).then(
-    resourceResponse => {
-      // map out the resource names and filter for things we
-      // don't want transferred at this time
-      const itemResources = resourceResponse.resources
-        .map((r: any) => r.resource)
-        .filter((res: any) => {
-          let result = true;
-          // Certain types have resources that must be interpolated or removed and can not be
-          // directly copied, so they must be filtered out. Sub-optimal as it spreads
-          // type specific logic around the app, but until we refactor how resources
-          // are handled, this is necessary
+  return getItemResources(itemTemplate.itemId, authentication).then((resourceResponse) => {
+    // map out the resource names and filter for things we
+    // don't want transferred at this time
+    const itemResources = resourceResponse.resources
+      .map((r: any) => r.resource)
+      .filter((res: any) => {
+        let result = true;
+        // Certain types have resources that must be interpolated or removed and can not be
+        // directly copied, so they must be filtered out. Sub-optimal as it spreads
+        // type specific logic around the app, but until we refactor how resources
+        // are handled, this is necessary
 
-          // Hub Sites
-          if (itemTemplate.type === "Hub Site Application") {
-            if (res.match(/^draft-(\d+).json$/)) {
-              result = false;
-            }
+        // Hub Sites
+        if (itemTemplate.type === "Hub Site Application") {
+          if (res.match(/^draft-(\d+).json$/)) {
+            result = false;
           }
+        }
 
-          // Storymaps
-          if (itemTemplate.type === "StoryMap") {
-            if (["oembed.json", "oembed.xml"].indexOf(res) !== -1) {
-              result = false;
-            }
-            if (res.match(/^draft_[\s\S]*.json$/)) {
-              result = false;
-            }
-            if (res === "published_data.json") {
-              result = false;
-            }
+        // Storymaps
+        if (itemTemplate.type === "StoryMap") {
+          if (["oembed.json", "oembed.xml"].indexOf(res) !== -1) {
+            result = false;
           }
-
-          // Web Experiences
-          if (itemTemplate.type === "Web Experience") {
-            if (res === "config/config.json") {
-              result = false;
-            }
+          if (res.match(/^draft_[\s\S]*.json$/)) {
+            result = false;
           }
+          if (res === "published_data.json") {
+            result = false;
+          }
+        }
 
-          return result;
-        });
-      // create the filePaths
-      const resourceItemFilePaths: ISourceFileCopyPath[] = generateSourceFilePaths(
-        authentication.portal,
-        itemTemplate.itemId,
-        itemTemplate.item.thumbnail,
-        itemResources,
-        itemTemplate.type === "Group",
-        storageVersion
-      );
-      return Promise.resolve(resourceItemFilePaths);
-    }
-  );
+        // Web Experiences
+        if (itemTemplate.type === "Web Experience") {
+          if (res === "config/config.json") {
+            result = false;
+          }
+        }
+
+        // GP Services
+        if (itemTemplate.type === "Geoprocessing Service") {
+          return res.indexOf("webtool") > -1;
+        }
+
+        return result;
+      });
+    // create the filePaths
+    const resourceItemFilePaths: ISourceFileCopyPath[] = generateSourceFilePaths(
+      authentication.portal,
+      itemTemplate.itemId,
+      itemTemplate.item.thumbnail,
+      itemResources,
+      itemTemplate.type === "Group",
+      storageVersion,
+    );
+    return Promise.resolve(resourceItemFilePaths);
+  });
 }

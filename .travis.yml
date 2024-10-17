@@ -2,7 +2,7 @@ os: linux
 dist: jammy
 language: node_js
 node_js:
-  - 18
+  - 22
 cache: npm
 before_install:
   - npm update

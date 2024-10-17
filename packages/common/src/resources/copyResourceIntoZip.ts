@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  IAssociatedFileCopyResults,
-  IAssociatedFileInfo,
-  ISourceFile,
-  IZipInfo,
-  UserSession
-} from "../interfaces";
+import { UserSession } from "../arcgisRestJS";
+import { IAssociatedFileCopyResults, IAssociatedFileInfo, ISourceFile, IZipInfo } from "../interfaces";
 import { createCopyResults } from "./createCopyResults";
 import { getBlobAsFile } from "../restHelpersGet";
 
@@ -33,15 +28,10 @@ import { getBlobAsFile } from "../restHelpersGet";
  * @param zipInfo Information about a zipfile such as its name and its zip object
  * @returns The result of the copy
  */
-export function copyResourceIntoZip(
-  file: ISourceFile,
-  zipInfo: IZipInfo
-): IAssociatedFileCopyResults {
+export function copyResourceIntoZip(file: ISourceFile, zipInfo: IZipInfo): IAssociatedFileCopyResults {
   // Add it to the zip
   if (file.folder) {
-    zipInfo.zip
-      .folder(file.folder)
-      .file(file.filename, file.file, { binary: true });
+    zipInfo.zip.folder(file.folder).file(file.filename, file.file, { binary: true });
   } else {
     zipInfo.zip.file(file.filename, file.file, { binary: true });
   }
@@ -60,9 +50,9 @@ export function copyResourceIntoZip(
 export function copyResourceIntoZipFromInfo(
   fileInfo: IAssociatedFileInfo,
   sourceAuthentication: UserSession,
-  zipInfo: IZipInfo
+  zipInfo: IZipInfo,
 ): Promise<IAssociatedFileCopyResults> {
-  return new Promise<IAssociatedFileCopyResults>(resolve => {
+  return new Promise<IAssociatedFileCopyResults>((resolve) => {
     let filePromise: Promise<any>;
     if (fileInfo.file) {
       filePromise = Promise.resolve(fileInfo.file);
@@ -74,22 +64,18 @@ export function copyResourceIntoZipFromInfo(
       (file: any) => {
         // And add it to the zip
         if (fileInfo.folder) {
-          zipInfo.zip
-            .folder(fileInfo.folder)
-            .file(fileInfo.filename, file, { binary: true });
+          zipInfo.zip.folder(fileInfo.folder).file(fileInfo.filename, file, { binary: true });
         } else {
           zipInfo.zip.file(fileInfo.filename, file, { binary: true });
         }
         zipInfo.filelist.push(fileInfo);
-        resolve(
-          createCopyResults(fileInfo, true) as IAssociatedFileCopyResults
-        );
+        resolve(createCopyResults(fileInfo, true) as IAssociatedFileCopyResults);
       },
       () =>
         resolve(
           // unable to get resource
-          createCopyResults(fileInfo, false) as IAssociatedFileCopyResults
-        )
+          createCopyResults(fileInfo, false) as IAssociatedFileCopyResults,
+        ),
     );
   });
 }

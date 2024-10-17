@@ -38,43 +38,44 @@ export async function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: common.UserSession,
   srcAuthentication: common.UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<common.IItemTemplate> {
   // Init template
-  const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(
-    itemInfo
-  );
-  itemTemplate.estimatedDeploymentCostFactor = 20;  // creating a workflow item can be really slow
+  const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(itemInfo);
+  itemTemplate.estimatedDeploymentCostFactor = 20; // creating a workflow item can be really slow
 
   // Templatize item info property values
-  itemTemplate.item.id = common.templatizeTerm(
-    itemTemplate.item.id,
-    itemTemplate.item.id,
-    ".itemId"
-  );
+  itemTemplate.item.id = common.templatizeTerm(itemTemplate.item.id, itemTemplate.item.id, ".itemId");
 
   // Request related items
-  const relatedPromise = common.getItemRelatedItemsInSameDirection(
-    itemTemplate.itemId,
-    "forward",
-    srcAuthentication
-  );
+  const relatedPromise = common.getItemRelatedItemsInSameDirection(itemTemplate.itemId, "forward", srcAuthentication);
 
   // Request its configuration
-  const configPromise = common.getWorkflowConfigurationZip(itemInfo.id, srcAuthentication,
-    templateDictionary.orgId, templateDictionary.workflowURL);
+  const configPromise = common.getWorkflowConfigurationZip(
+    itemInfo.id,
+    templateDictionary.workflowBaseUrl,
+    srcAuthentication,
+  );
 
-  const [relatedItems, configZip] = await Promise.all([relatedPromise, configPromise]);
+  // Request its data
+  const dataPromise = common.getItemDataAsJson(itemInfo.id, srcAuthentication);
+
+  const [relatedItems, configZip, data] = await Promise.all([relatedPromise, configPromise, dataPromise]);
+
+  itemTemplate.data = data;
 
   // Save the mappings to related items & add those items to the dependencies, but not WMA Code Attachments
   itemTemplate.dependencies = [] as string[];
   itemTemplate.relatedItems = [] as common.IRelatedItems[];
 
-  relatedItems.forEach(relatedItem => {
+  // get the dependencies listed in the workflow items data
+  common.getWorkflowDependencies(itemTemplate);
+
+  relatedItems.forEach((relatedItem) => {
     /* istanbul ignore else */
     if (relatedItem.relationshipType !== "WMA2Code") {
       itemTemplate.relatedItems.push(relatedItem);
-      relatedItem.relatedItemIds.forEach(relatedItemId => {
+      relatedItem.relatedItemIds.forEach((relatedItemId) => {
         if (itemTemplate.dependencies.indexOf(relatedItemId) < 0) {
           itemTemplate.dependencies.push(relatedItemId);
         }
@@ -82,7 +83,7 @@ export async function convertItemToTemplate(
     }
   });
 
-  // Add the templatized configuration to the template
+  // Add the configuration to the template
   itemTemplate.properties.configuration = await common.extractWorkflowFromZipFile(configZip);
 
   return Promise.resolve(itemTemplate);
@@ -102,30 +103,19 @@ export async function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  itemProgressCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback,
 ): Promise<common.ICreateItemFromTemplateResponse> {
   // Interrupt process if progress callback returns `false`
-  if (
-    !itemProgressCallback(
-      template.itemId,
-      common.EItemProgressStatus.Started,
-      0
-    )
-  ) {
-    itemProgressCallback(
-      template.itemId,
-      common.EItemProgressStatus.Ignored,
-      0
-    );
+  if (!itemProgressCallback(template.itemId, common.EItemProgressStatus.Started, 0)) {
+    itemProgressCallback(template.itemId, common.EItemProgressStatus.Ignored, 0);
     return Promise.resolve(common.generateEmptyCreationResponse(template.type));
   }
 
+  template.data = {};
+
   // Replace the templatized symbols in a copy of the template
   let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
-  newItemTemplate = common.replaceInTemplate(
-    newItemTemplate,
-    templateDictionary
-  );
+  newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
   /* istanbul ignore else */
   if (template.item.thumbnail) {
     newItemTemplate.item.thumbnail = template.item.thumbnail;
@@ -133,7 +123,10 @@ export async function createItemFromTemplate(
 
   try {
     const createdWorkflowItemId = await workflowHelpers.addWorkflowItem(
-      newItemTemplate, destinationAuthentication, templateDictionary.orgId, templateDictionary.workflowURL);
+      newItemTemplate,
+      templateDictionary.workflowBaseUrl,
+      destinationAuthentication,
+    );
     if (!createdWorkflowItemId) {
       throw new Error("Failed to create workflow item");
     }
@@ -144,14 +137,10 @@ export async function createItemFromTemplate(
         template.itemId,
         common.EItemProgressStatus.Created,
         template.estimatedDeploymentCostFactor / 2,
-        createdWorkflowItemId
+        createdWorkflowItemId,
       )
     ) {
-      itemProgressCallback(
-        template.itemId,
-        common.EItemProgressStatus.Cancelled,
-        0
-      );
+      itemProgressCallback(template.itemId, common.EItemProgressStatus.Cancelled, 0);
 
       void common.removeItem(createdWorkflowItemId, destinationAuthentication);
       return Promise.resolve(common.generateEmptyCreationResponse(template.type));
@@ -160,17 +149,30 @@ export async function createItemFromTemplate(
     // Add the new item to the settings
     newItemTemplate.itemId = newItemTemplate.item.id = createdWorkflowItemId;
     templateDictionary[template.itemId] = {
-      itemId: createdWorkflowItemId
+      itemId: createdWorkflowItemId,
     };
+
+    await workflowHelpers.updateTemplateDictionaryForWorkflow(
+      template.itemId,
+      createdWorkflowItemId,
+      templateDictionary,
+      destinationAuthentication,
+    );
 
     // Detempletize the workflow configuration
     newItemTemplate.properties.configuration = common.replaceInTemplate(
-      newItemTemplate.properties.configuration, templateDictionary);
+      newItemTemplate.properties.configuration,
+      templateDictionary,
+    );
 
     // Add the item's configuration properties; throw if the configuration update fails
     const configZipFile = await common.compressWorkflowIntoZipFile(newItemTemplate.properties.configuration);
-    await common.setWorkflowConfigurationZip(configZipFile, createdWorkflowItemId, destinationAuthentication,
-      templateDictionary.orgId, templateDictionary.workflowURL);
+    await common.setWorkflowConfigurationZip(
+      createdWorkflowItemId,
+      configZipFile,
+      templateDictionary.workflowBaseUrl,
+      destinationAuthentication,
+    );
 
     // Fetch the auxiliary items
     const itemIds = await workflowHelpers.fetchAuxiliaryItems(createdWorkflowItemId, destinationAuthentication);
@@ -178,7 +180,7 @@ export async function createItemFromTemplate(
     // Move the workflow and auxiliary items to the destination
     itemIds.push(createdWorkflowItemId);
     const moveResults = await common.moveItemsToFolder(itemIds, templateDictionary.folderId, destinationAuthentication);
-    const hasFailure = moveResults.some(result => {
+    const hasFailure = moveResults.some((result) => {
       return !result.success;
     });
     if (hasFailure) {
@@ -189,21 +191,17 @@ export async function createItemFromTemplate(
       template.itemId,
       common.EItemProgressStatus.Finished,
       template.estimatedDeploymentCostFactor / 2,
-      createdWorkflowItemId
+      createdWorkflowItemId,
     );
 
     return Promise.resolve({
       item: newItemTemplate,
       id: createdWorkflowItemId,
       type: newItemTemplate.type,
-      postProcess: false
+      postProcess: false,
     });
   } catch (err) {
-    itemProgressCallback(
-      template.itemId,
-      common.EItemProgressStatus.Failed,
-      0
-    );
+    itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
     return Promise.resolve(common.generateEmptyCreationResponse(template.type));
   }
 }

@@ -17,40 +17,37 @@
 import * as hubCommon from "@esri/hub-common";
 import * as hubSites from "@esri/hub-sites";
 import * as postProcessPageModule from "../../src/helpers/_post-process-page";
-import { IUpdateItemResponse } from "@esri/arcgis-rest-portal";
+import { IUpdateItemResponse } from "../../../common/src/arcgisRestJS";
 
 describe("_postProcessPage :: ", () => {
   let model: hubCommon.IModel;
+
   beforeEach(() => {
     model = {
       item: {
         id: "3ef",
         properties: {
-          chk: "{{bc66.itemId}}"
-        }
+          chk: "{{bc66.itemId}}",
+        },
       },
-      data: {}
+      data: {},
     } as hubCommon.IModel;
   });
+
   it("does second-pass interpolatin", () => {
     const fakeRo = {} as hubCommon.IHubUserRequestOptions;
-    const updatePageSpy = spyOn(hubSites, "updatePage").and.resolveTo(
-      {} as IUpdateItemResponse
-    );
-    return postProcessPageModule
-      ._postProcessPage(model, [], { bc66: { itemId: "ef66" } }, fakeRo)
-      .then(result => {
-        expect(result).toBe(true, "should return true");
-        expect(updatePageSpy.calls.count()).toBe(1, "should update the site");
-        const updateModel = updatePageSpy.calls.argsFor(0)[0];
-        expect(updateModel.item.properties.chk).toBe(
-          "ef66",
-          "it should do a second pass interpolation before updating"
-        );
-        expect(updatePageSpy.calls.argsFor(0)[1]).toEqual({
-          ...fakeRo,
-          allowList: []
-        });
+    const updatePageSpy = spyOn(hubSites, "updatePage").and.resolveTo({} as IUpdateItemResponse);
+    return postProcessPageModule._postProcessPage(model, [], { bc66: { itemId: "ef66" } }, fakeRo).then((result) => {
+      expect(result).withContext("should return true").toBe(true);
+      expect(updatePageSpy.calls.count()).withContext("should update the site").toBe(1);
+      const updateModel = updatePageSpy.calls.argsFor(0)[0];
+      expect(updateModel.item.properties.chk)
+        .withContext("it should do a second pass interpolation before updating")
+        .toBe("ef66");
+      expect(updatePageSpy.calls.argsFor(0)[1]).toEqual({
+        ...fakeRo,
+        allowList: [],
       });
+    });
   });
 });

@@ -18,21 +18,19 @@
  * Provides tests for common functions involving the management of item and group resources.
  */
 
+import { IItemResourceResponse, UserSession, ArcGISAuthError } from "../src/arcgisRestJS";
+import * as arcgisRestJS from "../src/arcgisRestJS";
 import * as interfaces from "../src/interfaces";
-import * as portal from "@esri/arcgis-rest-portal";
-import * as request from "@esri/arcgis-rest-request";
 import * as resourceHelpers from "../src/resourceHelpers";
 
-import * as staticRelatedItemsMocks from "./mocks/staticRelatedItemsMocks";
-import * as templates from "./mocks/templates";
 import * as utils from "./mocks/utils";
-import * as mockItems from "./mocks/agolItems";
-import * as fetchMock from "fetch-mock";
-import * as addResourceFromBlobModule from "../src/resources/add-resource-from-blob";
+const fetchMock = require("fetch-mock");
+import * as addResourceModule from "../src/resources/add-resource";
+import * as updateResourceModule from "../src/resources/update-resource";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -45,7 +43,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     soapUrl: "http://server/arcgis/services",
     secureSoapUrl: "https://server/arcgis/services",
     owningSystemUrl: "https://myorg.maps.arcgis.com",
-    authInfo: {}
+    authInfo: {},
   };
 
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
@@ -54,133 +52,236 @@ describe("Module `resourceHelpers`: common functions involving the management of
     fetchMock.restore();
   });
 
-  describe("addResourceFromBlob", () => {
-    it("has filename without folder", done => {
+  describe("addBlobResource", () => {
+    it("has filename without folder", async () => {
       const blob = utils.getSampleMetadataAsBlob();
       const itemId = "itm1234567890";
       const folder = "";
       const filename = "aFilename.xml";
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/addResources";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/addResources";
       const expected = { success: true, id: itemId };
 
       fetchMock.post(updateUrl, expected);
-      addResourceFromBlobModule
-        .addResourceFromBlob(blob, itemId, folder, filename, MOCK_USER_SESSION)
-        .then((response: any) => {
-          expect(response).toEqual(expected);
-          const options: fetchMock.MockOptions = fetchMock.lastOptions(
-            updateUrl
-          );
-          const fetchBody = (options as fetchMock.MockResponseObject).body;
-          expect(typeof fetchBody).toEqual("object");
-          const form = fetchBody as FormData;
-          expect(form.get("fileName")).toEqual(filename);
-          done();
-        }, done.fail);
+
+      const response: any = await addResourceModule.addBlobResource(blob, itemId, folder, filename, MOCK_USER_SESSION);
+      expect(response).toEqual(expected);
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
+      expect(typeof fetchBody).toEqual("object");
+      const form = fetchBody as FormData;
+      expect(form.get("fileName")).toEqual(filename);
     });
 
-    it("has a filename without an extension", done => {
+    it("has a filename without an extension", async () => {
       const blob = utils.getSampleMetadataAsBlob();
       const itemId = "itm1234567890";
       const folder = "aFolder";
       const filename = "aFilename";
-      const expected = new request.ArcGISAuthError(
-        "Filename must have an extension indicating its type"
-      );
+      const expected = new ArcGISAuthError("Filename must have an extension indicating its type");
 
-      addResourceFromBlobModule
-        .addResourceFromBlob(blob, itemId, folder, filename, MOCK_USER_SESSION)
-        .then(
-          () => done.fail(),
-          (response: any) => {
-            expect(response).toEqual(expected);
-            done();
-          }
-        );
+      return addResourceModule.addBlobResource(blob, itemId, folder, filename, MOCK_USER_SESSION).then(
+        () => fail(),
+        (response: any) => {
+          expect(response).toEqual(expected);
+          return Promise.resolve();
+        },
+      );
     });
 
-    it("has filename with folder", done => {
+    it("has filename with folder", async () => {
       const blob = utils.getSampleMetadataAsBlob();
       const itemId = "itm1234567890";
       const folder = "aFolder";
       const filename = "aFilename.xml";
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/addResources";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/addResources";
       const expected = { success: true, id: itemId };
 
       fetchMock.post(updateUrl, expected);
-      addResourceFromBlobModule
-        .addResourceFromBlob(blob, itemId, folder, filename, MOCK_USER_SESSION)
-        .then((response: any) => {
+
+      const response: any = await addResourceModule.addBlobResource(blob, itemId, folder, filename, MOCK_USER_SESSION);
+      expect(response).toEqual(expected);
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
+      expect(typeof fetchBody).toEqual("object");
+      const form = fetchBody as FormData;
+      expect(form.get("resourcesPrefix")).toEqual(folder);
+      expect(form.get("fileName")).toEqual(filename);
+    });
+  });
+
+  describe("addTextResource", () => {
+    it("has filename without folder", async () => {
+      const content = "abcdefghijklmnopqrstuvwxyz";
+      const itemId = "itm1234567890";
+      const folder = "";
+      const filename = "aFilename.text";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/addResources";
+      const expected = { success: true, id: itemId };
+
+      fetchMock.post(updateUrl, expected);
+
+      const response: any = await addResourceModule.addTextResource(
+        content,
+        itemId,
+        folder,
+        filename,
+        MOCK_USER_SESSION,
+      );
+      expect(response).toEqual(expected);
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
+      expect(typeof fetchBody).toEqual("string");
+      expect(fetchBody).toEqual(
+        "f=json&fileName=aFilename.text&text=abcdefghijklmnopqrstuvwxyz&access=inherit&token=fake-token",
+      );
+    });
+
+    it("has a filename without an extension", async () => {
+      const content = "";
+      const itemId = "itm1234567890";
+      const folder = "aFolder";
+      const filename = "aFilename";
+      const expected = new ArcGISAuthError("Filename must have an extension indicating its type");
+
+      return addResourceModule.addTextResource(content, itemId, folder, filename, MOCK_USER_SESSION).then(
+        () => fail(),
+        (response: any) => {
           expect(response).toEqual(expected);
-          const options: fetchMock.MockOptions = fetchMock.lastOptions(
-            updateUrl
-          );
-          const fetchBody = (options as fetchMock.MockResponseObject).body;
-          expect(typeof fetchBody).toEqual("object");
-          const form = fetchBody as FormData;
-          expect(form.get("resourcesPrefix")).toEqual(folder);
-          expect(form.get("fileName")).toEqual(filename);
-          done();
-        }, done.fail);
+          return Promise.resolve();
+        },
+      );
+    });
+
+    it("has filename with folder", async () => {
+      const content = JSON.stringify({ a: 1, b: 2, c: 3 });
+      const itemId = "itm1234567890";
+      const folder = "aFolder";
+      const filename = "aFilename.json";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/addResources";
+      const expected = { success: true, id: itemId };
+
+      fetchMock.post(updateUrl, expected);
+
+      const response: any = await addResourceModule.addTextResource(
+        content,
+        itemId,
+        folder,
+        filename,
+        MOCK_USER_SESSION,
+      );
+      expect(response).toEqual(expected);
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
+      expect(typeof fetchBody).toEqual("string");
+      expect(fetchBody).toEqual(
+        "f=json&fileName=aFilename.json&resourcesPrefix=aFolder&text=%7B%22a%22%3A1%2C%22b%22%3A2%2C%22c%22%3A3%7D&access=inherit&token=fake-token",
+      );
+    });
+  });
+
+  describe("updateResourceModule", () => {
+    it("has filename without folder", async () => {
+      const content = "abcdefghijklmnopqrstuvwxyz";
+      const itemId = "itm1234567890";
+      const folder = "";
+      const filename = "aFilename.text";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/updateResources";
+      const expected = { success: true, id: itemId };
+
+      fetchMock.post(updateUrl, expected);
+
+      const response: any = await updateResourceModule.updateTextResource(
+        content,
+        itemId,
+        folder,
+        filename,
+        MOCK_USER_SESSION,
+      );
+      expect(response).toEqual(expected);
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
+      expect(typeof fetchBody).toEqual("object");
+      const form = fetchBody as FormData;
+      expect(form.get("resourcesPrefix")).toBeNull();
+      expect(form.get("fileName")).toEqual(filename);
+    });
+
+    it("has a filename without an extension", async () => {
+      const content = "";
+      const itemId = "itm1234567890";
+      const folder = "aFolder";
+      const filename = "aFilename";
+      const expected = new ArcGISAuthError("Filename must have an extension indicating its type");
+
+      return updateResourceModule.updateTextResource(content, itemId, folder, filename, MOCK_USER_SESSION).then(
+        () => fail(),
+        (response: any) => {
+          expect(response).toEqual(expected);
+          return Promise.resolve();
+        },
+      );
+    });
+
+    it("has filename with folder", async () => {
+      const content = JSON.stringify({ a: 1, b: 2, c: 3 });
+      const itemId = "itm1234567890";
+      const folder = "aFolder";
+      const filename = "aFilename.json";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/updateResources";
+      const expected = { success: true, id: itemId };
+
+      fetchMock.post(updateUrl, expected);
+
+      const response: any = await updateResourceModule.updateTextResource(
+        content,
+        itemId,
+        folder,
+        filename,
+        MOCK_USER_SESSION,
+      );
+      expect(response).toEqual(expected);
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
+      expect(typeof fetchBody).toEqual("object");
+      const form = fetchBody as FormData;
+      expect(form.get("resourcesPrefix")).toEqual(folder);
+      expect(form.get("fileName")).toEqual(filename);
     });
   });
 
   describe("addThumbnailFromBlob", () => {
-    it("gets an item's thumbnail from a blob", done => {
+    it("gets an item's thumbnail from a blob", async () => {
       const blob = utils.getSampleImageAsBlob();
       const itemId = "itm1234567890";
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/update";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/update";
       const expected = utils.getSuccessResponse({ id: itemId });
-      const serverInfoUrl: string =
-        "https://myserver/images/thumbnail.png/rest/info";
+      const serverInfoUrl: string = "https://myserver/images/thumbnail.png/rest/info";
       const expectedServerInfo = SERVER_INFO;
 
-      fetchMock
-        .post(updateUrl, expected)
-        .post(serverInfoUrl, expectedServerInfo);
-      resourceHelpers
-        .addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION)
-        .then((response: any) => {
-          expect(response).toEqual(expected);
-          const options: fetchMock.MockOptions = fetchMock.lastOptions(
-            updateUrl
-          );
-          const fetchBody = (options as fetchMock.MockResponseObject).body;
-          expect(typeof fetchBody).toEqual("object");
-          done();
-        }, done.fail);
+      fetchMock.post(updateUrl, expected).post(serverInfoUrl, expectedServerInfo);
+
+      const response: any = await resourceHelpers.addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION);
+      expect(response).toEqual(expected);
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
+      expect(typeof fetchBody).toEqual("object");
     });
 
-    it("gets a group's thumbnail from a blob", done => {
+    it("gets a group's thumbnail from a blob", async () => {
       const blob = utils.getSampleImageAsBlob();
       const itemId = "grp1234567890";
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/update";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/update";
       const expected = utils.getSuccessResponse({ id: itemId });
-      const serverInfoUrl: string =
-        "https://myserver/images/thumbnail.png/rest/info";
+      const serverInfoUrl: string = "https://myserver/images/thumbnail.png/rest/info";
       const expectedServerInfo = SERVER_INFO;
 
-      fetchMock
-        .post(updateUrl, expected)
-        .post(serverInfoUrl, expectedServerInfo);
-      resourceHelpers
-        .addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION, true)
-        .then((response: any) => {
-          expect(response).toEqual(expected);
-          const options: fetchMock.MockOptions = fetchMock.lastOptions(
-            updateUrl
-          );
-          const fetchBody = (options as fetchMock.MockResponseObject).body;
-          expect(typeof fetchBody).toEqual("object");
-          done();
-        }, done.fail);
+      fetchMock.post(updateUrl, expected).post(serverInfoUrl, expectedServerInfo);
+
+      const response: any = await resourceHelpers.addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION, true);
+      expect(response).toEqual(expected);
+      const options: any = fetchMock.lastOptions(updateUrl);
+      const fetchBody = options.body;
+      expect(typeof fetchBody).toEqual("object");
     });
   });
 
@@ -192,7 +293,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
       const convertedBlob: interfaces.IFileMimeTyped = resourceHelpers.convertBlobToSupportableResource(
         blob,
-        "alternateName.txt"
+        "alternateName.txt",
       );
       expect((convertedBlob.blob as File).name).toEqual("namedBlob.txt");
       expect(convertedBlob.filename).toEqual("namedBlob.txt");
@@ -206,7 +307,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
       const convertedBlob: interfaces.IFileMimeTyped = resourceHelpers.convertBlobToSupportableResource(
         blob,
-        "alternateName.txt"
+        "alternateName.txt",
       );
       expect((convertedBlob.blob as File).name).toEqual("alternateName.txt");
       expect(convertedBlob.filename).toEqual("alternateName.txt");
@@ -218,9 +319,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(blob.name).toEqual("");
       expect(blob.type).toEqual("text/plain");
 
-      const convertedBlob: interfaces.IFileMimeTyped = resourceHelpers.convertBlobToSupportableResource(
-        blob
-      );
+      const convertedBlob: interfaces.IFileMimeTyped = resourceHelpers.convertBlobToSupportableResource(blob);
       expect((convertedBlob.blob as File).name).toEqual("");
       expect(convertedBlob.filename).toEqual("");
       expect(convertedBlob.mimeType).toEqual("text/plain");
@@ -233,7 +332,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
       const convertedBlob: interfaces.IFileMimeTyped = resourceHelpers.convertBlobToSupportableResource(
         blob,
-        "alternateName.pkg"
+        "alternateName.pkg",
       );
       expect((convertedBlob.blob as File).name).toEqual("namedBlob.pkg.zip");
       expect(convertedBlob.filename).toEqual("namedBlob.pkg");
@@ -247,392 +346,337 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
       const convertedBlob: interfaces.IFileMimeTyped = resourceHelpers.convertBlobToSupportableResource(
         blob,
-        "alternateName.pkg"
+        "alternateName.pkg",
       );
-      expect((convertedBlob.blob as File).name).toEqual(
-        "alternateName.pkg.zip"
-      );
+      expect((convertedBlob.blob as File).name).toEqual("alternateName.pkg.zip");
       expect(convertedBlob.filename).toEqual("alternateName.pkg");
       expect(convertedBlob.mimeType).toEqual("text/plain");
     });
   });
 
   describe("copyFilesFromStorageItem", () => {
-    it("handles an empty files list", done => {
+    it("handles an empty files list", async () => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [] as interfaces.IDeployFileCopyPath[];
-      const sourceItemId = "sln1234567890;"
+      const sourceItemId = "sln1234567890;";
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
       const expected = true;
 
-      resourceHelpers
-        .copyFilesFromStorageItem(
-          storageAuthentication,
-          filePaths,
-          sourceItemId,
-          null,
-          destinationItemId,
-          destinationAuthentication
-        )
-        .then((response: any) => {
-          expect(response).toEqual(expected);
-          done();
-        }, done.fail);
+      const response: any = await resourceHelpers.copyFilesFromStorageItem(
+        storageAuthentication,
+        filePaths,
+        sourceItemId,
+        "",
+        destinationItemId,
+        destinationAuthentication,
+      );
+      expect(response).toEqual(expected);
     });
 
-    it("remaps hub files", done => {
+    it("remaps hub files", async () => {
       const storageAuthentication = MOCK_USER_SESSION;
-      const sourceItemId = "sln1234567890;"
+      const sourceItemId = "sln1234567890;";
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
           type: interfaces.EFileType.Resource,
           folder: "",
           filename: "bc3-storageFilename.png",
-          url: "https://myserver/images/bc3-storageFilename.png"
-        }
+          url: "https://myserver/images/bc3-storageFilename.png",
+        },
       ];
       const tmpl = { itemId: "bc3" };
       // Spies
-      const resourceHelpersSpy = spyOn(
-        resourceHelpers,
-        "copyFilesFromStorageItem"
-      ).and.resolveTo(true);
-      resourceHelpers
-        .copyFilesFromStorageItem(
-          storageAuthentication,
-          filePaths,
-          sourceItemId,
-          null,
-          "3ef",
-          storageAuthentication,
-          tmpl
-        )
-        .then(resp => {
-          expect(resourceHelpersSpy.calls.count()).toBe(
-            1,
-            "should call copyFilesFromStorageItem once"
-          );
-          const secondArg = resourceHelpersSpy.calls.argsFor(0)[1];
-          expect(secondArg[0].url).toBe(
-            filePaths[0].url,
-            "url 0 should be the same"
-          );
-          done();
-        })
-        .catch(ex => {
-          done.fail(ex);
-        });
+      const resourceHelpersSpy = spyOn(resourceHelpers, "copyFilesFromStorageItem").and.resolveTo(true);
+
+      await resourceHelpers.copyFilesFromStorageItem(
+        storageAuthentication,
+        filePaths,
+        sourceItemId,
+        "",
+        "3ef",
+        storageAuthentication,
+        tmpl,
+      );
+      expect(resourceHelpersSpy.calls.count()).withContext("should call copyFilesFromStorageItem once").toBe(1);
+      const secondArg = resourceHelpersSpy.calls.argsFor(0)[1];
+      expect(secondArg[0].url).withContext("url 0 should be the same").toBe(filePaths[0].url);
     });
 
-    it("copies a single data file", done => {
+    it("copies a single data file", async () => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
           type: interfaces.EFileType.Data,
           folder: "storageFolder",
           filename: "storageFilename.png",
-          url: "https://myserver/images/resource.png"
-        }
+          url: "https://myserver/images/resource.png",
+        },
       ];
-      const sourceItemId = "sln1234567890;"
+      const sourceItemId = "sln1234567890;";
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
       const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
       const expectedServerInfo = SERVER_INFO;
       const fetchUrl = "https://myserver/images/resource.png";
       const expectedFetch = utils.getSampleImageAsBlob();
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/update";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/update";
       const expectedUpdate = true;
 
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
-          utils.getPortalsSelfResponse()
+          utils.getPortalsSelfResponse(),
         )
         .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
         .post(serverInfoUrl, expectedServerInfo)
         .post(fetchUrl, expectedFetch, { sendAsJson: false })
         .post(updateUrl, { success: true });
-      resourceHelpers
-        .copyFilesFromStorageItem(
-          storageAuthentication,
-          filePaths,
-          sourceItemId,
-          null,
-          destinationItemId,
-          destinationAuthentication
-        )
-        .then((response: any) => {
-          expect(response).toEqual(expectedUpdate);
-          done();
-        }, done.fail);
+
+      const response: any = await resourceHelpers.copyFilesFromStorageItem(
+        storageAuthentication,
+        filePaths,
+        sourceItemId,
+        "",
+        destinationItemId,
+        destinationAuthentication,
+      );
+      expect(response).toEqual(expectedUpdate);
     });
 
-    it("copies a single data file using list of MIME types", done => {
+    it("copies a single data file using list of MIME types", async () => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
           type: interfaces.EFileType.Data,
           folder: "storageFolder",
           filename: "storageFilename.png",
-          url: "https://myserver/images/resource.png"
-        }
+          url: "https://myserver/images/resource.png",
+        },
       ];
-      const sourceItemId = "sln1234567890;"
+      const sourceItemId = "sln1234567890;";
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
       const mimeTypes: interfaces.IKeyedStrings = {
-        "storageFilename.png": "image/png"
+        "storageFilename.png": "image/png",
       };
       const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
       const expectedServerInfo = SERVER_INFO;
       const fetchUrl = "https://myserver/images/resource.png";
       const expectedFetch = utils.getSampleImageAsBlob();
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/update";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/update";
       const expectedUpdate = true;
 
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
-          utils.getPortalsSelfResponse()
+          utils.getPortalsSelfResponse(),
         )
         .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
         .post(serverInfoUrl, expectedServerInfo)
         .post(fetchUrl, expectedFetch, { sendAsJson: false })
         .post(updateUrl, { success: true });
-      resourceHelpers
-        .copyFilesFromStorageItem(
-          storageAuthentication,
-          filePaths,
-          sourceItemId,
-          null,
-          destinationItemId,
-          destinationAuthentication,
-          { properties: mimeTypes }
-        )
-        .then((response: any) => {
-          expect(response).toEqual(expectedUpdate);
-          done();
-        }, done.fail);
+
+      const response: any = await resourceHelpers.copyFilesFromStorageItem(
+        storageAuthentication,
+        filePaths,
+        sourceItemId,
+        "",
+        destinationItemId,
+        destinationAuthentication,
+        { properties: mimeTypes },
+      );
+      expect(response).toEqual(expectedUpdate);
     });
 
-    it("copies a single metadata file", done => {
+    it("copies a single metadata file", async () => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
           type: interfaces.EFileType.Metadata,
           folder: "",
           filename: "",
-          url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
-        }
+          url: "https://myserver/doc/metadata.xml", // Metadata uses only URL
+        },
       ];
-      const sourceItemId = "sln1234567890;"
+      const sourceItemId = "sln1234567890;";
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
       const serverInfoUrl = "https://myserver/doc/metadata.xml/rest/info";
       const expectedServerInfo = SERVER_INFO;
       const fetchUrl = "https://myserver/doc/metadata.xml";
-      const expectedFetch = new Blob(
-        ["<meta><value1>a</value1><value2>b</value2></meta>"],
-        { type: "text/xml" }
-      );
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/update";
+      const expectedFetch = new Blob(["<meta><value1>a</value1><value2>b</value2></meta>"], { type: "text/xml" });
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/update";
       const expectedUpdate = true;
 
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
-          utils.getPortalsSelfResponse()
+          utils.getPortalsSelfResponse(),
         )
         .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
         .post(serverInfoUrl, expectedServerInfo)
         .post(fetchUrl, expectedFetch, { sendAsJson: false })
         .post(updateUrl, expectedUpdate);
-      resourceHelpers
-        .copyFilesFromStorageItem(
-          storageAuthentication,
-          filePaths,
-          sourceItemId,
-          null,
-          destinationItemId,
-          destinationAuthentication
-        )
-        .then((response: any) => {
-          expect(response).toEqual(expectedUpdate);
-          done();
-        }, done.fail);
+
+      const response: any = await resourceHelpers.copyFilesFromStorageItem(
+        storageAuthentication,
+        filePaths,
+        sourceItemId,
+        "",
+        destinationItemId,
+        destinationAuthentication,
+      );
+      expect(response).toEqual(expectedUpdate);
     });
 
-    it("copies a single resource file", done => {
+    it("copies a single resource file", async () => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
           type: interfaces.EFileType.Resource,
           folder: "storageFolder",
           filename: "storageFilename.png",
-          url: "https://myserver/images/resource.png"
-        }
+          url: "https://myserver/images/resource.png",
+        },
       ];
-      const sourceItemId = "sln1234567890;"
+      const sourceItemId = "sln1234567890;";
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
       const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
       const expectedServerInfo = SERVER_INFO;
       const fetchUrl = "https://myserver/images/resource.png";
       const expectedFetch = utils.getSampleImageAsBlob();
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/addResources";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/addResources";
       const expectedUpdate = true;
 
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
-          utils.getPortalsSelfResponse()
+          utils.getPortalsSelfResponse(),
         )
         .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
         .post(serverInfoUrl, expectedServerInfo)
         .post(fetchUrl, expectedFetch, { sendAsJson: false })
         .post(updateUrl, expectedUpdate);
-      resourceHelpers
-        .copyFilesFromStorageItem(
-          storageAuthentication,
-          filePaths,
-          sourceItemId,
-          null,
-          destinationItemId,
-          destinationAuthentication
-        )
-        .then((response: any) => {
-          expect(response).toEqual(expectedUpdate);
-          done();
-        }, done.fail);
+
+      const response: any = await resourceHelpers.copyFilesFromStorageItem(
+        storageAuthentication,
+        filePaths,
+        sourceItemId,
+        "",
+        destinationItemId,
+        destinationAuthentication,
+      );
+      expect(response).toEqual(expectedUpdate);
     });
 
-    it("copies multiple resource files", done => {
+    it("copies multiple resource files", async () => {
       const storageAuthentication = MOCK_USER_SESSION;
       const template = {
-        itemId: "abc"
+        itemId: "abc",
       };
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
           type: interfaces.EFileType.Resource,
           folder: "storageFolder1",
           filename: "storageFilename1.png",
-          url: "https://myserver/images/resource.png"
+          url: "https://myserver/images/resource.png",
         },
         {
           type: interfaces.EFileType.Resource,
           folder: "storageFolder2",
           filename: "storageFilename2.png",
-          url: "https://myserver/images/resource.png"
+          url: "https://myserver/images/resource.png",
         },
         {
           type: interfaces.EFileType.Resource,
           folder: "",
           filename: template.itemId + "-storageFilename2.png",
-          url: "https://myserver/images/resource.png"
-        }
+          url: "https://myserver/images/resource.png",
+        },
       ];
-      const sourceItemId = "sln1234567890;"
+      const sourceItemId = "sln1234567890;";
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
       const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
       const expectedServerInfo = SERVER_INFO;
       const fetchUrl = "https://myserver/images/resource.png";
       const expectedFetch = utils.getSampleImageAsBlob();
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/addResources";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/addResources";
       const expectedUpdate = true;
 
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
-          utils.getPortalsSelfResponse()
+          utils.getPortalsSelfResponse(),
         )
         .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
         .post(serverInfoUrl, expectedServerInfo)
         .post(fetchUrl, expectedFetch, { sendAsJson: false })
         .post(updateUrl, expectedUpdate);
-      resourceHelpers
-        .copyFilesFromStorageItem(
-          storageAuthentication,
-          filePaths,
-          sourceItemId,
-          null,
-          destinationItemId,
-          destinationAuthentication,
-          template
-        )
-        .then((response: any) => {
-          expect(response).toEqual(expectedUpdate);
-          done();
-        }, done.fail);
+
+      const response: any = await resourceHelpers.copyFilesFromStorageItem(
+        storageAuthentication,
+        filePaths,
+        sourceItemId,
+        "",
+        destinationItemId,
+        destinationAuthentication,
+        template,
+      );
+      expect(response).toEqual(expectedUpdate);
     });
 
-    it("does not copy thumbnail files", done => {
+    it("does not copy thumbnail files", async () => {
       const storageAuthentication = MOCK_USER_SESSION;
-      const sourceItemId = "sln1234567890;"
+      const sourceItemId = "sln1234567890;";
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
           type: interfaces.EFileType.Thumbnail,
           folder: "",
           filename: "",
-          url: utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png" // Thumbnail uses only URL
-        }
+          url: utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png", // Thumbnail uses only URL
+        },
       ];
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
 
-      resourceHelpers
-        .copyFilesFromStorageItem(
-          storageAuthentication,
-          filePaths,
-          sourceItemId,
-          null,
-          destinationItemId,
-          destinationAuthentication
-        )
-        .then((response: any) => {
-          expect(response).toBeTruthy();
-          done();
-        }, done.fail);
+      const response: any = await resourceHelpers.copyFilesFromStorageItem(
+        storageAuthentication,
+        filePaths,
+        sourceItemId,
+        "",
+        destinationItemId,
+        destinationAuthentication,
+      );
+      expect(response).toBeTruthy();
     });
   });
 
   describe("copyFilesToStorageItem", () => {
-    it("empty files list", done => {
-      const sourceUserSession = MOCK_USER_SESSION;
+    it("empty files list", async () => {
       const filePaths: interfaces.ISourceFile[] = [] as interfaces.ISourceFile[];
       const storageItemId: string = "itm1234567890";
       const storageAuthentication = MOCK_USER_SESSION;
       const expected: string[] = [];
 
-      resourceHelpers
-        .copyFilesToStorageItem(filePaths, storageItemId, storageAuthentication)
-        .then((response: any) => {
-          expect(response).toEqual(expected);
-          done();
-        }, done.fail);
+      const response: any = await resourceHelpers.copyFilesToStorageItem(
+        filePaths,
+        storageItemId,
+        storageAuthentication,
+      );
+      expect(response).toEqual(expected);
     });
 
-    it("single file to copy", done => {
-      const sourceUserSession = MOCK_USER_SESSION;
+    it("single file to copy", async () => {
       const files: interfaces.ISourceFile[] = [
         {
           itemId: "itm1234567890",
           folder: "storageFolder",
           filename: "storageFilename.png",
-          file: utils.getSampleImageAsFile()
-        }
+          file: utils.getSampleImageAsFile(),
+        },
       ];
       const storageItemId: string = "itm1234567890";
       const storageAuthentication = MOCK_USER_SESSION;
@@ -640,26 +684,21 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expectedServerInfo = SERVER_INFO;
       const fetchUrl = "https://myserver/images/thumbnail.png";
       const expectedFetch = utils.getSampleImageAsBlob();
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/addResources";
+      const updateUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/itm1234567890/addResources";
       const expectedUpdate: string[] = ["storageFolder/storageFilename.png"];
 
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
-          utils.getPortalsSelfResponse()
+          utils.getPortalsSelfResponse(),
         )
         .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
         .post(serverInfoUrl, expectedServerInfo)
         .post(fetchUrl, expectedFetch)
         .post(updateUrl, expectedUpdate);
-      resourceHelpers
-        .copyFilesToStorageItem(files, storageItemId, storageAuthentication)
-        .then((response: any) => {
-          expect(response).toEqual(expectedUpdate);
-          done();
-        }, done.fail);
+
+      const response: any = await resourceHelpers.copyFilesToStorageItem(files, storageItemId, storageAuthentication);
+      expect(response).toEqual(expectedUpdate);
     });
   });
 
@@ -668,7 +707,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const expected = {
         folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
-        filename: "metadata.xml"
+        filename: "metadata.xml",
       };
 
       const actual = resourceHelpers.generateMetadataStorageFilename(itemId);
@@ -686,10 +725,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
         {
           itemId,
           url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
-          filename: "metadata.xml"
+          filename: "metadata.xml",
         },
         {
           itemId,
@@ -697,15 +735,15 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-          filename: "thumbnail.png"
-        }
+          filename: "thumbnail.png",
+        },
       ];
 
       const actual = resourceHelpers.generateSourceFilePaths(
         portalSharingUrl,
         itemId,
         thumbnailUrlPart,
-        resourceFilenames
+        resourceFilenames,
       );
       expect(actual.length).toEqual(2);
       expect(actual).toEqual(expected);
@@ -719,19 +757,16 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
           itemId,
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
+          url: utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
           folder: "8f7ec78195d0479784036387d522e29f",
-          filename: "gtnp2.jpg"
+          filename: "gtnp2.jpg",
         },
         {
           itemId,
           url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
-          filename: "metadata.xml"
+          filename: "metadata.xml",
         },
         {
           itemId,
@@ -739,15 +774,15 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-          filename: "thumbnail.png"
-        }
+          filename: "thumbnail.png",
+        },
       ];
 
       const actual = resourceHelpers.generateSourceFilePaths(
         portalSharingUrl,
         itemId,
         thumbnailUrlPart,
-        resourceFilenames
+        resourceFilenames,
       );
       expect(actual.length).toEqual(3);
       expect(actual).toEqual(expected);
@@ -765,15 +800,14 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
           folder: "8f7ec78195d0479784036387d522e29f_myFolder",
-          filename: "gtnp2.jpg"
+          filename: "gtnp2.jpg",
         },
         {
           itemId,
           url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
-          filename: "metadata.xml"
+          filename: "metadata.xml",
         },
         {
           itemId,
@@ -781,15 +815,15 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-          filename: "thumbnail.png"
-        }
+          filename: "thumbnail.png",
+        },
       ];
 
       const actual = resourceHelpers.generateSourceFilePaths(
         portalSharingUrl,
         itemId,
         thumbnailUrlPart,
-        resourceFilenames
+        resourceFilenames,
       );
       expect(actual.length).toEqual(3);
       expect(actual).toEqual(expected);
@@ -803,11 +837,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
           itemId,
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
+          url: utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
           folder: "8f7ec78195d0479784036387d522e29f",
-          filename: "gtnp2.jpg"
+          filename: "gtnp2.jpg",
         },
         {
           itemId,
@@ -815,15 +847,14 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
           folder: "8f7ec78195d0479784036387d522e29f_myFolder",
-          filename: "gtnp2.jpg"
+          filename: "gtnp2.jpg",
         },
         {
           itemId,
           url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
-          filename: "metadata.xml"
+          filename: "metadata.xml",
         },
         {
           itemId,
@@ -831,15 +862,15 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-          filename: "thumbnail.png"
-        }
+          filename: "thumbnail.png",
+        },
       ];
 
       const actual = resourceHelpers.generateSourceFilePaths(
         portalSharingUrl,
         itemId,
         thumbnailUrlPart,
-        resourceFilenames
+        resourceFilenames,
       );
       expect(actual.length).toEqual(4);
       expect(actual).toEqual(expected);
@@ -856,10 +887,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
         {
           itemId,
           url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
-          filename: "metadata.xml"
+          filename: "metadata.xml",
         },
         {
           itemId,
@@ -867,8 +897,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-          filename: "thumbnail.png"
-        }
+          filename: "thumbnail.png",
+        },
       ];
 
       const actual = resourceHelpers.generateSourceFilePaths(
@@ -877,7 +907,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         thumbnailUrlPart,
         resourceFilenames,
         false,
-        1
+        1,
       );
       expect(actual.length).toEqual(2);
       expect(actual).toEqual(expected);
@@ -891,19 +921,16 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
           itemId,
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
+          url: utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
           folder: "8f7ec78195d0479784036387d522e29f",
-          filename: "gtnp2.jpg"
+          filename: "gtnp2.jpg",
         },
         {
           itemId,
           url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
-          filename: "metadata.xml"
+          filename: "metadata.xml",
         },
         {
           itemId,
@@ -911,8 +938,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-          filename: "thumbnail.png"
-        }
+          filename: "thumbnail.png",
+        },
       ];
 
       const actual = resourceHelpers.generateSourceFilePaths(
@@ -921,7 +948,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         thumbnailUrlPart,
         resourceFilenames,
         false,
-        1
+        1,
       );
       expect(actual.length).toEqual(3);
       expect(actual).toEqual(expected);
@@ -939,15 +966,14 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
           folder: "8f7ec78195d0479784036387d522e29f/myFolder",
-          filename: "gtnp2.jpg"
+          filename: "gtnp2.jpg",
         },
         {
           itemId,
           url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
-          filename: "metadata.xml"
+          filename: "metadata.xml",
         },
         {
           itemId,
@@ -955,8 +981,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-          filename: "thumbnail.png"
-        }
+          filename: "thumbnail.png",
+        },
       ];
 
       const actual = resourceHelpers.generateSourceFilePaths(
@@ -965,7 +991,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         thumbnailUrlPart,
         resourceFilenames,
         false,
-        1
+        1,
       );
       expect(actual.length).toEqual(3);
       expect(actual).toEqual(expected);
@@ -979,11 +1005,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
           itemId,
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
+          url: utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
           folder: "8f7ec78195d0479784036387d522e29f",
-          filename: "gtnp2.jpg"
+          filename: "gtnp2.jpg",
         },
         {
           itemId,
@@ -991,15 +1015,14 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
           folder: "8f7ec78195d0479784036387d522e29f/myFolder",
-          filename: "gtnp2.jpg"
+          filename: "gtnp2.jpg",
         },
         {
           itemId,
           url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
-          filename: "metadata.xml"
+          filename: "metadata.xml",
         },
         {
           itemId,
@@ -1007,8 +1030,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-          filename: "thumbnail.png"
-        }
+          filename: "thumbnail.png",
+        },
       ];
 
       const actual = resourceHelpers.generateSourceFilePaths(
@@ -1017,7 +1040,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         thumbnailUrlPart,
         resourceFilenames,
         false,
-        1
+        1,
       );
       expect(actual.length).toEqual(4);
       expect(actual).toEqual(expected);
@@ -1029,13 +1052,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const itemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const expected =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/metadata/metadata.xml";
+        utils.PORTAL_SUBSET.restUrl + "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/metadata/metadata.xml";
 
-      const actual = resourceHelpers.generateSourceMetadataUrl(
-        portalSharingUrl,
-        itemId
-      );
+      const actual = resourceHelpers.generateSourceMetadataUrl(portalSharingUrl, itemId);
       expect(actual).toEqual(expected);
     });
   });
@@ -1046,14 +1065,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const sourceResourceFilename = "gtnp2.jpg";
       const expected =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg";
+        utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg";
 
-      const actual = resourceHelpers.generateSourceResourceUrl(
-        portalSharingUrl,
-        itemId,
-        sourceResourceFilename
-      );
+      const actual = resourceHelpers.generateSourceResourceUrl(portalSharingUrl, itemId, sourceResourceFilename);
       expect(actual).toEqual(expected);
     });
 
@@ -1062,14 +1076,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const sourceResourceFilename = "aFolder/git_merge.png";
       const expected =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/8f7ec78195d0479784036387d522e29f/resources/aFolder/git_merge.png";
+        utils.PORTAL_SUBSET.restUrl + "/content/items/8f7ec78195d0479784036387d522e29f/resources/aFolder/git_merge.png";
 
-      const actual = resourceHelpers.generateSourceResourceUrl(
-        portalSharingUrl,
-        itemId,
-        sourceResourceFilename
-      );
+      const actual = resourceHelpers.generateSourceResourceUrl(portalSharingUrl, itemId, sourceResourceFilename);
       expect(actual).toEqual(expected);
     });
   });
@@ -1080,14 +1089,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const itemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const thumbnailUrlPart = "thumbnail/thumbnail.png";
       const expected =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/thumbnail/thumbnail.png";
+        utils.PORTAL_SUBSET.restUrl + "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/thumbnail/thumbnail.png";
 
-      const actual = resourceHelpers.generateSourceThumbnailUrl(
-        portalSharingUrl,
-        itemId,
-        thumbnailUrlPart
-      );
+      const actual = resourceHelpers.generateSourceThumbnailUrl(portalSharingUrl, itemId, thumbnailUrlPart);
       expect(actual).toEqual(expected);
     });
 
@@ -1100,12 +1104,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         utils.PORTAL_SUBSET.restUrl +
         "/community/groups/b6430e0ca08d4b1380f3a5908985da3c/info/thumbnail1553812391084.png";
 
-      const actual = resourceHelpers.generateSourceThumbnailUrl(
-        portalSharingUrl,
-        itemId,
-        thumbnailUrlPart,
-        isGroup
-      );
+      const actual = resourceHelpers.generateSourceThumbnailUrl(portalSharingUrl, itemId, thumbnailUrlPart, isGroup);
       expect(actual).toEqual(expected);
     });
   });
@@ -1117,11 +1116,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames: string[] = [];
       const expected: interfaces.IDeployFileCopyPath[] = [];
 
-      const actual = resourceHelpers.generateStorageFilePaths(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilenames
-      );
+      const actual = resourceHelpers.generateStorageFilePaths(portalSharingUrl, storageItemId, resourceFilenames);
       expect(actual.length).toEqual(0);
       expect(actual).toEqual(expected);
     });
@@ -1129,9 +1124,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("generates paths with a single top-level file resource", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
-      const resourceFilenames: string[] = [
-        "8f7ec78195d0479784036387d522e29f/gtnp2.jpg"
-      ];
+      const resourceFilenames: string[] = ["8f7ec78195d0479784036387d522e29f/gtnp2.jpg"];
       const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
@@ -1139,15 +1132,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
             "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f/gtnp2.jpg",
           folder: "",
           filename: "gtnp2.jpg",
-          type: interfaces.EFileType.Resource
-        }
+          type: interfaces.EFileType.Resource,
+        },
       ];
 
-      const actual = resourceHelpers.generateStorageFilePaths(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilenames
-      );
+      const actual = resourceHelpers.generateStorageFilePaths(portalSharingUrl, storageItemId, resourceFilenames);
       expect(actual.length).toEqual(1);
       expect(actual).toEqual(expected);
     });
@@ -1155,9 +1144,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("generates paths with a single file resource in a folder, template version 0", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
-      const resourceFilenames: string[] = [
-        "8f7ec78195d0479784036387d522e29f_myFolder/gtnp2.jpg"
-      ];
+      const resourceFilenames: string[] = ["8f7ec78195d0479784036387d522e29f_myFolder/gtnp2.jpg"];
       const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
@@ -1165,15 +1152,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
             "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_myFolder/gtnp2.jpg",
           folder: "myFolder",
           filename: "gtnp2.jpg",
-          type: interfaces.EFileType.Resource
-        }
+          type: interfaces.EFileType.Resource,
+        },
       ];
 
-      const actual = resourceHelpers.generateStorageFilePaths(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilenames
-      );
+      const actual = resourceHelpers.generateStorageFilePaths(portalSharingUrl, storageItemId, resourceFilenames);
       expect(actual.length).toEqual(1);
       expect(actual).toEqual(expected);
     });
@@ -1181,9 +1164,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("generates paths with a single file resource in a folder, template version 1", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
-      const resourceFilenames: string[] = [
-        "8f7ec78195d0479784036387d522e29f/myFolder/gtnp2.jpg"
-      ];
+      const resourceFilenames: string[] = ["8f7ec78195d0479784036387d522e29f/myFolder/gtnp2.jpg"];
       const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
@@ -1191,16 +1172,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
             "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f/myFolder/gtnp2.jpg",
           folder: "myFolder",
           filename: "gtnp2.jpg",
-          type: interfaces.EFileType.Resource
-        }
+          type: interfaces.EFileType.Resource,
+        },
       ];
 
-      const actual = resourceHelpers.generateStorageFilePaths(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilenames,
-        1
-      );
+      const actual = resourceHelpers.generateStorageFilePaths(portalSharingUrl, storageItemId, resourceFilenames, 1);
       expect(actual.length).toEqual(1);
       expect(actual).toEqual(expected);
     });
@@ -1208,9 +1184,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("generates paths with metadata", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
-      const resourceFilenames: string[] = [
-        "8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml"
-      ];
+      const resourceFilenames: string[] = ["8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml"];
       const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
@@ -1218,15 +1192,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
             "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml",
           folder: "",
           filename: "metadata.xml",
-          type: interfaces.EFileType.Metadata
-        }
+          type: interfaces.EFileType.Metadata,
+        },
       ];
 
-      const actual = resourceHelpers.generateStorageFilePaths(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilenames
-      );
+      const actual = resourceHelpers.generateStorageFilePaths(portalSharingUrl, storageItemId, resourceFilenames);
       expect(actual.length).toEqual(1);
       expect(actual).toEqual(expected);
     });
@@ -1234,9 +1204,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("generates paths with a thumbnail", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
-      const resourceFilenames: string[] = [
-        "8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png"
-      ];
+      const resourceFilenames: string[] = ["8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png"];
       const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
@@ -1244,15 +1212,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
             "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png",
           folder: "",
           filename: "thumbnail.png",
-          type: interfaces.EFileType.Thumbnail
-        }
+          type: interfaces.EFileType.Thumbnail,
+        },
       ];
 
-      const actual = resourceHelpers.generateStorageFilePaths(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilenames
-      );
+      const actual = resourceHelpers.generateStorageFilePaths(portalSharingUrl, storageItemId, resourceFilenames);
       expect(actual.length).toEqual(1);
       expect(actual).toEqual(expected);
     });
@@ -1262,10 +1226,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const expected: interfaces.IDeployFileCopyPath[] = [];
 
-      const actual = resourceHelpers.generateStorageFilePaths(
-        portalSharingUrl,
-        storageItemId
-      );
+      const actual = resourceHelpers.generateStorageFilePaths(portalSharingUrl, storageItemId);
       expect(actual.length).toEqual(0);
       expect(actual).toEqual(expected);
     });
@@ -1278,12 +1239,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames: string[] = [];
       const expected: interfaces.IDeployFileCopyPath[] = [];
 
-      const actual = resourceHelpers.generateStorageFilePaths(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilenames,
-        1
-      );
+      const actual = resourceHelpers.generateStorageFilePaths(portalSharingUrl, storageItemId, resourceFilenames, 1);
       expect(actual.length).toEqual(0);
       expect(actual).toEqual(expected);
     });
@@ -1291,9 +1247,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("generates paths with a single top-level file resource", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
-      const resourceFilenames: string[] = [
-        "8f7ec78195d0479784036387d522e29f/gtnp2.jpg"
-      ];
+      const resourceFilenames: string[] = ["8f7ec78195d0479784036387d522e29f/gtnp2.jpg"];
       const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
@@ -1301,16 +1255,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
             "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f/gtnp2.jpg",
           folder: "",
           filename: "gtnp2.jpg",
-          type: interfaces.EFileType.Resource
-        }
+          type: interfaces.EFileType.Resource,
+        },
       ];
 
-      const actual = resourceHelpers.generateStorageFilePaths(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilenames,
-        1
-      );
+      const actual = resourceHelpers.generateStorageFilePaths(portalSharingUrl, storageItemId, resourceFilenames, 1);
       expect(actual.length).toEqual(1);
       expect(actual).toEqual(expected);
     });
@@ -1318,9 +1267,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("generates paths with a single file resource in a folder", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
-      const resourceFilenames: string[] = [
-        "8f7ec78195d0479784036387d522e29f/myFolder/gtnp2.jpg"
-      ];
+      const resourceFilenames: string[] = ["8f7ec78195d0479784036387d522e29f/myFolder/gtnp2.jpg"];
       const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
@@ -1328,16 +1275,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
             "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f/myFolder/gtnp2.jpg",
           folder: "myFolder",
           filename: "gtnp2.jpg",
-          type: interfaces.EFileType.Resource
-        }
+          type: interfaces.EFileType.Resource,
+        },
       ];
 
-      const actual = resourceHelpers.generateStorageFilePaths(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilenames,
-        1
-      );
+      const actual = resourceHelpers.generateStorageFilePaths(portalSharingUrl, storageItemId, resourceFilenames, 1);
       expect(actual.length).toEqual(1);
       expect(actual).toEqual(expected);
     });
@@ -1345,9 +1287,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("generates paths with metadata", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
-      const resourceFilenames: string[] = [
-        "8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml"
-      ];
+      const resourceFilenames: string[] = ["8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml"];
       const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
@@ -1355,16 +1295,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
             "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml",
           folder: "",
           filename: "metadata.xml",
-          type: interfaces.EFileType.Metadata
-        }
+          type: interfaces.EFileType.Metadata,
+        },
       ];
 
-      const actual = resourceHelpers.generateStorageFilePaths(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilenames,
-        1
-      );
+      const actual = resourceHelpers.generateStorageFilePaths(portalSharingUrl, storageItemId, resourceFilenames, 1);
       expect(actual.length).toEqual(1);
       expect(actual).toEqual(expected);
     });
@@ -1372,9 +1307,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("generates paths with a thumbnail", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
-      const resourceFilenames: string[] = [
-        "8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png"
-      ];
+      const resourceFilenames: string[] = ["8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png"];
       const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
@@ -1382,16 +1315,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
             "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png",
           folder: "",
           filename: "thumbnail.png",
-          type: interfaces.EFileType.Thumbnail
-        }
+          type: interfaces.EFileType.Thumbnail,
+        },
       ];
 
-      const actual = resourceHelpers.generateStorageFilePaths(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilenames,
-        1
-      );
+      const actual = resourceHelpers.generateStorageFilePaths(portalSharingUrl, storageItemId, resourceFilenames, 1);
       expect(actual.length).toEqual(1);
       expect(actual).toEqual(expected);
     });
@@ -1401,10 +1329,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const expected: interfaces.IDeployFileCopyPath[] = [];
 
-      const actual = resourceHelpers.generateStorageFilePaths(
-        portalSharingUrl,
-        storageItemId
-      );
+      const actual = resourceHelpers.generateStorageFilePaths(portalSharingUrl, storageItemId);
       expect(actual.length).toEqual(0);
       expect(actual).toEqual(expected);
     });
@@ -1416,13 +1341,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const sourceResourceFilename = "thumbnail1553812391084.png";
       const expected = {
         folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-        filename: "thumbnail1553812391084.png"
+        filename: "thumbnail1553812391084.png",
       };
 
-      const actual = resourceHelpers.generateThumbnailStorageFilename(
-        itemId,
-        sourceResourceFilename
-      );
+      const actual = resourceHelpers.generateThumbnailStorageFilename(itemId, sourceResourceFilename);
       expect(actual).toEqual(expected);
     });
 
@@ -1431,61 +1353,50 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const sourceResourceFilename = "thumbnail/thumbnail.png";
       const expected = {
         folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-        filename: "thumbnail.png"
+        filename: "thumbnail.png",
       };
 
-      const actual = resourceHelpers.generateThumbnailStorageFilename(
-        itemId,
-        sourceResourceFilename
-      );
+      const actual = resourceHelpers.generateThumbnailStorageFilename(itemId, sourceResourceFilename);
       expect(actual).toEqual(expected);
     });
   });
 
   describe("getThumbnailFromStorageItem", () => {
-    it("handles an empty files list", done => {
+    it("handles an empty files list", async () => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [] as interfaces.IDeployFileCopyPath[];
 
-      resourceHelpers
-        .getThumbnailFromStorageItem(storageAuthentication, filePaths)
-        .then(response => {
-          expect(response).toBeNull();
-          done();
-        }, done.fail);
+      const response: any = await resourceHelpers.getThumbnailFromStorageItem(storageAuthentication, filePaths);
+      expect(response).toBeNull();
     });
 
-    it("copies a thumbnail file", done => {
+    it("copies a thumbnail file", async () => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
           type: interfaces.EFileType.Thumbnail,
           folder: "",
           filename: "thumbnail.png",
-          url: utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png" // Thumbnail uses only URL
-        }
+          url: utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png", // Thumbnail uses only URL
+        },
       ];
       const expectedImage = utils.getSampleImageAsFile(filePaths[0].filename);
 
       fetchMock.post(filePaths[0].url, expectedImage, { sendAsJson: false });
-      resourceHelpers
-        .getThumbnailFromStorageItem(storageAuthentication, filePaths)
-        .then((response: File) => {
-          expect(response).toEqual(expectedImage);
-          expect(response.name).toEqual(filePaths[0].filename);
-          done();
-        }, done.fail);
+
+      const response: File = await resourceHelpers.getThumbnailFromStorageItem(storageAuthentication, filePaths);
+      expect(response).toEqual(expectedImage);
+      expect(response.name).toEqual(filePaths[0].filename);
     });
   });
 
   describe("isSupportedFileType", () => {
     it("recognizes supported file types for resource", () => {
-      const fileTypes =
-        ".json|.xml|.txt|.png|.pbf|.zip|.jpeg|.jpg|.gif|.bmp|.gz|.svg|.svgz|.geodatabase";
-      fileTypes.split("|").forEach(fileType =>
+      const fileTypes = ".json|.xml|.txt|.png|.pbf|.zip|.jpeg|.jpg|.gif|.bmp|.gz|.svg|.svgz|.geodatabase";
+      fileTypes.split("|").forEach((fileType) =>
         expect(resourceHelpers.isSupportedFileType(fileType))
           .withContext(fileType + "is not supported")
-          .toBeTruthy()
+          .toBeTruthy(),
       );
     });
 
@@ -1493,98 +1404,74 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const fileTypes =
         ".bin|.cpg|.css|.csv|.dbf|.doc|.docx|.htm|.html|.ico|.jar|.js|.mxd|.mxs|.pdf|.ppt|.pptx" +
         "|.prj|.rtf|.shp|.tar|.tif|.tiff|.ts|.ttf|.vsd|.wav|.xls|.xlsx";
-      fileTypes.split("|").forEach(fileType =>
+      fileTypes.split("|").forEach((fileType) =>
         expect(resourceHelpers.isSupportedFileType(fileType))
           .withContext(fileType + "is supported")
-          .toBeFalsy()
+          .toBeFalsy(),
       );
     });
   });
 
   describe("removeItemResourceFile", () => {
-    it("correctly maps call", done => {
+    it("correctly maps call", async () => {
       const itemId = "abcde";
       const filename = "fghij";
 
-      const resourceHelpersSpy = spyOn(
-        portal,
-        "removeItemResource"
-      ).and.resolveTo({ success: true });
-      resourceHelpers.removeItemResourceFile(itemId, filename, MOCK_USER_SESSION)
-      .then(
-        () => {
-          const restjsArg = resourceHelpersSpy.calls.argsFor(0)[0];
-          expect(restjsArg).toEqual({
-            id: itemId,
-            resource: filename,
-            authentication: MOCK_USER_SESSION
-          });
-          done();
-        },
-        done.fail
-      );
+      const resourceHelpersSpy = spyOn(arcgisRestJS, "removeItemResource").and.resolveTo({ success: true });
+
+      await resourceHelpers.removeItemResourceFile(itemId, filename, MOCK_USER_SESSION);
+      const restjsArg = resourceHelpersSpy.calls.argsFor(0)[0];
+      expect(restjsArg).toEqual({
+        id: itemId,
+        resource: filename,
+        authentication: MOCK_USER_SESSION,
+      });
     });
   });
 
   describe("updateItemResourceFile", () => {
-    it("correctly maps call", done => {
+    it("correctly maps call", async () => {
       const itemId = "abcde";
       const filename = "fghij";
 
-      const resourceHelpersSpy = spyOn(
-        portal,
-        "updateItemResource"
-      ).and.resolveTo({
+      const resourceHelpersSpy = spyOn(arcgisRestJS, "updateItemResource").and.resolveTo({
         success: true,
         itemId,
         owner: "Fred",
-        folder: "MGM"
-      } as portal.IItemResourceResponse);
-      resourceHelpers.updateItemResourceFile(itemId, filename, utils.getSampleImageAsFile(), MOCK_USER_SESSION)
-      .then(
-        () => {
-          const restjsArg = resourceHelpersSpy.calls.argsFor(0)[0];
-          expect(restjsArg).toEqual({
-            id: itemId,
-            prefix: undefined,
-            name: filename,
-            resource: utils.getSampleImageAsFile(),
-            authentication: MOCK_USER_SESSION
-          });
-          done();
-        },
-        done.fail
-      );
+        folder: "MGM",
+      } as IItemResourceResponse);
+
+      await resourceHelpers.updateItemResourceFile(itemId, filename, utils.getSampleImageAsFile(), MOCK_USER_SESSION);
+      const restjsArg = resourceHelpersSpy.calls.argsFor(0)[0];
+      expect(restjsArg).toEqual({
+        id: itemId,
+        prefix: undefined,
+        name: filename,
+        resource: utils.getSampleImageAsFile(),
+        authentication: MOCK_USER_SESSION,
+      });
     });
 
-    it("correctly maps call with prefixed filename", done => {
+    it("correctly maps call with prefixed filename", async () => {
       const itemId = "abcde";
       const filename = "fghij/folder/myfile";
 
-      const resourceHelpersSpy = spyOn(
-        portal,
-        "updateItemResource"
-      ).and.resolveTo({
+      const resourceHelpersSpy = spyOn(arcgisRestJS, "updateItemResource").and.resolveTo({
         success: true,
         itemId,
         owner: "Fred",
-        folder: "MGM"
-      } as portal.IItemResourceResponse);
-      resourceHelpers.updateItemResourceFile(itemId, filename, utils.getSampleImageAsFile(), MOCK_USER_SESSION)
-      .then(
-        () => {
-          const restjsArg = resourceHelpersSpy.calls.argsFor(0)[0];
-          expect(restjsArg).toEqual({
-            id: itemId,
-            prefix: "fghij/folder",
-            name: "myfile",
-            resource: utils.getSampleImageAsFile(),
-            authentication: MOCK_USER_SESSION
-          });
-          done();
-        },
-        done.fail
-      );
+        folder: "MGM",
+      } as IItemResourceResponse);
+
+      await resourceHelpers.updateItemResourceFile(itemId, filename, utils.getSampleImageAsFile(), MOCK_USER_SESSION);
+      const restjsArg = resourceHelpersSpy.calls.argsFor(0)[0];
+      expect(restjsArg).toEqual({
+        id: itemId,
+        prefix: "fghij/folder",
+        name: "myfile",
+        resource: utils.getSampleImageAsFile(),
+        authentication: MOCK_USER_SESSION,
+      });
     });
   });
 });

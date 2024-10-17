@@ -1,5 +1,4 @@
-#!/bin/zsh
-# Builds the repository and its demos 
+# Builds the repository and its demos
 
 node --version
 npm --version
@@ -14,13 +13,17 @@ cd demos/deleteSolution && npm install ; cd ../..
 cd demos/deploySolution && npm install ; cd ../..
 cd demos/getItemInfo && npm install ; cd ../..
 cd demos/implementedTypes && npm install ; cd ../..
+cd demos/reuseDeployedItems && npm install ; cd ../..
 cd demos/verifySolution && npm install ; cd ../..
 
 # install and build the packages
 npm install
+npm run prettify
+npm run lint:fix
 npm run build
+./commit-stamp.sh
 
-# #ove package.json files in distributions to keep lerna happy
+# remove package.json files in distributions to keep lerna happy
 rm ./packages/common/dist/cjs/package.json
 rm ./packages/common/dist/esm/package.json
 rm ./packages/creator/dist/cjs/package.json
@@ -62,7 +65,7 @@ cd demos/deleteSolution && npm run build ; cd ../..
 cd demos/deploySolution && npm run build ; cd ../..
 cd demos/getItemInfo && npm run build ; cd ../..
 cd demos/implementedTypes && npm run build ; cd ../..
+cd demos/reuseDeployedItems && npm run build ; cd ../..
 cd demos/verifySolution && npm run build ; cd ../..
 
-rm -rf coverage
 npm run test

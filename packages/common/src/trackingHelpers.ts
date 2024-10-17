@@ -16,12 +16,11 @@
 
 // Helper functions shared across deploy and create
 
-import { IItemTemplate, UserSession } from "./interfaces";
+import { ICreateServiceParams, UserSession } from "./arcgisRestJS";
+import { IItemTemplate, IItemUpdate } from "./interfaces";
 import { getProp, setCreateProp, setProp } from "./generalHelpers";
 import { getItemBase } from "./restHelpersGet";
 import { templatizeTerm } from "./templatization";
-import { IItemUpdate } from "@esri/arcgis-rest-types";
-import { ICreateServiceParams } from "@esri/arcgis-rest-service-admin";
 
 /**
  * Used by deploy to evaluate if we have everything we need to deploy tracking views.
@@ -40,7 +39,7 @@ export function setLocationTrackingEnabled(
   portalResponse: any,
   userResponse: any,
   templateDictionary: any,
-  templates?: IItemTemplate[]
+  templates?: IItemTemplate[],
 ): void {
   // set locationTracking...contains service url and id
   const locationTracking = getProp(portalResponse, "helperServices.locationTracking");
@@ -48,17 +47,14 @@ export function setLocationTrackingEnabled(
   if (locationTracking) {
     templateDictionary.locationTracking = locationTracking;
   }
-  
+
   // verify we have location tracking service and the user is an admin
   templateDictionary.locationTrackingEnabled =
-    templateDictionary.locationTracking &&
-    getProp(userResponse, "role") === "org_admin"
-      ? true
-      : false;
+    templateDictionary.locationTracking && getProp(userResponse, "role") === "org_admin" ? true : false;
 
-    if (templates) {
-      _validateTrackingTemplates(templates, templateDictionary);
-    }
+  if (templates) {
+    _validateTrackingTemplates(templates, templateDictionary);
+  }
 }
 
 /**
@@ -72,16 +68,12 @@ export function setLocationTrackingEnabled(
  *
  * @private
  */
-export function _validateTrackingTemplates(
-  templates: IItemTemplate[],
-  templateDictionary: any
-): void {
+export function _validateTrackingTemplates(templates: IItemTemplate[], templateDictionary: any): void {
   /* istanbul ignore else */
   if (
     !templateDictionary.locationTrackingEnabled &&
-    templates.some(template => {
-      const typeKeywords: string[] =
-        getProp(template, "item.typeKeywords") || [];
+    templates.some((template) => {
+      const typeKeywords: string[] = getProp(template, "item.typeKeywords") || [];
       return typeKeywords.indexOf("Location Tracking View") > -1;
     })
   ) {
@@ -102,19 +94,19 @@ export function _validateTrackingTemplates(
  *
  * @private
  */
-export function getTackingServiceOwner(
-  templateDictionary: any,
-  authentication: UserSession
-): Promise<boolean> {
+export function getTackingServiceOwner(templateDictionary: any, authentication: UserSession): Promise<boolean> {
   if (templateDictionary.locationTrackingEnabled) {
     const locationTrackingId: string = templateDictionary.locationTracking.id;
-    return getItemBase(locationTrackingId, authentication).then(itemBase => {
-      templateDictionary.locationTracking.owner = itemBase.owner;
-      templateDictionary[itemBase.id] = {
-        itemId: itemBase.id
-      };
-      return Promise.resolve(itemBase && itemBase.owner === authentication.username);
-    }, () => Promise.resolve(false));
+    return getItemBase(locationTrackingId, authentication).then(
+      (itemBase) => {
+        templateDictionary.locationTracking.owner = itemBase.owner;
+        templateDictionary[itemBase.id] = {
+          itemId: itemBase.id,
+        };
+        return Promise.resolve(itemBase && itemBase.owner === authentication.username);
+      },
+      () => Promise.resolve(false),
+    );
   } else {
     return Promise.resolve(false);
   }
@@ -128,17 +120,11 @@ export function getTackingServiceOwner(
  *
  * @private
  */
-export function isTrackingViewTemplate(
-  itemTemplate?: IItemTemplate,
-  itemUpdate?: IItemUpdate
-): boolean {
-  const typeKeywords: any =
-    getProp(itemTemplate, "item.typeKeywords") ||
-      getProp(itemUpdate, "typeKeywords");
+export function isTrackingViewTemplate(itemTemplate?: IItemTemplate, itemUpdate?: IItemUpdate): boolean {
+  const typeKeywords: any = getProp(itemTemplate, "item.typeKeywords") || getProp(itemUpdate, "typeKeywords");
   const trackViewGroup: any =
-    getProp(itemTemplate, "item.properties.trackViewGroup") ||
-      getProp(itemUpdate, "properties.trackViewGroup");
-  return (typeKeywords && typeKeywords.indexOf("Location Tracking View") > -1 && trackViewGroup) ? true : false;
+    getProp(itemTemplate, "item.properties.trackViewGroup") || getProp(itemUpdate, "properties.trackViewGroup");
+  return typeKeywords && typeKeywords.indexOf("Location Tracking View") > -1 && trackViewGroup ? true : false;
 }
 
 /**
@@ -148,11 +134,9 @@ export function isTrackingViewTemplate(
  *
  * @private
  */
-export function isTrackingViewGroup(
-  itemTemplate: IItemTemplate
-) {
+export function isTrackingViewGroup(itemTemplate: IItemTemplate) {
   const typeKeywords: any = getProp(itemTemplate, "item.tags");
-  return (typeKeywords && typeKeywords.indexOf("Location Tracking Group") > -1) ? true : false
+  return typeKeywords && typeKeywords.indexOf("Location Tracking Group") > -1 ? true : false;
 }
 
 /**
@@ -160,29 +144,23 @@ export function isTrackingViewGroup(
  * This function will update the itemTemplate that is passed in when it's a tracking view.
  *
  * @param itemTemplate Template for feature service item
- * 
+ *
  * @private
  */
- export function templatizeTracker(
-  itemTemplate: IItemTemplate
-): void {
+export function templatizeTracker(itemTemplate: IItemTemplate): void {
   /* istanbul ignore else */
   if (isTrackingViewTemplate(itemTemplate)) {
     const trackViewGroup: any = getProp(itemTemplate, "item.properties.trackViewGroup");
     itemTemplate.groups.push(trackViewGroup);
     itemTemplate.dependencies.push(trackViewGroup);
     const groupIdVar: string = templatizeTerm(trackViewGroup, trackViewGroup, ".itemId");
-    setProp(
-      itemTemplate, 
-      "item.properties.trackViewGroup", 
-      groupIdVar
-    );
+    setProp(itemTemplate, "item.properties.trackViewGroup", groupIdVar);
     _setName(itemTemplate, "item.name", trackViewGroup, groupIdVar);
     _setName(itemTemplate, "properties.service.adminServiceInfo.name", trackViewGroup, groupIdVar);
 
     const layersAndTables: any[] = (itemTemplate.properties.layers || []).concat(itemTemplate.properties.tables || []);
-    layersAndTables.forEach(l => {
-      templatizeServiceItemId(l, "adminLayerInfo.viewLayerDefinition.sourceServiceItemId")
+    layersAndTables.forEach((l) => {
+      templatizeServiceItemId(l, "adminLayerInfo.viewLayerDefinition.sourceServiceItemId");
     });
   }
 }
@@ -195,48 +173,32 @@ export function isTrackingViewGroup(
  * @param path the path to the property that stores the current name
  * @param groupId the id of the associated tracker group
  * @param groupIdVar the variable to replace the existing name with
- * 
+ *
  * @private
  */
-export function _setName(
-  itemTemplate: IItemTemplate,
-  path: string,
-  groupId: string,
-  groupIdVar: string
-) {
+export function _setName(itemTemplate: IItemTemplate, path: string, groupId: string, groupIdVar: string) {
   const name: string = getProp(itemTemplate, path);
   /* istanbul ignore else */
   if (name) {
-    setProp(
-      itemTemplate,
-      path,
-      name.replace(groupId, groupIdVar)
-    );
+    setProp(itemTemplate, path, name.replace(groupId, groupIdVar));
   }
 }
 
 /**
  * Templatize the tracker view serviceItemId
- * 
+ *
  * This function will update the input obj with the templatized variable
  *
  * @param obj the object that stores the serviceItemId
  * @param path the path to the property that stores the serviceItemId
- * 
+ *
  * @private
  */
-export function templatizeServiceItemId(
-  obj: any,
-  path: string,
-) {
+export function templatizeServiceItemId(obj: any, path: string) {
   const serviceItemId = getProp(obj, path);
   /* istanbul ignore else */
   if (serviceItemId) {
-    setProp(
-      obj,
-      path,
-      templatizeTerm(serviceItemId, serviceItemId, ".itemId")
-    );
+    setProp(obj, path, templatizeTerm(serviceItemId, serviceItemId, ".itemId"));
   }
 }
 
@@ -246,13 +208,13 @@ export function templatizeServiceItemId(
  * @param itemTemplate Template for feature service item
  * @param options the current request options to update
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
- * 
+ *
  * @private
  */
 export function setTrackingOptions(
   itemTemplate: IItemTemplate,
   options: any,
-  templateDictionary: any
+  templateDictionary: any,
 ): ICreateServiceParams {
   /* istanbul ignore else */
   if (isTrackingViewTemplate(itemTemplate)) {
@@ -265,7 +227,7 @@ export function setTrackingOptions(
     setCreateProp(options.params, "isView", true);
     setCreateProp(options.params, "outputType", "locationTrackingService");
 
-    delete(options.folderId);
+    delete options.folderId;
   }
   return options.item;
 }

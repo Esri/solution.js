@@ -30,8 +30,6 @@ import * as dependencies from "../dependencies";
  * as the build order used to create the template Solution
  */
 export function reconstructBuildOrderIds(templates: IItemTemplate[]): string[] {
-  const buildOrdering: IBuildOrdering = dependencies.topologicallySortItems(
-    templates
-  );
+  const buildOrdering: IBuildOrdering = dependencies.topologicallySortItems(templates);
   return buildOrdering.buildOrder;
 }

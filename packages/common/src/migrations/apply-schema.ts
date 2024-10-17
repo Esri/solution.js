@@ -42,7 +42,7 @@ export function _applySchema(model: ISolutionItem): ISolutionItem {
       item: entry.item as IItemGeneralized,
       data: entry.data,
       itemId: entry.itemId || entry.fieldName || entry.key,
-      resources: entry.resources || []
+      resources: entry.resources || [],
     } as IItemTemplate;
   });
   clone.item.properties.schemaVersion = 1;

@@ -20,14 +20,8 @@
  *
  * @module deleteSolution
  */
-
-import {
-  EItemProgressStatus,
-  IDeleteSolutionOptions,
-  ISolutionPrecis,
-  IStatusResponse,
-  UserSession
-} from "../interfaces";
+import { UserSession } from "../arcgisRestJS";
+import { EItemProgressStatus, IDeleteSolutionOptions, ISolutionPrecis, IStatusResponse } from "../interfaces";
 import * as deleteEmptyGroups from "./deleteEmptyGroups";
 import * as deleteSolutionFolder from "./deleteSolutionFolder";
 import * as deleteSolutionItem from "./deleteSolutionItem";
@@ -55,7 +49,7 @@ export function deleteSolutionContents(
   solutionItemId: string,
   solutionSummary: ISolutionPrecis,
   authentication: UserSession,
-  options?: IDeleteSolutionOptions
+  options?: IDeleteSolutionOptions,
 ): Promise<ISolutionPrecis[]> {
   const deleteOptions: IDeleteSolutionOptions = options || {};
   let progressPercentStep = 0;
@@ -64,30 +58,28 @@ export function deleteSolutionContents(
   let solutionFailureSummary: ISolutionPrecis;
   let solutionIds = [] as string[];
 
-  return new Promise<ISolutionPrecis[]>(resolve => {
+  return new Promise<ISolutionPrecis[]>((resolve) => {
     let removalPromise: Promise<ISolutionPrecis[]> = Promise.resolve([
       {
         id: solutionSummary.id,
         title: solutionSummary.title,
         folder: solutionSummary.folder,
         items: [],
-        groups: []
+        groups: [],
       },
       {
         id: solutionSummary.id,
         title: solutionSummary.title,
         folder: solutionSummary.folder,
         items: [],
-        groups: []
-      }
+        groups: [],
+      },
     ] as ISolutionPrecis[]);
 
     if (solutionSummary.items.length > 0) {
       // Save a copy of the Solution item ids for the deleteSolutionFolder call because removeItems
       // destroys the solutionSummary.items list
-      solutionIds = solutionSummary.items
-        .map(item => item.id)
-        .concat([solutionItemId]);
+      solutionIds = solutionSummary.items.map((item) => item.id).concat([solutionItemId]);
 
       const hubSiteItemIds: string[] = solutionSummary.items
         .filter((item: any) => item.type === "Hub Site Application")
@@ -95,10 +87,7 @@ export function deleteSolutionContents(
 
       // Delete the items
       progressPercentStep = 100 / (solutionSummary.items.length + 2); // one extra for starting plus one extra for solution itself
-      reportProgress.reportProgress(
-        (percentDone += progressPercentStep),
-        deleteOptions
-      ); // let the caller know that we've started
+      reportProgress.reportProgress((percentDone += progressPercentStep), deleteOptions); // let the caller know that we've started
 
       // Proceed with the deletion
       removalPromise = removeItems.removeItems(
@@ -107,7 +96,7 @@ export function deleteSolutionContents(
         authentication,
         percentDone,
         progressPercentStep,
-        deleteOptions
+        deleteOptions,
       );
     }
 
@@ -116,22 +105,17 @@ export function deleteSolutionContents(
         [solutionDeletedSummary, solutionFailureSummary] = results;
 
         // Attempt to delete groups; we won't be checking success
-        return new Promise<ISolutionPrecis[]>(resolve2 => {
+        return new Promise<ISolutionPrecis[]>((resolve2) => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          deleteEmptyGroups
-            .deleteEmptyGroups(solutionSummary.groups, authentication)
-            .then(() => {
-              resolve2(results);
-            });
+          deleteEmptyGroups.deleteEmptyGroups(solutionSummary.groups, authentication).then(() => {
+            resolve2(results);
+          });
         });
       })
       .then(() => {
         // If there were no failed deletes, it's OK to delete Solution item
         if (solutionFailureSummary.items.length === 0) {
-          return deleteSolutionItem.deleteSolutionItem(
-            solutionItemId,
-            authentication
-          );
+          return deleteSolutionItem.deleteSolutionItem(solutionItemId, authentication);
         } else {
           // Not all items were deleted, so don't delete solution
           return Promise.resolve({ success: false, itemId: solutionItemId });
@@ -140,19 +124,10 @@ export function deleteSolutionContents(
       .then((solutionItemDeleteStatus: IStatusResponse) => {
         // If all deletes succeeded, see if we can delete the folder that contained them
         if (solutionItemDeleteStatus.success) {
-          reportProgress.reportProgress(
-            99,
-            deleteOptions,
-            solutionItemId,
-            EItemProgressStatus.Finished
-          );
+          reportProgress.reportProgress(99, deleteOptions, solutionItemId, EItemProgressStatus.Finished);
 
           // Can't delete if folder contains non-solution items
-          return deleteSolutionFolder.deleteSolutionFolder(
-            solutionIds,
-            solutionSummary.folder,
-            authentication
-          );
+          return deleteSolutionFolder.deleteSolutionFolder(solutionIds, solutionSummary.folder, authentication);
         } else {
           return Promise.resolve(false);
         }

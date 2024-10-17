@@ -16,8 +16,8 @@
 
 import { replaceItemIds } from "../../src/helpers/replace-item-ids";
 import { IModelTemplate } from "@esri/hub-common";
-import { IItem } from "@esri/arcgis-rest-portal";
-import { cloneObject } from "@esri/solution-common/src/generalHelpers";
+import { IItem } from "../../../common/src/arcgisRestJS";
+import { cloneObject } from "../../../common/src/generalHelpers";
 
 describe("replaceItemIds :: ", () => {
   const m = {
@@ -25,73 +25,60 @@ describe("replaceItemIds :: ", () => {
     type: "Hub Site Application",
     key: "unused",
     item: {
-      description: "in the ef1 middle and ef1 end"
+      description: "in the ef1 middle and ef1 end",
     } as IItem,
     data: {
-      chk: "ef2 and ef2"
+      chk: "ef2 and ef2",
     },
     properties: {
-      chk: "ef1"
+      chk: "ef1",
     },
-    dependencies: ["ef1", "ef2"]
+    dependencies: ["ef1", "ef2"],
   } as IModelTemplate;
 
   it("works with deps", () => {
     const model = cloneObject(m);
     const chk = replaceItemIds(model);
-    expect(chk).not.toBe(model, "should return a clone");
-    expect(chk.item.description).toBe(
-      "in the {{ef1.itemId}} middle and {{ef1.itemId}} end",
-      "should interpolate into a string"
-    );
-    expect(chk.data.chk).toBe(
-      "{{ef2.itemId}} and {{ef2.itemId}}",
-      "interpolate in data"
-    );
-    expect(chk.properties.chk).toBe(
-      "{{ef1.itemId}}",
-      "interpolate in properties"
-    );
+    expect(chk).withContext("should return a clone").not.toBe(model);
+    expect(chk.item.description)
+      .withContext("should interpolate into a string")
+      .toBe("in the {{ef1.itemId}} middle and {{ef1.itemId}} end");
+    expect(chk.data.chk).withContext("interpolate in data").toBe("{{ef2.itemId}} and {{ef2.itemId}}");
+    expect(chk.properties?.chk).withContext("interpolate in properties").toBe("{{ef1.itemId}}");
   });
 
   it("works with empty deps", () => {
     const model = cloneObject(m);
     model.dependencies = [];
     const chk = replaceItemIds(model);
-    expect(chk).not.toBe(model, "should return a clone");
-    expect(chk.item.description).toBe(
-      "in the ef1 middle and ef1 end",
-      "NOT should interpolate into a string"
-    );
-    expect(chk.data.chk).toBe("ef2 and ef2", "NOT interpolate in data");
-    expect(chk.properties.chk).toBe("ef1", "NOT interpolate in properties");
+    expect(chk).withContext("should return a clone").not.toBe(model);
+    expect(chk.item.description)
+      .withContext("NOT should interpolate into a string")
+      .toBe("in the ef1 middle and ef1 end");
+    expect(chk.data.chk).withContext("NOT interpolate in data").toBe("ef2 and ef2");
+    expect(chk.properties?.chk).withContext("NOT interpolate in properties").toBe("ef1");
   });
 
   it("works with no deps", () => {
     const model = cloneObject(m);
     delete model.dependencies;
     const chk = replaceItemIds(model);
-    expect(chk).not.toBe(model, "should return a clone");
-    expect(chk.item.description).toBe(
-      "in the ef1 middle and ef1 end",
-      "NOT should interpolate into a string"
-    );
-    expect(chk.data.chk).toBe("ef2 and ef2", "NOT interpolate in data");
-    expect(chk.properties.chk).toBe("ef1", "NOT interpolate in properties");
+    expect(chk).withContext("should return a clone").not.toBe(model);
+    expect(chk.item.description)
+      .withContext("NOT should interpolate into a string")
+      .toBe("in the ef1 middle and ef1 end");
+    expect(chk.data.chk).withContext("NOT interpolate in data").toBe("ef2 and ef2");
+    expect(chk.properties?.chk).withContext("NOT interpolate in properties").toBe("ef1");
   });
 
   it("skips props if missing", () => {
     const model = cloneObject(m);
     delete model.properties;
     const chk = replaceItemIds(model);
-    expect(chk).not.toBe(model, "should return a clone");
-    expect(chk.item.description).toBe(
-      "in the {{ef1.itemId}} middle and {{ef1.itemId}} end",
-      "should interpolate into a string"
-    );
-    expect(chk.data.chk).toBe(
-      "{{ef2.itemId}} and {{ef2.itemId}}",
-      "interpolate in data"
-    );
+    expect(chk).withContext("should return a clone").not.toBe(model);
+    expect(chk.item.description)
+      .withContext("should interpolate into a string")
+      .toBe("in the {{ef1.itemId}} middle and {{ef1.itemId}} end");
+    expect(chk.data.chk).withContext("interpolate in data").toBe("{{ef2.itemId}} and {{ef2.itemId}}");
   });
 });

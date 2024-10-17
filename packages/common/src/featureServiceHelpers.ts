@@ -22,28 +22,18 @@
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export {
-  queryFeatures as rest_queryFeatures,
-  addFeatures as rest_addFeatures
-} from "@esri/arcgis-rest-feature-layer";
-
 //#region Imports -------------------------------------------------------------------------------------------------------//
 
 import {
   IDefaultSpatialReferenceAndExtent,
   IDependency,
-  IExtent,
   IFeatureServiceProperties,
   IItemTemplate,
   INumberValuePair,
-  IQueryRelatedOptions,
-  IQueryRelatedResponse,
   IPostProcessArgs,
-  ISpatialReference,
   IStringValuePair,
   IUpdate,
   UNREACHABLE,
-  UserSession
 } from "./interfaces";
 import {
   checkUrlPathTermination,
@@ -52,26 +42,20 @@ import {
   fail,
   getProp,
   setCreateProp,
-  setProp
+  setProp,
 } from "./generalHelpers";
+import { replaceInTemplate, templatizeTerm, templatizeIds } from "./templatization";
+import { addToServiceDefinition, getLayerUpdates, getRequest } from "./restHelpers";
+import { isTrackingViewTemplate, templatizeTracker } from "./trackingHelpers";
 import {
-  replaceInTemplate,
-  templatizeTerm,
-  templatizeIds
-} from "./templatization";
-import {
-  addToServiceDefinition,
-  getLayerUpdates,
-  getRequest,
-  rest_request
-} from "./restHelpers";
-import {
-  isTrackingViewTemplate,
-  templatizeTracker
-} from "./trackingHelpers";
-import {
-  queryRelated
-} from "@esri/arcgis-rest-feature-layer";
+  IExtent,
+  IQueryRelatedOptions,
+  IQueryRelatedResponse,
+  ISpatialReference,
+  queryRelated,
+  request,
+  UserSession,
+} from "./arcgisRestJS";
 
 //#endregion ------------------------------------------------------------------------------------------------------------//
 
@@ -87,13 +71,13 @@ import {
 export function getFeatureServiceRelatedRecords(
   url: string,
   relationshipId: number,
-  objectIds?: number[]
+  objectIds?: number[],
 ): Promise<IQueryRelatedResponse> {
   const options: IQueryRelatedOptions = {
     url: url + `/${relationshipId}`,
     relationshipId,
-    objectIds
-  }
+    objectIds,
+  };
 
   return queryRelated(options);
 }
@@ -112,7 +96,7 @@ export function templatize(
   itemTemplate: IItemTemplate,
   dependencies: IDependency[],
   templatizeFieldReferences: boolean,
-  templateDictionary?: any
+  templateDictionary?: any,
 ): IItemTemplate {
   templateDictionary = templateDictionary || {};
 
@@ -124,7 +108,7 @@ export function templatize(
     ...itemTemplate.item,
     id: templatizeTerm(id, id, ".itemId"),
     url: _templatize(id, "url"),
-    typeKeywords: templatizeIds(itemTemplate.item.typeKeywords)
+    typeKeywords: templatizeIds(itemTemplate.item.typeKeywords),
   };
 
   // special handeling if we are dealing with a tracker view
@@ -144,44 +128,27 @@ export function templatize(
 
   // Set up symbols for the URL of the feature service and its layers and tables
   templateDictionary[fsUrl] = itemTemplate.item.url; // map FS URL to its templatized form
-  jsonItems.concat(_items).forEach(layer => {
-    templateDictionary[fsUrl + "/" + layer.id] = _templatize(
-      id,
-      "layer" + layer.id + ".url"
-    );
+  jsonItems.concat(_items).forEach((layer) => {
+    templateDictionary[fsUrl + "/" + layer.id] = _templatize(id, "layer" + layer.id + ".url");
   });
 
   // templatize the service references serviceItemId
   itemTemplate.properties.service.serviceItemId = templatizeTerm(
     itemTemplate.properties.service.serviceItemId,
     itemTemplate.properties.service.serviceItemId,
-    ".itemId"
+    ".itemId",
   );
 
-  const initialExtent: any = getProp(
-    itemTemplate,
-    "properties.service.initialExtent"
-  );
+  const initialExtent: any = getProp(itemTemplate, "properties.service.initialExtent");
   /* istanbul ignore else */
   if (initialExtent) {
-    itemTemplate.properties.service.initialExtent = templatizeTerm(
-      id,
-      id,
-      ".solutionExtent"
-    );
+    itemTemplate.properties.service.initialExtent = templatizeTerm(id, id, ".solutionExtent");
   }
 
-  const fullExtent: any = getProp(
-    itemTemplate,
-    "properties.service.fullExtent"
-  );
+  const fullExtent: any = getProp(itemTemplate, "properties.service.fullExtent");
   /* istanbul ignore else */
   if (fullExtent) {
-    itemTemplate.properties.service.fullExtent = templatizeTerm(
-      id,
-      id,
-      ".solutionExtent"
-    );
+    itemTemplate.properties.service.fullExtent = templatizeTerm(id, id, ".solutionExtent");
   }
 
   // this default extent will be used in cases where it does not make sense to apply the orgs
@@ -197,7 +164,7 @@ export function templatize(
     setCreateProp(
       itemTemplate,
       "properties.service.spatialReference",
-      itemTemplate.properties.defaultExtent.spatialReference
+      itemTemplate.properties.defaultExtent.spatialReference,
     );
   }
 
@@ -207,21 +174,13 @@ export function templatize(
 
   jsonItems.forEach((jsonItem: any) => {
     // get the source service json for the given data item
-    const matchingItems = _items.filter(item => {
+    const matchingItems = _items.filter((item) => {
       return jsonItem.id === item.id;
     });
 
     // templatize the source service json
-    const _item: any =
-      matchingItems.length === 1 ? matchingItems[0] : undefined;
-    _templatizeLayer(
-      _item,
-      jsonItem,
-      itemTemplate,
-      dependencies,
-      templatizeFieldReferences,
-      templateDictionary
-    );
+    const _item: any = matchingItems.length === 1 ? matchingItems[0] : undefined;
+    _templatizeLayer(_item, jsonItem, itemTemplate, dependencies, templatizeFieldReferences, templateDictionary);
 
     hasZ = jsonItem.hasZ || (_item && _item.hasZ) ? true : hasZ;
   });
@@ -242,7 +201,7 @@ export function templatize(
 export function deleteViewProps(layer: any) {
   const props: string[] = ["definitionQuery"];
 
-  props.forEach(prop => {
+  props.forEach((prop) => {
     deleteProp(layer, prop);
   });
 }
@@ -258,16 +217,13 @@ export function deleteViewProps(layer: any) {
  * @param fieldInfos the object that stores the cached field infos
  * @returns An updated instance of the fieldInfos
  */
-export function cacheFieldInfos(
-  layer: any,
-  fieldInfos: any
-): any {
+export function cacheFieldInfos(layer: any, fieldInfos: any): any {
   // cache the source fields as they are in the original source
   if (layer && layer.fields) {
     fieldInfos[layer.id] = {
       sourceFields: JSON.parse(JSON.stringify(layer.fields)),
       type: layer.type,
-      id: layer.id
+      id: layer.id,
     };
   }
 
@@ -281,10 +237,10 @@ export function cacheFieldInfos(
     relationships: true,
     drawingInfo: false,
     timeInfo: false,
-    viewDefinitionQuery: false
+    viewDefinitionQuery: false,
   };
 
-  Object.keys(props).forEach(k => {
+  Object.keys(props).forEach((k) => {
     _cacheFieldInfo(layer, k, fieldInfos, props[k]);
   });
 
@@ -299,14 +255,10 @@ export function cacheFieldInfos(
  * @param itemTemplate The current itemTemplate being processed
  * @returns An updated instance of the fieldInfos
  */
-export function cacheContingentValues(
-  id: string,
-  fieldInfos: any,
-  itemTemplate: IItemTemplate
-): any {
-  const contingentValues = getProp(itemTemplate, 'properties.contingentValues');
+export function cacheContingentValues(id: string, fieldInfos: any, itemTemplate: IItemTemplate): any {
+  const contingentValues = getProp(itemTemplate, "properties.contingentValues");
   if (contingentValues && contingentValues[id]) {
-    fieldInfos[id]['contingentValues'] = contingentValues[id];
+    fieldInfos[id]["contingentValues"] = contingentValues[id];
   }
   return fieldInfos;
 }
@@ -320,19 +272,9 @@ export function cacheContingentValues(
  * @param fieldInfos the object that will store the cached property
  * @private
  */
-export function _cacheFieldInfo(
-  layer: any,
-  prop: string,
-  fieldInfos: any,
-  removeProp: boolean
-): void {
+export function _cacheFieldInfo(layer: any, prop: string, fieldInfos: any, removeProp: boolean): void {
   /* istanbul ignore else */
-  if (
-    layer &&
-    layer.hasOwnProperty(prop) &&
-    fieldInfos &&
-    fieldInfos.hasOwnProperty(layer.id)
-  ) {
+  if (layer && layer.hasOwnProperty(prop) && fieldInfos && fieldInfos.hasOwnProperty(layer.id)) {
     fieldInfos[layer.id][prop] = layer[prop];
     // editFieldsInfo does not come through unless its with the layer
     // when it's being added
@@ -353,7 +295,7 @@ export function cachePopupInfos(data: any): any {
   // store any popupInfo so we can update after any potential name changes
   const popupInfos: IPopupInfos = {
     layers: {},
-    tables: {}
+    tables: {},
   };
 
   if (data && data.layers && data.layers.length > 0) {
@@ -375,11 +317,7 @@ export function cachePopupInfos(data: any): any {
  * @param _items list or either layers or tables
  * @private
  */
-export function _cachePopupInfo(
-  popupInfos: IPopupInfos,
-  type: "layers" | "tables",
-  _items: any
-): void {
+export function _cachePopupInfo(popupInfos: IPopupInfos, type: "layers" | "tables", _items: any): void {
   _items.forEach((item: any) => {
     if (item && item.hasOwnProperty("popupInfo")) {
       popupInfos[type][item.id] = item.popupInfo;
@@ -398,23 +336,18 @@ export function _cachePopupInfo(
  * @param templateDictionary Hash of key details used for variable replacement
  * @returns templatized itemTemplate
  */
-export function cacheLayerInfo(
-  layerId: string,
-  itemId: string,
-  url: string,
-  templateDictionary: any
-): void {
+export function cacheLayerInfo(layerId: string, itemId: string, url: string, templateDictionary: any): void {
   if (layerId) {
     const layerIdVar = `layer${layerId}`;
 
     // need to structure these differently so they are not used for standard replacement calls
     // this now adds additional vars that are not needing replacement unless we fail to fetch the service
     const newVars = getProp(templateDictionary, `${UNREACHABLE}.${itemId}`) || {
-      itemId
+      itemId,
     };
     newVars[layerIdVar] = getProp(newVars, layerIdVar) || {
       layerId,
-      itemId
+      itemId,
     };
 
     if (url !== "") {
@@ -426,7 +359,7 @@ export function cacheLayerInfo(
 
     templateDictionary[UNREACHABLE] = {
       ...templateDictionary[UNREACHABLE],
-      ...unreachableVars
+      ...unreachableVars,
     };
   }
 }
@@ -443,20 +376,17 @@ export function cacheLayerInfo(
 export function updateTemplate(
   itemTemplate: IItemTemplate,
   templateDictionary: any,
-  createResponse: any
+  createResponse: any,
 ): IItemTemplate {
   // Update the item with any typeKeywords that were added on create
   _updateTypeKeywords(itemTemplate, createResponse);
 
   // Add the new item to the template dictionary
-  templateDictionary[itemTemplate.itemId] = Object.assign(
-    templateDictionary[itemTemplate.itemId] || {},
-    {
-      itemId: createResponse.serviceItemId,
-      url: checkUrlPathTermination(createResponse.serviceurl),
-      name: createResponse.name
-    }
-  );
+  templateDictionary[itemTemplate.itemId] = Object.assign(templateDictionary[itemTemplate.itemId] || {}, {
+    itemId: createResponse.serviceItemId,
+    url: checkUrlPathTermination(createResponse.serviceurl),
+    name: createResponse.name,
+  });
 
   // Update the item template now that the new service has been created
   itemTemplate.itemId = createResponse.serviceItemId;
@@ -472,21 +402,14 @@ export function updateTemplate(
  * @returns An updated instance of the template
  * @private
  */
-export function _updateTypeKeywords(
-  itemTemplate: IItemTemplate,
-  createResponse: any
-): IItemTemplate {
+export function _updateTypeKeywords(itemTemplate: IItemTemplate, createResponse: any): IItemTemplate {
   // https://github.com/Esri/solution.js/issues/589
 
   const iKwords: string[] = getProp(itemTemplate, "item.typeKeywords");
   const cKwords: string[] = getProp(createResponse, "typeKeywords");
 
   if (iKwords && cKwords) {
-    setProp(
-      itemTemplate,
-      "item.typeKeywords",
-      iKwords.concat(cKwords.filter(k => iKwords.indexOf(k) < 0))
-    );
+    setProp(itemTemplate, "item.typeKeywords", iKwords.concat(cKwords.filter((k) => iKwords.indexOf(k) < 0)));
   }
 
   return itemTemplate;
@@ -503,28 +426,18 @@ export function _updateTypeKeywords(
  * @param layerInfos The object that stores the cached layer properties and name mapping
  * @returns The settings object that will be used to de-templatize the field references.
  */
-export function getLayerSettings(
-  layerInfos: any,
-  url: string,
-  itemId: string,
-  enterpriseIDMapping?: any
-): any {
+export function getLayerSettings(layerInfos: any, url: string, itemId: string, enterpriseIDMapping?: any): any {
   const settings: any = {};
   const ids = Object.keys(layerInfos);
   ids.forEach((id: any) => {
     const _layerId = getProp(layerInfos[id], "item.id");
     const isNum: boolean = parseInt(_layerId, 10) > -1;
-    const layerId: number =
-      isNum && enterpriseIDMapping
-        ? enterpriseIDMapping[_layerId]
-        : isNum
-        ? _layerId
-        : id;
+    const layerId: number = isNum && enterpriseIDMapping ? enterpriseIDMapping[_layerId] : isNum ? _layerId : id;
     settings[`layer${isNum ? _layerId : id}`] = {
       fields: _getNameMapping(layerInfos, id),
       url: checkUrlPathTermination(url) + layerId,
       layerId,
-      itemId
+      itemId,
     };
     deleteProp(layerInfos[id], "newFields");
     deleteProp(layerInfos[id], "sourceFields");
@@ -542,12 +455,9 @@ export function getLayerSettings(
  * @param solutionItemId The item id for the deployed solution item.
  * @returns An updated collection of AGO templates with unique feature service names.
  */
-export function setNamesAndTitles(
-  templates: IItemTemplate[],
-  solutionItemId: string
-): IItemTemplate[] {
+export function setNamesAndTitles(templates: IItemTemplate[], solutionItemId: string): IItemTemplate[] {
   const names: string[] = [];
-  return templates.map(t => {
+  return templates.map((t) => {
     /* istanbul ignore else */
     if (t.item.type === "Feature Service") {
       // Retain the existing title but swap with name if it's missing
@@ -566,10 +476,7 @@ export function setNamesAndTitles(
         const name: string = baseName.substring(0, 50) + "_" + solutionItemId;
 
         // If the name + GUID already exists then append "_occurrenceCount"
-        t.item.name =
-          names.indexOf(name) === -1
-            ? name
-            : `${name}_${names.filter(n => n === name).length}`;
+        t.item.name = names.indexOf(name) === -1 ? name : `${name}_${names.filter((n) => n === name).length}`;
 
         names.push(name);
       }
@@ -587,10 +494,7 @@ export function setNamesAndTitles(
  * @param itemTemplate The current itemTemplate being processed.
  * @param settings The settings object used to de-templatize the various templates within the item.
  */
-export function updateSettingsFieldInfos(
-  itemTemplate: IItemTemplate,
-  settings: any
-): void {
+export function updateSettingsFieldInfos(itemTemplate: IItemTemplate, settings: any): void {
   const dependencies = itemTemplate.dependencies;
   const id = itemTemplate.itemId;
   const settingsKeys = Object.keys(settings);
@@ -603,13 +507,11 @@ export function updateSettingsFieldInfos(
             // combine for multi-source views
             const fieldInfos = {};
             fieldInfos[d] = getProp(settings[_k], "fieldInfos");
-            settings[k]["sourceServiceFields"] = settings[k][
-              "sourceServiceFields"
-            ]
+            settings[k]["sourceServiceFields"] = settings[k]["sourceServiceFields"]
               ? { ...settings[k]["sourceServiceFields"], ...fieldInfos }
               : fieldInfos;
             const layerKeys = Object.keys(settings[_k]);
-            layerKeys.forEach(layerKey => {
+            layerKeys.forEach((layerKey) => {
               /* istanbul ignore else */
               if (layerKey.startsWith("layer")) {
                 settings[k][layerKey] = settings[_k][layerKey];
@@ -633,21 +535,19 @@ export function updateSettingsFieldInfos(
  */
 export function updateTemplateForInvalidDesignations(
   template: IItemTemplate,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IItemTemplate> {
   return new Promise<IItemTemplate>((resolve, reject) => {
     template.properties.hasInvalidDesignations = true;
     if (template.item.url) {
       // get the admin URL
       const url: string = template.item.url;
-      rest_request(url + "?f=json", {
-        authentication: authentication
+      request(url + "?f=json", {
+        authentication: authentication,
       }).then(
-        serviceData => {
+        (serviceData) => {
           const layerInfos: any = {};
-          const layersAndTables: any[] = (serviceData.layers || []).concat(
-            serviceData.tables || []
-          );
+          const layersAndTables: any[] = (serviceData.layers || []).concat(serviceData.tables || []);
           layersAndTables.forEach((l: any) => {
             /* istanbul ignore else */
             if (l && l.hasOwnProperty("id")) {
@@ -657,13 +557,13 @@ export function updateTemplateForInvalidDesignations(
 
           template.data[template.itemId] = Object.assign(
             {
-              itemId: template.itemId
+              itemId: template.itemId,
             },
-            getLayerSettings(layerInfos, url, template.itemId)
+            getLayerSettings(layerInfos, url, template.itemId),
           );
           resolve(template);
         },
-        e => reject(fail(e))
+        (e) => reject(fail(e)),
       );
     } else {
       resolve(template);
@@ -685,26 +585,24 @@ export function updateTemplateForInvalidDesignations(
 export function processContingentValues(
   properties: IFeatureServiceProperties,
   adminUrl: string,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    if (getProp(properties, 'service.isView')) {
+    if (getProp(properties, "service.isView")) {
       // views will inherit from the source service
       resolve();
     } else {
-      const layersAndTables: any[] = (properties.layers || []).concat(
-        properties.tables || []
-      );
+      const layersAndTables: any[] = (properties.layers || []).concat(properties.tables || []);
       const layerIds = [];
       const contingentValuePromises: Array<Promise<any>> = layersAndTables.reduce((prev, cur) => {
         /* istanbul ignore else */
         if (cur.hasContingentValuesDefinition) {
           prev.push(
-            rest_request(
-              `${adminUrl}/${cur['id']}/contingentValues?f=json`, { authentication }
-            )
+            request(`${adminUrl}/${cur["id"]}/contingentValues?f=json`, {
+              authentication,
+            }),
           );
-          layerIds.push(cur['id']);
+          layerIds.push(cur["id"]);
         }
         return prev;
       }, []);
@@ -713,16 +611,18 @@ export function processContingentValues(
         Promise.all(contingentValuePromises).then((results) => {
           const contingentValues = {};
           results.forEach((r, i) => {
-            deleteProp(r, 'typeCodes');
+            deleteProp(r, "typeCodes");
             /* istanbul ignore else */
-            if (getProp(r, 'stringDicts') && getProp(r, 'contingentValuesDefinition')) {
-              r.contingentValuesDefinition['stringDicts'] = r.stringDicts;
-              deleteProp(r, 'stringDicts');
+            if (getProp(r, "stringDicts") && getProp(r, "contingentValuesDefinition")) {
+              r.contingentValuesDefinition["stringDicts"] = r.stringDicts;
+              deleteProp(r, "stringDicts");
             }
-            deleteProps(
-              getProp(r, 'contingentValuesDefinition'),
-              ['layerID', 'layerName', 'geometryType', 'hasSubType']
-            );
+            deleteProps(getProp(r, "contingentValuesDefinition"), [
+              "layerID",
+              "layerName",
+              "geometryType",
+              "hasSubType",
+            ]);
             contingentValues[layerIds[i]] = r;
           });
           properties.contingentValues = contingentValues;
@@ -744,37 +644,27 @@ export function processContingentValues(
  * @param settings The settings object that has all of the mappings for de-templatizing.
  * @returns An object that contains updated instances of popupInfos, fieldInfos, and adminLayerInfos
  */
-export function deTemplatizeFieldInfos(
-  fieldInfos: any,
-  popupInfos: any,
-  adminLayerInfos: any,
-  settings: any
-): any {
+export function deTemplatizeFieldInfos(fieldInfos: any, popupInfos: any, adminLayerInfos: any, settings: any): any {
   const fieldInfoKeys = Object.keys(fieldInfos);
-  fieldInfoKeys.forEach(id => {
+  fieldInfoKeys.forEach((id) => {
     if (fieldInfos[id].hasOwnProperty("templates")) {
-      fieldInfos[id].templates = JSON.parse(
-        replaceInTemplate(JSON.stringify(fieldInfos[id].templates), settings)
-      );
+      fieldInfos[id].templates = JSON.parse(replaceInTemplate(JSON.stringify(fieldInfos[id].templates), settings));
     }
 
     if (fieldInfos[id].hasOwnProperty("adminLayerInfo")) {
-      adminLayerInfos[id].viewLayerDefinition.table.relatedTables =
-        fieldInfos[id].adminLayerInfo;
+      adminLayerInfos[id].viewLayerDefinition.table.relatedTables = fieldInfos[id].adminLayerInfo;
       deleteProp(fieldInfos[id], "adminLayerInfo");
     }
 
     if (fieldInfos[id].hasOwnProperty("types")) {
-      fieldInfos[id].types = JSON.parse(
-        replaceInTemplate(JSON.stringify(fieldInfos[id].types), settings)
-      );
+      fieldInfos[id].types = JSON.parse(replaceInTemplate(JSON.stringify(fieldInfos[id].types), settings));
     }
   });
 
   return {
     popupInfos: replaceInTemplate(popupInfos, settings),
     fieldInfos: replaceInTemplate(fieldInfos, settings),
-    adminLayerInfos: replaceInTemplate(adminLayerInfos, settings)
+    adminLayerInfos: replaceInTemplate(adminLayerInfos, settings),
   };
 }
 
@@ -790,16 +680,16 @@ export function deTemplatizeFieldInfos(
 export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
   const properties: any = itemTemplate.properties;
   const layersAndTables: any[] = [];
-  (properties.layers || []).forEach(function(layer: any) {
+  (properties.layers || []).forEach(function (layer: any) {
     layersAndTables.push({
       item: layer,
-      type: "layer"
+      type: "layer",
     });
   });
-  (properties.tables || []).forEach(function(table: any) {
+  (properties.tables || []).forEach(function (table: any) {
     layersAndTables.push({
       item: table,
-      type: "table"
+      type: "table",
     });
   });
   return layersAndTables;
@@ -816,20 +706,16 @@ export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
  * @returns A promise that will resolve an array of promises with either a failure or the data
  * @private
  */
-export function getExistingLayersAndTables(
-  url: string,
-  ids: number[],
-  authentication: UserSession
-): Promise<any> {
+export function getExistingLayersAndTables(url: string, ids: number[], authentication: UserSession): Promise<any> {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  return new Promise(resolve => {
-    const defs: Array<Promise<any>> = ids.map(id => {
-      return rest_request(checkUrlPathTermination(url) + id, {
-        authentication
+  return new Promise((resolve) => {
+    const defs: Array<Promise<any>> = ids.map((id) => {
+      return request(checkUrlPathTermination(url) + id, {
+        authentication,
       });
     });
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    Promise.all(defs.map(p => p.catch(e => e))).then(resolve);
+    Promise.all(defs.map((p) => p.catch((e) => e))).then(resolve);
   });
 }
 
@@ -848,7 +734,7 @@ export function addFeatureServiceLayersAndTables(
   itemTemplate: IItemTemplate,
   templateDictionary: any,
   popupInfos: IPopupInfos,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     if (isTrackingViewTemplate(itemTemplate)) {
@@ -868,43 +754,39 @@ export function addFeatureServiceLayersAndTables(
           itemTemplate.key,
           adminLayerInfos,
           fieldInfos,
-          itemTemplate
+          itemTemplate,
         ).then(
           () => {
             // Detemplatize field references and update the layer properties
             // Only failure path is handled by addFeatureServiceDefinition
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            updateLayerFieldReferences(
-              itemTemplate,
-              fieldInfos,
-              popupInfos,
-              adminLayerInfos,
-              templateDictionary
-            ).then(r => {
-              // Update relationships and layer definitions
-              const updates: IUpdate[] = getLayerUpdates(
-                {
-                  message: "updated layer definition",
-                  objects: r.layerInfos.fieldInfos,
-                  itemTemplate: r.itemTemplate,
-                  authentication
-                } as IPostProcessArgs,
-                templateDictionary.isPortal
-              );
-              // Process the updates sequentially
-              updates
-                .reduce((prev, update) => {
-                  return prev.then(() => {
-                    return getRequest(update);
-                  });
-                }, Promise.resolve(null))
-                .then(
-                  () => resolve(null),
-                  (e: any) => reject(fail(e)) // getRequest
+            updateLayerFieldReferences(itemTemplate, fieldInfos, popupInfos, adminLayerInfos, templateDictionary).then(
+              (r) => {
+                // Update relationships and layer definitions
+                const updates: IUpdate[] = getLayerUpdates(
+                  {
+                    message: "updated layer definition",
+                    objects: r.layerInfos.fieldInfos,
+                    itemTemplate: r.itemTemplate,
+                    authentication,
+                  } as IPostProcessArgs,
+                  templateDictionary.isPortal,
                 );
-            });
+                // Process the updates sequentially
+                updates
+                  .reduce((prev, update) => {
+                    return prev.then(() => {
+                      return getRequest(update);
+                    });
+                  }, Promise.resolve(null))
+                  .then(
+                    () => resolve(null),
+                    (e: any) => reject(fail(e)), // getRequest
+                  );
+              },
+            );
           },
-          e => reject(fail(e)) // addFeatureServiceDefinition
+          (e) => reject(fail(e)), // addFeatureServiceDefinition
         );
       } else {
         resolve(null);
@@ -936,7 +818,7 @@ export function addFeatureServiceDefinition(
   key: string,
   adminLayerInfos: any,
   fieldInfos: any,
-  itemTemplate: IItemTemplate
+  itemTemplate: IItemTemplate,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     if (isTrackingViewTemplate(itemTemplate)) {
@@ -945,7 +827,7 @@ export function addFeatureServiceDefinition(
       let options: any = {
         layers: [],
         tables: [],
-        authentication
+        authentication,
       };
 
       // if the service has veiws keep track of the fields so we can use them to
@@ -963,17 +845,10 @@ export function addFeatureServiceDefinition(
       listToAdd.forEach((toAdd, i) => {
         let item = toAdd.item;
         const originalId = item.id;
-        fieldInfos = cacheFieldInfos(
-          item,
-          fieldInfos
-        );
+        fieldInfos = cacheFieldInfos(item, fieldInfos);
 
         // cache the values to be added in seperate addToDef calls
-        fieldInfos = cacheContingentValues(
-          item.id,
-          fieldInfos,
-          itemTemplate
-        );
+        fieldInfos = cacheContingentValues(item.id, fieldInfos, itemTemplate);
 
         /* istanbul ignore else */
         if (item.isView) {
@@ -989,17 +864,13 @@ export function addFeatureServiceDefinition(
           // bring over the fieldInfos from the source layer
           updateSettingsFieldInfos(itemTemplate, templateDictionary);
           // update adminLayerInfo before add to definition with view source fieldInfo settings
-          item.adminLayerInfo = replaceInTemplate(
-            item.adminLayerInfo,
-            templateDictionary
-          );
+          item.adminLayerInfo = replaceInTemplate(item.adminLayerInfo, templateDictionary);
 
           /* istanbul ignore else */
           if (fieldInfos && fieldInfos.hasOwnProperty(item.id)) {
-            Object.keys(templateDictionary).some(k => {
+            Object.keys(templateDictionary).some((k) => {
               if (templateDictionary[k].itemId === itemTemplate.itemId) {
-                fieldInfos[item.id]["sourceServiceFields"] =
-                  templateDictionary[k].sourceServiceFields;
+                fieldInfos[item.id]["sourceServiceFields"] = templateDictionary[k].sourceServiceFields;
                 return true;
               } else {
                 return false;
@@ -1015,13 +886,7 @@ export function addFeatureServiceDefinition(
         removeLayerOptimization(item);
 
         // this can still chunk layers
-        options = _updateAddOptions(
-          itemTemplate,
-          options,
-          layerChunks,
-          isSelfReferential,
-          authentication
-        );
+        options = _updateAddOptions(itemTemplate, options, layerChunks, isSelfReferential, authentication);
 
         if (item.type === "Feature Layer") {
           options.layers.push(item);
@@ -1039,7 +904,7 @@ export function addFeatureServiceDefinition(
           options = {
             layers: [],
             tables: [],
-            authentication
+            authentication,
           };
         }
       });
@@ -1050,13 +915,12 @@ export function addFeatureServiceDefinition(
 
       layerChunks
         .reduce(
-          (prev, curr) =>
-            prev.then(() => addToServiceDefinition(serviceUrl, curr, false, useAsync)),
-          Promise.resolve(null)
+          (prev, curr) => prev.then(() => addToServiceDefinition(serviceUrl, curr, false, useAsync)),
+          Promise.resolve(null),
         )
         .then(
           () => resolve(null),
-          (e: any) => reject(fail(e))
+          (e: any) => reject(fail(e)),
         );
     }
   });
@@ -1073,11 +937,7 @@ export function addFeatureServiceDefinition(
  * @returns Sorted list of layers and tables when using a multi-service view
  * @private
  */
-export function _updateOrder(
-  layersAndTables: any[],
-  isSelfReferential: boolean,
-  itemTemplate: IItemTemplate
-): any[] {
+export function _updateOrder(layersAndTables: any[], isSelfReferential: boolean, itemTemplate: IItemTemplate): any[] {
   const isMsView: boolean = getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
   return isSelfReferential || isMsView ? layersAndTables.sort((a, b) => a.item.id - b.item.id) : layersAndTables;
 }
@@ -1100,7 +960,7 @@ export function _updateAddOptions(
   options: any,
   layerChunks: any[],
   isSelfReferential: boolean,
-  authentication: UserSession
+  authentication: UserSession,
 ): any {
   const isMsView: boolean = getProp(itemTemplate, "properties.service.isMultiServicesView") || false;
   /* istanbul ignore else */
@@ -1112,7 +972,7 @@ export function _updateAddOptions(
       options = {
         layers: [],
         tables: [],
-        authentication
+        authentication,
       };
     }
   }
@@ -1128,12 +988,10 @@ export function _updateAddOptions(
  * @returns true when valid internal references are found
  * @private
  */
-export function _isSelfReferential(
-  layersAndTables: any[]
-): boolean {
-  const names = layersAndTables.map(l => l.item.name);
+export function _isSelfReferential(layersAndTables: any[]): boolean {
+  const names = layersAndTables.map((l) => l.item.name);
   const srcTables = {};
-  return layersAndTables.some(l => {
+  return layersAndTables.some((l) => {
     const table = l.item.adminLayerInfo?.viewLayerDefinition?.table;
     if (table) {
       const name = table.sourceServiceName;
@@ -1146,10 +1004,10 @@ export function _isSelfReferential(
             srcTables[name].push(id);
           }
         } else {
-          srcTables[name] = [id]
+          srcTables[name] = [id];
         }
       }
-      return (table.relatedTables || []).some(r => names.indexOf(r.name) > -1);
+      return (table.relatedTables || []).some((r) => names.indexOf(r.name) > -1);
     }
   });
 }
@@ -1177,17 +1035,11 @@ export function removeLayerOptimization(layer: any): void {
  * @returns the updated item
  * @private
  */
-export function _updateForPortal(
-  item: any,
-  itemTemplate: IItemTemplate,
-  templateDictionary: any
-): any {
+export function _updateForPortal(item: any, itemTemplate: IItemTemplate, templateDictionary: any): any {
   // When deploying to portal we need to adjust the uniquie ID field up front
   /* istanbul ignore else */
   if (item.uniqueIdField && item.uniqueIdField.name) {
-    item.uniqueIdField.name = String(
-      item.uniqueIdField.name
-    ).toLocaleLowerCase();
+    item.uniqueIdField.name = String(item.uniqueIdField.name).toLocaleLowerCase();
   }
 
   // Portal will fail if the geometryField is null
@@ -1198,18 +1050,11 @@ export function _updateForPortal(
   // Portal will fail if the sourceFields in the viewLayerDef contain fields that are not in the source service
   /* istanbul ignore else */
   if (item.isView) {
-    const viewLayerDefTable: any = getProp(
-      item,
-      "adminLayerInfo.viewLayerDefinition.table"
-    );
+    const viewLayerDefTable: any = getProp(item, "adminLayerInfo.viewLayerDefinition.table");
 
     let fieldNames: string[] = [];
     if (viewLayerDefTable) {
-      const tableFieldNames: string[] = _getFieldNames(
-        viewLayerDefTable,
-        itemTemplate,
-        templateDictionary
-      );
+      const tableFieldNames: string[] = _getFieldNames(viewLayerDefTable, itemTemplate, templateDictionary);
       fieldNames = fieldNames.concat(tableFieldNames);
 
       const dynamicFieldNames = _getDynamicFieldNames(viewLayerDefTable);
@@ -1218,31 +1063,24 @@ export function _updateForPortal(
       setProp(
         item,
         "adminLayerInfo.viewLayerDefinition.table",
-        _updateSourceLayerFields(viewLayerDefTable, fieldNames)
+        _updateSourceLayerFields(viewLayerDefTable, fieldNames),
       );
 
       // Handle related also
       /* istanbul ignore else */
       if (Array.isArray(viewLayerDefTable.relatedTables)) {
         viewLayerDefTable.relatedTables.map((relatedTable: any) => {
-          const relatedTableFieldNames: string[] = _getFieldNames(
-            relatedTable,
-            itemTemplate,
-            templateDictionary
-          );
+          const relatedTableFieldNames: string[] = _getFieldNames(relatedTable, itemTemplate, templateDictionary);
           fieldNames = fieldNames.concat(relatedTableFieldNames);
 
           const dynamicRelatedFieldNames = _getDynamicFieldNames(relatedTable);
           fieldNames = fieldNames.concat(dynamicRelatedFieldNames);
 
-          return _updateSourceLayerFields(
-            relatedTable,
-            [...relatedTableFieldNames, ...dynamicRelatedFieldNames]
-          );
+          return _updateSourceLayerFields(relatedTable, [...relatedTableFieldNames, ...dynamicRelatedFieldNames]);
         });
       }
     } else {
-      Object.keys(templateDictionary).some(k => {
+      Object.keys(templateDictionary).some((k) => {
         /* istanbul ignore else */
         if (templateDictionary[k].itemId === item.serviceItemId) {
           const layerInfo: any = templateDictionary[k][`layer${item.id}`];
@@ -1278,33 +1116,21 @@ export function _updateForPortal(
  * @returns an array of the source layers fields
  * @private
  */
-export function _getFieldNames(
-  table: any,
-  itemTemplate: IItemTemplate,
-  templateDictionary: any
-): string[] {
+export function _getFieldNames(table: any, itemTemplate: IItemTemplate, templateDictionary: any): string[] {
   let sourceLayerFields: any[] = [];
   const viewSourceLayerId: number = table.sourceLayerId;
 
   /* istanbul ignore else */
   if (typeof viewSourceLayerId === "number") {
     // need to make sure these actually exist in the source..
-    itemTemplate.dependencies.forEach(d => {
+    itemTemplate.dependencies.forEach((d) => {
       const layerInfo: any = templateDictionary[d][`layer${viewSourceLayerId}`];
       /* istanbul ignore else */
-      if (
-        layerInfo &&
-        layerInfo.fields &&
-        templateDictionary[d].name === table.sourceServiceName
-      ) {
+      if (layerInfo && layerInfo.fields && templateDictionary[d].name === table.sourceServiceName) {
         if (Array.isArray(layerInfo.fields)) {
-          sourceLayerFields = sourceLayerFields.concat(
-            layerInfo.fields.map((f: any) => f.name)
-          );
+          sourceLayerFields = sourceLayerFields.concat(layerInfo.fields.map((f: any) => f.name));
         } else {
-          sourceLayerFields = sourceLayerFields.concat(
-            Object.keys(layerInfo.fields)
-          );
+          sourceLayerFields = sourceLayerFields.concat(Object.keys(layerInfo.fields));
         }
       }
     });
@@ -1321,9 +1147,7 @@ export function _getFieldNames(
  * @returns an array of field names
  * @private
  */
-export function _getDynamicFieldNames(
-  table: any
-): string[] {
+export function _getDynamicFieldNames(table: any): string[] {
   const fieldNames: string[] = table.sourceLayerFields.reduce((prev, cur) => {
     if (cur.statisticType) {
       prev.push(cur.name);
@@ -1347,15 +1171,11 @@ export function _updateItemFields(item: any, fieldNames: string[]): any {
   if (fieldNames.length > 0) {
     /* istanbul ignore else */
     if (item.fields) {
-      item.fields = item.fields.filter(
-        (f: any) => fieldNames.indexOf(f.name) > -1
-      );
+      item.fields = item.fields.filter((f: any) => fieldNames.indexOf(f.name) > -1);
     }
     /* istanbul ignore else */
     if (item.indexes) {
-      item.indexes = item.indexes.filter(
-        (f: any) => fieldNames.indexOf(f.fields) > -1
-      );
+      item.indexes = item.indexes.filter((f: any) => fieldNames.indexOf(f.fields) > -1);
     }
   }
   return item;
@@ -1369,24 +1189,16 @@ export function _updateItemFields(item: any, fieldNames: string[]): any {
  * @returns Updated instance of the table
  * @private
  */
-export function _updateSourceLayerFields(
-  table: any,
-  sourceLayerFields: string[]
-): any {
+export function _updateSourceLayerFields(table: any, sourceLayerFields: string[]): any {
   /* istanbul ignore else */
-  if (
-    Array.isArray(table.sourceLayerFields) &&
-    table.sourceLayerFields.length > 0
-  ) {
+  if (Array.isArray(table.sourceLayerFields) && table.sourceLayerFields.length > 0) {
     // need to make sure these actually exist in the source..
     /* istanbul ignore else */
     if (sourceLayerFields.length > 0) {
       setProp(
         table,
         "sourceLayerFields",
-        table.sourceLayerFields.filter(
-          (f: any) => sourceLayerFields.indexOf(f.source.toLowerCase()) > -1
-        )
+        table.sourceLayerFields.filter((f: any) => sourceLayerFields.indexOf(f.source.toLowerCase()) > -1),
       );
     }
   }
@@ -1401,21 +1213,13 @@ export function _updateSourceLayerFields(
  * @param templateDictionary Hash mapping property names to replacement values
  * @private
  */
-export function _updateGeomFieldName(
-  adminLayerInfo: any,
-  templateDictionary: any
-): void {
+export function _updateGeomFieldName(adminLayerInfo: any, templateDictionary: any): void {
   // issue #471
-  const tableName: string = getProp(
-    adminLayerInfo,
-    "viewLayerDefinition.table.name"
-  );
+  const tableName: string = getProp(adminLayerInfo, "viewLayerDefinition.table.name");
   const fieldName: string = getProp(adminLayerInfo, "geometryField.name");
   /* istanbul ignore else */
   if (fieldName && tableName) {
-    const geomName: string = templateDictionary.isPortal
-      ? `${tableName}.shape`
-      : `${tableName}.Shape`;
+    const geomName: string = templateDictionary.isPortal ? `${tableName}.shape` : `${tableName}.Shape`;
     setProp(adminLayerInfo, "geometryField.name", geomName);
   } else if (!fieldName && getProp(adminLayerInfo, "geometryField")) {
     // null geom field will cause failure to deploy in portal
@@ -1438,21 +1242,17 @@ export function _updateGeomFieldName(
 export function _updateTemplateDictionaryFields(
   itemTemplate: IItemTemplate,
   templateDictionary: any,
-  compareItemId: boolean = true
+  compareItemId: boolean = true,
 ): void {
   const layers: any[] = itemTemplate.properties.layers;
   const tables: any[] = itemTemplate.properties.tables;
   const layersAndTables: any[] = layers.concat(tables);
   const fieldInfos: any = {};
-  layersAndTables.forEach(layerOrTable => {
+  layersAndTables.forEach((layerOrTable) => {
     fieldInfos[layerOrTable.id] = layerOrTable.fields;
   });
-  Object.keys(templateDictionary).some(k => {
-    if (
-      compareItemId
-        ? templateDictionary[k].itemId === itemTemplate.itemId
-        : k === itemTemplate.itemId
-    ) {
+  Object.keys(templateDictionary).some((k) => {
+    if (compareItemId ? templateDictionary[k].itemId === itemTemplate.itemId : k === itemTemplate.itemId) {
       templateDictionary[k].fieldInfos = fieldInfos;
       return true;
     } else {
@@ -1471,18 +1271,10 @@ export function _updateTemplateDictionaryFields(
  * @param spatialReference \{ wkid: 102100 \} for example
  * @private
  */
-export function setDefaultSpatialReference(
-  templateDictionary: any,
-  itemId: string,
-  spatialReference: any
-): void {
+export function setDefaultSpatialReference(templateDictionary: any, itemId: string, spatialReference: any): void {
   /* istanbul ignore else */
   if (spatialReference) {
-    setCreateProp(
-      templateDictionary,
-      `${itemId}.defaultSpatialReference`,
-      spatialReference
-    );
+    setCreateProp(templateDictionary, `${itemId}.defaultSpatialReference`, spatialReference);
   }
 }
 
@@ -1499,37 +1291,24 @@ export function setDefaultSpatialReference(
 export function validateSpatialReferenceAndExtent(
   serviceInfo: any,
   itemTemplate: IItemTemplate,
-  templateDictionary: any
+  templateDictionary: any,
 ): void {
   /* istanbul ignore else */
   if (getProp(serviceInfo, "service.isView")) {
     // first pass ensure we have a geometry type before getting the spatial reference or extent
     // issue: #1368
-    const geomCheckResults = _getSourceSpatialReferenceAndExtent(
-      serviceInfo,
-      itemTemplate,
-      templateDictionary,
-      true
-    );
+    const geomCheckResults = _getSourceSpatialReferenceAndExtent(serviceInfo, itemTemplate, templateDictionary, true);
 
     // if not found with first pass just check for the first service that has the key values defined
     // as we did before the above handeling
-    const results = _getSourceSpatialReferenceAndExtent(
-      serviceInfo,
-      itemTemplate,
-      templateDictionary,
-      false
-    );
+    const results = _getSourceSpatialReferenceAndExtent(serviceInfo, itemTemplate, templateDictionary, false);
 
     const sourceSR = geomCheckResults.spatialReference || results.spatialReference;
     const sourceExt = geomCheckResults.extent || results.extent;
 
     const sourceWkid: number = getProp(sourceSR, "wkid");
 
-    const viewWkid: number = getProp(
-      serviceInfo,
-      "service.spatialReference.wkid"
-    );
+    const viewWkid: number = getProp(serviceInfo, "service.spatialReference.wkid");
     /* istanbul ignore else */
     if (sourceWkid && viewWkid && sourceWkid !== viewWkid) {
       setCreateProp(serviceInfo, "service.spatialReference", sourceSR);
@@ -1537,11 +1316,7 @@ export function validateSpatialReferenceAndExtent(
 
     const viewExt: number = getProp(serviceInfo, "service.fullExtent");
     /* istanbul ignore else */
-    if (
-      sourceExt &&
-      viewExt &&
-      JSON.stringify(sourceExt) !== JSON.stringify(viewExt)
-    ) {
+    if (sourceExt && viewExt && JSON.stringify(sourceExt) !== JSON.stringify(viewExt)) {
       setCreateProp(serviceInfo, "defaultExtent", sourceExt);
     }
   }
@@ -1563,23 +1338,22 @@ export function _getSourceSpatialReferenceAndExtent(
   serviceInfo: any,
   itemTemplate: IItemTemplate,
   templateDictionary: any,
-  validateGeom: boolean
+  validateGeom: boolean,
 ): IDefaultSpatialReferenceAndExtent {
-  const layersAndTables = [
-    ...serviceInfo.layers || [],
-    ...serviceInfo.tables || []
-  ];
+  const layersAndTables = [...(serviceInfo.layers || []), ...(serviceInfo.tables || [])];
 
   let spatialReference: ISpatialReference;
   let extent: IExtent;
 
-  itemTemplate.dependencies.some(id => {
+  itemTemplate.dependencies.some((id) => {
     const source: any = templateDictionary[id];
 
-    const hasGeom = validateGeom ? layersAndTables.some(layerOrTable => {
-      const name = getProp(layerOrTable, "adminLayerInfo.viewLayerDefinition.table.sourceServiceName");
-      return name && source.name && name === source.name && layerOrTable.geometryType;
-    }) : true;
+    const hasGeom = validateGeom
+      ? layersAndTables.some((layerOrTable) => {
+          const name = getProp(layerOrTable, "adminLayerInfo.viewLayerDefinition.table.sourceServiceName");
+          return name && source.name && name === source.name && layerOrTable.geometryType;
+        })
+      : true;
 
     const sr: any = getProp(source, "defaultSpatialReference");
     /* istanbul ignore else */
@@ -1597,8 +1371,8 @@ export function _getSourceSpatialReferenceAndExtent(
   });
   return {
     spatialReference,
-    extent
-  }
+    extent,
+  };
 }
 
 /**
@@ -1618,27 +1392,21 @@ export function updateLayerFieldReferences(
   fieldInfos: any,
   popupInfos: IPopupInfos,
   adminLayerInfos: any,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<any> {
   return new Promise((resolveFn, rejectFn) => {
     // Will need to do some post processing for fields
     // to handle any potential field name changes when deploying to portal
-    postProcessFields(
-      itemTemplate,
-      fieldInfos,
-      popupInfos,
-      adminLayerInfos,
-      templateDictionary
-    ).then(
+    postProcessFields(itemTemplate, fieldInfos, popupInfos, adminLayerInfos, templateDictionary).then(
       (layerInfos: any) => {
         // Update the items text with detemplatized popupInfo
         updatePopupInfo(itemTemplate, layerInfos.popupInfos);
         resolveFn({
           itemTemplate,
-          layerInfos
+          layerInfos,
         });
       },
-      e => rejectFn(fail(e))
+      (e) => rejectFn(fail(e)),
     );
   });
 }
@@ -1661,19 +1429,17 @@ export function postProcessFields(
   layerInfos: any,
   popupInfos: any,
   adminLayerInfos: any,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<any> {
   return new Promise((resolveFn, rejectFn) => {
     if (!itemTemplate.item.url) {
-      rejectFn(
-        fail("Feature layer " + itemTemplate.itemId + " does not have a URL")
-      );
+      rejectFn(fail("Feature layer " + itemTemplate.itemId + " does not have a URL"));
     } else {
       const id = itemTemplate.itemId;
       const settingsKeys = Object.keys(templateDictionary);
 
       let templateInfo: any;
-      settingsKeys.some(k => {
+      settingsKeys.some((k) => {
         if (templateDictionary[k].itemId === id) {
           templateInfo = templateDictionary[k];
           return true;
@@ -1699,15 +1465,12 @@ export function postProcessFields(
           const layerInfo: any = layerInfos[item.id];
           layerInfo["isView"] = item.isView;
           layerInfo["newFields"] = item.fields;
-          layerInfo["sourceSchemaChangesAllowed"] =
-            item.sourceSchemaChangesAllowed;
+          layerInfo["sourceSchemaChangesAllowed"] = item.sourceSchemaChangesAllowed;
 
           /* istanbul ignore else */
           if (item.editFieldsInfo) {
             // more than case change when deployed to protal so keep track of the new names
-            layerInfo["newEditFieldsInfo"] = JSON.parse(
-              JSON.stringify(item.editFieldsInfo)
-            );
+            layerInfo["newEditFieldsInfo"] = JSON.parse(JSON.stringify(item.editFieldsInfo));
           }
 
           /* istanbul ignore else */
@@ -1723,20 +1486,13 @@ export function postProcessFields(
         if (id === templateDictionary[k].itemId) {
           templateDictionary[k] = Object.assign(
             templateDictionary[k],
-            getLayerSettings(layerInfos, templateDictionary[k].url, id)
+            getLayerSettings(layerInfos, templateDictionary[k].url, id),
           );
         }
       });
 
       // update the layerInfos object with current field names
-      resolveFn(
-        deTemplatizeFieldInfos(
-          layerInfos,
-          popupInfos,
-          adminLayerInfos,
-          templateDictionary
-        )
-      );
+      resolveFn(deTemplatizeFieldInfos(layerInfos, popupInfos, adminLayerInfos, templateDictionary));
     }
   });
 }
@@ -1748,11 +1504,8 @@ export function postProcessFields(
  * @param popupInfos popup info to be added back to the layer
  * @private
  */
-export function updatePopupInfo(
-  itemTemplate: IItemTemplate,
-  popupInfos: any
-): void {
-  ["layers", "tables"].forEach(type => {
+export function updatePopupInfo(itemTemplate: IItemTemplate, popupInfos: any): void {
+  ["layers", "tables"].forEach((type) => {
     const _items: any[] = getProp(itemTemplate, "data." + type);
     /* istanbul ignore else */
     if (_items && Array.isArray(_items)) {
@@ -1774,21 +1527,11 @@ export function updatePopupInfo(
  * @param value to be converted to lower case for lookup while deploying
  * @private
  */
-export function _templatize(
-  basePath: string,
-  value: string,
-  suffix?: string
-): string {
+export function _templatize(basePath: string, value: string, suffix?: string): string {
   if (value.startsWith("{{")) {
     return value;
   } else {
-    return String(
-      templatizeTerm(
-        basePath,
-        basePath,
-        "." + String(value).toLowerCase() + (suffix ? "." + suffix : "")
-      )
-    );
+    return String(templatizeTerm(basePath, basePath, "." + String(value).toLowerCase() + (suffix ? "." + suffix : "")));
   }
 }
 
@@ -1800,12 +1543,7 @@ export function _templatize(
  * @param basePath path used to de-templatize while deploying
  * @private
  */
-export function _templatizeProperty(
-  object: any,
-  property: string,
-  basePath: string,
-  suffix: string
-): void {
+export function _templatizeProperty(object: any, property: string, basePath: string, suffix: string): void {
   if (object && object.hasOwnProperty(property) && object[property]) {
     object[property] = _templatize(basePath, object[property], suffix);
   }
@@ -1828,7 +1566,7 @@ export function _templatizeLayer(
   itemTemplate: IItemTemplate,
   dependencies: IDependency[],
   templatizeFieldReferences: boolean,
-  templateDictionary: any
+  templateDictionary: any,
 ): void {
   // check for and repair common field issues
   _validateFields(adminItem);
@@ -1836,12 +1574,7 @@ export function _templatizeLayer(
   // Templatize all properties that contain field references
   /* istanbul ignore else */
   if (templatizeFieldReferences) {
-    _templatizeLayerFieldReferences(
-      dataItem,
-      itemTemplate.itemId,
-      adminItem,
-      dependencies
-    );
+    _templatizeLayerFieldReferences(dataItem, itemTemplate.itemId, adminItem, dependencies);
   }
 
   const updates: any[] = [adminItem];
@@ -1849,37 +1582,25 @@ export function _templatizeLayer(
     updates.push(dataItem);
   }
 
-  updates.forEach(update => {
+  updates.forEach((update) => {
     if (update.hasOwnProperty("name")) {
       // templatize the name but leave the current name as the optional default
       update.name = templatizeTerm(
         update["serviceItemId"] + ".layer" + update.id,
         update["serviceItemId"] + ".layer" + update.id,
-        ".name||" + update.name
+        ".name||" + update.name,
       );
     }
     if (update.hasOwnProperty("extent")) {
-      update.extent = templatizeTerm(
-        update["serviceItemId"],
-        update["serviceItemId"],
-        ".solutionExtent"
-      );
+      update.extent = templatizeTerm(update["serviceItemId"], update["serviceItemId"], ".solutionExtent");
     }
 
     if (update.hasOwnProperty("serviceItemId")) {
-      update["serviceItemId"] = templatizeTerm(
-        update["serviceItemId"],
-        update["serviceItemId"],
-        ".itemId"
-      );
+      update["serviceItemId"] = templatizeTerm(update["serviceItemId"], update["serviceItemId"], ".itemId");
     }
 
     if (update.hasOwnProperty("adminLayerInfo")) {
-      update.adminLayerInfo = _templatizeAdminLayerInfo(
-        update,
-        dependencies,
-        templateDictionary
-      );
+      update.adminLayerInfo = _templatizeAdminLayerInfo(update, dependencies, templateDictionary);
     }
   });
 }
@@ -1916,14 +1637,11 @@ export function _validateFields(adminItem: any): void {
  * @param fieldNames string list of fields names
  * @private
  */
-export function _validateDisplayField(
-  adminItem: any,
-  fieldNames: string[]
-): void {
+export function _validateDisplayField(adminItem: any, fieldNames: string[]): void {
   const displayField: string = adminItem.displayField || "";
   let i: number = -1;
   if (
-    fieldNames.some(name => {
+    fieldNames.some((name) => {
       i += 1;
       return name === displayField || name === displayField.toLowerCase();
     })
@@ -1944,7 +1662,7 @@ export function _validateDisplayField(
       skipFields.push(globalIdField);
     }
 
-    fieldNames.some(name => {
+    fieldNames.some((name) => {
       if (skipFields.indexOf(name) === -1) {
         adminItem.displayField = name;
         return true;
@@ -1971,7 +1689,7 @@ export function _validateIndexes(adminItem: any, fieldNames: string[]): void {
     adminItem.indexes = indexes.reduce((filtered, index) => {
       const indexFields: any[] = index.fields.split(",");
       const verifiedFields: string[] = [];
-      indexFields.forEach(indexField => {
+      indexFields.forEach((indexField) => {
         /* istanbul ignore else */
         if (indexedFields.indexOf(indexField) === -1) {
           indexedFields.push(indexField);
@@ -2000,18 +1718,15 @@ export function _validateIndexes(adminItem: any, fieldNames: string[]): void {
  * @param fieldNames string list of fields names
  * @private
  */
-export function _validateTemplatesFields(
-  adminItem: any,
-  fieldNames: string[]
-): void {
+export function _validateTemplatesFields(adminItem: any, fieldNames: string[]): void {
   const templates: any[] = adminItem.templates;
   /* istanbul ignore else */
   if (templates) {
-    adminItem.templates = templates.map(template => {
+    adminItem.templates = templates.map((template) => {
       const attributes: any = getProp(template, "prototype.attributes");
       /* istanbul ignore else */
       if (attributes) {
-        Object.keys(attributes).forEach(k => {
+        Object.keys(attributes).forEach((k) => {
           /* istanbul ignore else */
           if (fieldNames.indexOf(k) === -1) {
             delete attributes[k];
@@ -2031,14 +1746,11 @@ export function _validateTemplatesFields(
  * @param fieldNames string list of fields names
  * @private
  */
-export function _validateTypesTemplates(
-  adminItem: any,
-  fieldNames: string[]
-): void {
+export function _validateTypesTemplates(adminItem: any, fieldNames: string[]): void {
   const types: any[] = adminItem.types;
   /* istanbul ignore else */
   if (types) {
-    adminItem.types = types.map(t => {
+    adminItem.types = types.map((t) => {
       _validateTemplatesFields(t, fieldNames);
       return t;
     });
@@ -2052,19 +1764,16 @@ export function _validateTypesTemplates(
  * @param fieldNames string list of fields names
  * @private
  */
-export function _validateEditFieldsInfo(
-  adminItem: any,
-  fieldNames: string[]
-): void {
+export function _validateEditFieldsInfo(adminItem: any, fieldNames: string[]): void {
   const editFieldsInfo: any = adminItem.editFieldsInfo;
   /* istanbul ignore else */
   if (editFieldsInfo) {
     const editFieldsInfoKeys: string[] = Object.keys(editFieldsInfo);
-    editFieldsInfoKeys.forEach(k => {
+    editFieldsInfoKeys.forEach((k) => {
       const editFieldName: string = editFieldsInfo[k];
       /* istanbul ignore else */
       if (editFieldName) {
-        fieldNames.some(name => {
+        fieldNames.some((name) => {
           if (name === editFieldName) {
             return true;
           } else if (name === editFieldName.toLowerCase()) {
@@ -2096,7 +1805,7 @@ export function _templatizeLayerFieldReferences(
   dataItem: any,
   itemID: string,
   layer: any,
-  dependencies: IDependency[]
+  dependencies: IDependency[],
 ): void {
   // This is the value that will be used as the template for adlib replacement
   const path: string = itemID + ".layer" + layer.id + ".fields";
@@ -2131,11 +1840,7 @@ export function _templatizeLayerFieldReferences(
  * @returns A new copy of the modified adminLayerInfo for the given layer
  * @private
  */
-export function _templatizeAdminLayerInfo(
-  layer: any,
-  dependencies: IDependency[],
-  templateDictionary: any
-): any {
+export function _templatizeAdminLayerInfo(layer: any, dependencies: IDependency[], templateDictionary: any): any {
   // Create new instance of adminLayerInfo to update for clone
   const adminLayerInfo = Object.assign({}, layer.adminLayerInfo);
   _updateGeomFieldName(adminLayerInfo, templateDictionary);
@@ -2174,16 +1879,10 @@ export function _templatizeAdminLayerInfo(
  * @param dependencies Array of service dependencies
  * @private
  */
-export function _processAdminObject(
-  object: any,
-  dependencies: IDependency[]
-): void {
+export function _processAdminObject(object: any, dependencies: IDependency[]): void {
   deleteProp(object, "sourceId");
   if (object.hasOwnProperty("sourceServiceName")) {
-    object.sourceServiceName = _templatizeSourceServiceName(
-      object.sourceServiceName,
-      dependencies
-    );
+    object.sourceServiceName = _templatizeSourceServiceName(object.sourceServiceName, dependencies);
   }
 }
 
@@ -2197,11 +1896,9 @@ export function _processAdminObject(
  */
 export function _templatizeSourceServiceName(
   lookupName: string,
-  dependencies: IDependency[]
+  dependencies: IDependency[],
 ): string | string[] | undefined {
-  const deps = dependencies.filter(
-    dependency => dependency.name === lookupName
-  );
+  const deps = dependencies.filter((dependency) => dependency.name === lookupName);
   return deps.length === 1 ? _templatize(deps[0].id, "name") : undefined;
 }
 
@@ -2213,10 +1910,7 @@ export function _templatizeSourceServiceName(
  * @param itemID the id for the item that contains this layer
  * @private
  */
-export function _templatizeAdminLayerInfoFields(
-  layer: any,
-  dependencies: IDependency[]
-): void {
+export function _templatizeAdminLayerInfoFields(layer: any, dependencies: IDependency[]): void {
   // templatize the source layer fields
   const table = getProp(layer, "adminLayerInfo.viewLayerDefinition.table");
 
@@ -2227,11 +1921,7 @@ export function _templatizeAdminLayerInfoFields(
     _templatizeAdminSourceLayerFields(table.sourceLayerFields || [], path);
 
     // templatize the releated table fields
-    const relatedTables =
-      getProp(
-        layer,
-        "adminLayerInfo.viewLayerDefinition.table.relatedTables"
-      ) || [];
+    const relatedTables = getProp(layer, "adminLayerInfo.viewLayerDefinition.table.relatedTables") || [];
 
     if (relatedTables.length > 0) {
       relatedTables.forEach((t: any) => {
@@ -2240,10 +1930,7 @@ export function _templatizeAdminLayerInfoFields(
 
         _templatizeTopFilter(t.topFilter || {}, relatedPath);
 
-        _templatizeAdminSourceLayerFields(
-          t.sourceLayerFields || [],
-          relatedPath
-        );
+        _templatizeAdminSourceLayerFields(t.sourceLayerFields || [], relatedPath);
 
         const parentKeyFields: any[] = t.parentKeyFields || [];
         t.parentKeyFields = parentKeyFields.map((f: any) => {
@@ -2266,13 +1953,8 @@ export function _templatizeAdminLayerInfoFields(
  * @param dependencies array of item dependencies
  * @private
  */
-export function _getDependantItemId(
-  lookupName: string,
-  dependencies: IDependency[]
-): string {
-  const deps = dependencies.filter(
-    dependency => dependency.name === lookupName
-  );
+export function _getDependantItemId(lookupName: string, dependencies: IDependency[]): string {
+  const deps = dependencies.filter((dependency) => dependency.name === lookupName);
   return deps.length === 1 ? deps[0].id : "";
 }
 
@@ -2283,11 +1965,8 @@ export function _getDependantItemId(
  * @param basePath path used to de-templatize while deploying
  * @private
  */
-export function _templatizeAdminSourceLayerFields(
-  fields: any[],
-  basePath: string
-): void {
-  fields.forEach(f => _templatizeProperty(f, "source", basePath, "name"));
+export function _templatizeAdminSourceLayerFields(fields: any[], basePath: string): void {
+  fields.forEach((f) => _templatizeProperty(f, "source", basePath, "name"));
 }
 
 /**
@@ -2307,7 +1986,7 @@ export function _templatizeTopFilter(topFilter: any, basePath: string): void {
       const orderByField = orderByFields.split(" ")[0];
       topFilter.orderByFields = topFilter.orderByFields.replace(
         orderByField,
-        _templatize(basePath, orderByField, "name")
+        _templatize(basePath, orderByField, "name"),
       );
     }
 
@@ -2333,13 +2012,10 @@ export function _templatizeTopFilter(topFilter: any, basePath: string): void {
  * @param itemID the id of the item that contains the related table
  * @private
  */
-export function _templatizeRelationshipFields(
-  layer: any,
-  itemID: string
-): void {
+export function _templatizeRelationshipFields(layer: any, itemID: string): void {
   if (layer && layer.relationships) {
     const relationships: any[] = layer.relationships;
-    relationships.forEach(r => {
+    relationships.forEach((r) => {
       /* istanbul ignore else */
       if (r.keyField) {
         const basePath: string = itemID + ".layer" + layer.id + ".fields";
@@ -2364,7 +2040,7 @@ export function _templatizePopupInfo(
   layer: any,
   basePath: string,
   itemID: any,
-  fieldNames: string[]
+  fieldNames: string[],
 ): void {
   // the data layer does not have the fields...will need to get those
   // from the associated layer json
@@ -2380,13 +2056,7 @@ export function _templatizePopupInfo(
     _templatizeExpressionInfos(expressionInfos, fieldNames, basePath);
 
     const popupElements: any[] = popupInfo.popupElements || [];
-    _templatizePopupElements(
-      popupElements,
-      basePath,
-      layer,
-      itemID,
-      fieldNames
-    );
+    _templatizePopupElements(popupElements, basePath, layer, itemID, fieldNames);
 
     const mediaInfos: any = popupInfo.mediaInfos || [];
     _templatizeMediaInfos(mediaInfos, fieldNames, basePath, layer, itemID);
@@ -2403,22 +2073,14 @@ export function _templatizePopupInfo(
  * @param basePath path used to de-templatize while deploying
  * @private
  */
-export function _templatizeName(
-  object: any,
-  property: string,
-  fieldNames: string[],
-  basePath: string
-): void {
+export function _templatizeName(object: any, property: string, fieldNames: string[], basePath: string): void {
   if (object.hasOwnProperty(property)) {
-    fieldNames.forEach(name => {
+    fieldNames.forEach((name) => {
       // Only test and replace instance of the name so any enclosing characters
       // will be retained
       const regEx = new RegExp("(\\b" + name + "\\b(?![}]{2}))", "gm");
       if (regEx.test(object[property])) {
-        object[property] = object[property].replace(
-          regEx,
-          _templatize(basePath, name, "name")
-        );
+        object[property] = object[property].replace(regEx, _templatize(basePath, name, "name"));
       }
     });
   }
@@ -2434,12 +2096,7 @@ export function _templatizeName(
  * @param basePath path used to de-templatize while deploying
  * @private
  */
-export function _templatizePopupInfoFieldInfos(
-  fieldInfos: any[],
-  layer: any,
-  itemID: any,
-  basePath: string
-): void {
+export function _templatizePopupInfoFieldInfos(fieldInfos: any[], layer: any, itemID: any, basePath: string): void {
   fieldInfos.forEach((f: any) => {
     f.fieldName = _templatizeFieldName(f.fieldName, layer, itemID, basePath);
   });
@@ -2455,20 +2112,12 @@ export function _templatizePopupInfoFieldInfos(
  * @param basePath path used to de-templatize while deploying
  * @private
  */
-export function _templatizeFieldName(
-  name: string,
-  layer: any,
-  itemID: string,
-  basePath: string
-): string {
+export function _templatizeFieldName(name: string, layer: any, itemID: string, basePath: string): string {
   if (name.indexOf("relationships/") > -1) {
     const rels = name.split("/");
     const relationshipId: any = rels[1];
 
-    const adminRelatedTables: any = getProp(
-      layer,
-      "adminLayerInfo.viewLayerDefinition.table.relatedTables"
-    );
+    const adminRelatedTables: any = getProp(layer, "adminLayerInfo.viewLayerDefinition.table.relatedTables");
 
     const relatedTables: any[] = layer.relationships || adminRelatedTables;
     /* istanbul ignore else */
@@ -2477,11 +2126,8 @@ export function _templatizeFieldName(
       const relatedTable: any = relatedTables[relationshipId];
       // the layers relationships stores the property as relatedTableId
       // the layers adminLayerInfo relatedTables stores the property as sourceLayerId
-      const prop: string = getProp(relatedTable, "relatedTableId")
-        ? "relatedTableId"
-        : "sourceLayerId";
-      const _basePath: string =
-        itemID + ".layer" + relatedTable[prop] + ".fields";
+      const prop: string = getProp(relatedTable, "relatedTableId") ? "relatedTableId" : "sourceLayerId";
+      const _basePath: string = itemID + ".layer" + relatedTable[prop] + ".fields";
       rels[2] = _templatize(_basePath, rels[2], "name");
       name = rels.join("/");
     }
@@ -2503,13 +2149,9 @@ export function _templatizeFieldName(
  * @param basePath path used to de-templatize while deploying
  * @private
  */
-export function _templatizeExpressionInfos(
-  expressionInfos: any[],
-  fieldNames: string[],
-  basePath: string
-): any[] {
+export function _templatizeExpressionInfos(expressionInfos: any[], fieldNames: string[], basePath: string): any[] {
   return expressionInfos.map((i: any) => {
-    fieldNames.forEach(name => {
+    fieldNames.forEach((name) => {
       i.expression = _templatizeArcadeExpressions(i.expression, name, basePath);
     });
     return i;
@@ -2531,7 +2173,7 @@ export function _templatizePopupElements(
   basePath: string,
   layer: any,
   itemID: string,
-  fieldNames: any
+  fieldNames: any,
 ): void {
   popupElelments.forEach((pe: any) => {
     if (pe.hasOwnProperty("fieldInfos")) {
@@ -2559,11 +2201,11 @@ export function _templatizeMediaInfos(
   fieldNames: string[],
   basePath: string,
   layer: any,
-  itemId: string
+  itemId: string,
 ): void {
   // templatize various properties of mediaInfos
   const props: string[] = ["title", "caption"];
-  props.forEach(p => _templatizeName(mediaInfos, p, fieldNames, basePath));
+  props.forEach((p) => _templatizeName(mediaInfos, p, fieldNames, basePath));
 
   mediaInfos.forEach((mi: any) => {
     /* istanbul ignore else */
@@ -2571,9 +2213,7 @@ export function _templatizeMediaInfos(
       const v: any = mi.value;
 
       const vfields: any[] = v.fields || [];
-      v.fields = vfields.map(f =>
-        _templatizeFieldName(f, layer, itemId, basePath)
-      );
+      v.fields = vfields.map((f) => _templatizeFieldName(f, layer, itemId, basePath));
 
       if (v.hasOwnProperty("normalizeField")) {
         _templatizeProperty(v, "normalizeField", basePath, "name");
@@ -2581,12 +2221,7 @@ export function _templatizeMediaInfos(
 
       /* istanbul ignore else */
       if (v.hasOwnProperty("tooltipField")) {
-        v.tooltipField = _templatizeFieldName(
-          v.tooltipField,
-          layer,
-          itemId,
-          basePath
-        );
+        v.tooltipField = _templatizeFieldName(v.tooltipField, layer, itemId, basePath);
       }
     }
   });
@@ -2600,18 +2235,14 @@ export function _templatizeMediaInfos(
  * @param fieldNames json of layer being cloned
  * @private
  */
-export function _templatizeDefinitionEditor(
-  layer: any,
-  basePath: string,
-  fieldNames: string[]
-): void {
+export function _templatizeDefinitionEditor(layer: any, basePath: string, fieldNames: string[]): void {
   if (layer) {
     const defEditor: any = layer.definitionEditor || {};
     /* istanbul ignore else */
     if (defEditor) {
       const inputs: any[] = defEditor.inputs;
       if (inputs) {
-        inputs.forEach(i => {
+        inputs.forEach((i) => {
           /* istanbul ignore else */
           if (i.parameters) {
             i.parameters.forEach((p: any) => {
@@ -2626,7 +2257,7 @@ export function _templatizeDefinitionEditor(
           defEditor.parameterizedExpression || "",
           basePath,
           fieldNames,
-          "name"
+          "name",
         );
       }
     }
@@ -2641,18 +2272,9 @@ export function _templatizeDefinitionEditor(
  * @param fieldNames array of field names
  * @private
  */
-export function _templatizeDefinitionExpression(
-  layer: any,
-  basePath: string,
-  fieldNames: string[]
-): void {
+export function _templatizeDefinitionExpression(layer: any, basePath: string, fieldNames: string[]): void {
   if (layer && layer.hasOwnProperty("definitionExpression")) {
-    layer.definitionExpression = _templatizeSimpleName(
-      layer.definitionExpression || "",
-      basePath,
-      fieldNames,
-      "name"
-    );
+    layer.definitionExpression = _templatizeSimpleName(layer.definitionExpression || "", basePath, fieldNames, "name");
   }
 }
 
@@ -2668,16 +2290,13 @@ export function _templatizeSimpleName(
   expression: string,
   basePath: string,
   fieldNames: string[],
-  suffix: string
+  suffix: string,
 ): string {
-  fieldNames.forEach(name => {
+  fieldNames.forEach((name) => {
     // look for the name but not if its followed by }}
     const regEx = new RegExp("\\b" + name + "\\b(?![}]{2})", "gm");
     if (expression && regEx.test(expression)) {
-      expression = expression.replace(
-        regEx,
-        _templatize(basePath, name, suffix)
-      );
+      expression = expression.replace(regEx, _templatize(basePath, name, suffix));
     }
   });
   return expression;
@@ -2691,11 +2310,7 @@ export function _templatizeSimpleName(
  * @param fieldNames array of the layers field names
  * @private
  */
-export function _templatizeDrawingInfo(
-  layer: any,
-  basePath: string,
-  fieldNames: string[]
-): void {
+export function _templatizeDrawingInfo(layer: any, basePath: string, fieldNames: string[]): void {
   if (layer) {
     const drawingInfo: any = layer.drawingInfo;
 
@@ -2719,11 +2334,7 @@ export function _templatizeDrawingInfo(
  * @param fieldNames array of the layers field names
  * @private
  */
-export function _templatizeRenderer(
-  renderer: any,
-  basePath: string,
-  fieldNames: string[]
-): void {
+export function _templatizeRenderer(renderer: any, basePath: string, fieldNames: string[]): void {
   switch (renderer.type) {
     case "classBreaks":
     case "uniqueValue":
@@ -2748,11 +2359,7 @@ export function _templatizeRenderer(
  * @param fieldNames array of field names that will be used to search expressions
  * @private
  */
-export function _templatizeGenRenderer(
-  renderer: any,
-  basePath: string,
-  fieldNames: string[]
-): void {
+export function _templatizeGenRenderer(renderer: any, basePath: string, fieldNames: string[]): void {
   /* istanbul ignore else */
   if (renderer) {
     // update authoringInfo
@@ -2762,50 +2369,37 @@ export function _templatizeGenRenderer(
     }
 
     const props: string[] = ["field", "normalizationField"];
-    props.forEach(p => _templatizeProperty(renderer, p, basePath, "name"));
+    props.forEach((p) => _templatizeProperty(renderer, p, basePath, "name"));
 
     const fieldNameProps: string[] = ["field1", "field2", "field3"];
-    fieldNameProps.forEach(fnP =>
-      _templatizeProperty(renderer, fnP, basePath, "name")
-    );
+    fieldNameProps.forEach((fnP) => _templatizeProperty(renderer, fnP, basePath, "name"));
 
     // When an attribute name is specified, it's enclosed in square brackets
     const rExp: string = renderer.rotationExpression;
     if (rExp) {
-      fieldNames.forEach(name => {
+      fieldNames.forEach((name) => {
         const regEx = new RegExp("(\\[" + name + "\\])", "gm");
         if (regEx.test(rExp)) {
-          renderer.rotationExpression = rExp.replace(
-            regEx,
-            "[" + _templatize(basePath, name, "name") + "]"
-          );
+          renderer.rotationExpression = rExp.replace(regEx, "[" + _templatize(basePath, name, "name") + "]");
         }
       });
     }
 
     // update valueExpression
     if (renderer.valueExpression) {
-      fieldNames.forEach(name => {
-        renderer.valueExpression = _templatizeArcadeExpressions(
-          renderer.valueExpression,
-          name,
-          basePath
-        );
+      fieldNames.forEach((name) => {
+        renderer.valueExpression = _templatizeArcadeExpressions(renderer.valueExpression, name, basePath);
       });
     }
 
     // update visualVariables
     const visualVariables: any[] = renderer.visualVariables;
     if (visualVariables) {
-      visualVariables.forEach(v => {
-        props.forEach(p => _templatizeProperty(v, p, basePath, "name"));
+      visualVariables.forEach((v) => {
+        props.forEach((p) => _templatizeProperty(v, p, basePath, "name"));
         if (v.valueExpression) {
-          fieldNames.forEach(name => {
-            v.valueExpression = _templatizeArcadeExpressions(
-              v.valueExpression,
-              name,
-              basePath
-            );
+          fieldNames.forEach((name) => {
+            v.valueExpression = _templatizeArcadeExpressions(v.valueExpression, name, basePath);
           });
         }
       });
@@ -2821,18 +2415,10 @@ export function _templatizeGenRenderer(
  * @param fieldNames array of field names that will be used to search expressions
  * @private
  */
-export function _templatizeTemporalRenderer(
-  renderer: any,
-  basePath: string,
-  fieldNames: string[]
-): void {
-  const renderers: any[] = [
-    renderer.latestObservationRenderer,
-    renderer.observationRenderer,
-    renderer.trackRenderer
-  ];
+export function _templatizeTemporalRenderer(renderer: any, basePath: string, fieldNames: string[]): void {
+  const renderers: any[] = [renderer.latestObservationRenderer, renderer.observationRenderer, renderer.trackRenderer];
 
-  renderers.forEach(r => {
+  renderers.forEach((r) => {
     _templatizeRenderer(r, basePath, fieldNames);
   });
 }
@@ -2845,30 +2431,26 @@ export function _templatizeTemporalRenderer(
  * @param fieldNames the name of fields from the layer
  * @private
  */
-export function _templatizeAuthoringInfo(
-  authoringInfo: any,
-  basePath: string,
-  fieldNames: string[]
-): void {
+export function _templatizeAuthoringInfo(authoringInfo: any, basePath: string, fieldNames: string[]): void {
   /* istanbul ignore else */
   if (authoringInfo) {
     const props: string[] = ["field", "normalizationField"];
 
     const field1: any = authoringInfo.field1;
-    props.forEach(p => _templatizeProperty(field1, p, basePath, "name"));
+    props.forEach((p) => _templatizeProperty(field1, p, basePath, "name"));
 
     const field2: any = authoringInfo.field2;
-    props.forEach(p => _templatizeProperty(field2, p, basePath, "name"));
+    props.forEach((p) => _templatizeProperty(field2, p, basePath, "name"));
 
     const fields: any[] = authoringInfo.fields;
     if (fields) {
-      authoringInfo.fields = fields.map(f => _templatize(basePath, f, "name"));
+      authoringInfo.fields = fields.map((f) => _templatize(basePath, f, "name"));
     }
 
     const vProps: string[] = ["endTime", "field", "startTime"];
     const vVars: any = authoringInfo.visualVariables;
     if (vVars) {
-      vProps.forEach(p => {
+      vProps.forEach((p) => {
         // endTime and startTime may or may not be a field name
         if (fieldNames.indexOf(vVars[p]) > -1) {
           _templatizeProperty(vVars, p, basePath, "name");
@@ -2886,11 +2468,7 @@ export function _templatizeAuthoringInfo(
  * @param basePath path used to de-templatize while deploying
  * @private
  */
-export function _templatizeArcadeExpressions(
-  text: string,
-  fieldName: string,
-  basePath: string
-): string {
+export function _templatizeArcadeExpressions(text: string, fieldName: string, basePath: string): string {
   const t = _templatize(basePath, fieldName, "name");
 
   if (text) {
@@ -2913,16 +2491,12 @@ export function _templatizeArcadeExpressions(
 
     // test for $feature[] with join case
     // captures VOTED_DEM_2016 from $feature["COUNTY_ID.VOTED_DEM_2016"]
-    exp =
-      "(?:[$]feature)(\\[\\\"?\\'?)(\\w+)[.]" + fieldName + "(\\\"?\\'?\\])";
+    exp = "(?:[$]feature)(\\[\\\"?\\'?)(\\w+)[.]" + fieldName + "(\\\"?\\'?\\])";
     regEx = new RegExp(exp, "gm");
     result = regEx.exec(text);
     if (result && result.length > 3) {
       // TODO result[2] is the table name...this needs to be templatized as well
-      text = text.replace(
-        regEx,
-        "$feature" + result[1] + result[2] + "." + t + result[3]
-      );
+      text = text.replace(regEx, "$feature" + result[1] + result[2] + "." + t + result[3]);
     }
 
     // test for "fieldName"
@@ -2946,33 +2520,24 @@ export function _templatizeArcadeExpressions(
  * @param fieldNames array of the layers field names
  * @private
  */
-export function _templatizeLabelingInfo(
-  labelingInfo: any,
-  basePath: string,
-  fieldNames: string[]
-): void {
+export function _templatizeLabelingInfo(labelingInfo: any, basePath: string, fieldNames: string[]): void {
   labelingInfo.forEach((li: any) => {
     /* istanbul ignore else */
     if (li.hasOwnProperty("fieldInfos")) {
       const fieldInfos: any[] = li.fieldInfos || [];
-      fieldInfos.forEach(fi =>
-        _templatizeProperty(fi, "fieldName", basePath, "name")
-      );
+      fieldInfos.forEach((fi) => _templatizeProperty(fi, "fieldName", basePath, "name"));
     }
 
     const labelExp: string = li.labelExpression || "";
     const labelExpInfo: any = li.labelExpressionInfo || {};
-    fieldNames.forEach(n => {
+    fieldNames.forEach((n) => {
       const t: string = _templatize(basePath, n, "name");
 
       // check for [fieldName] or ["fieldName"]
       const regExBracket = new RegExp('(\\[\\"*)+(' + n + ')(\\"*\\])+', "gm");
       let result = regExBracket.exec(labelExp);
       if (result) {
-        li.labelExpression = labelExp.replace(
-          regExBracket,
-          result[1] + t + result[3]
-        );
+        li.labelExpression = labelExp.replace(regExBracket, result[1] + t + result[3]);
       }
       /* istanbul ignore else */
       if (labelExpInfo.value) {
@@ -2989,11 +2554,7 @@ export function _templatizeLabelingInfo(
       }
       /* istanbul ignore else */
       if (labelExpInfo.expression) {
-        li.labelExpressionInfo.expression = _templatizeArcadeExpressions(
-          labelExpInfo.expression,
-          n,
-          basePath
-        );
+        li.labelExpressionInfo.expression = _templatizeArcadeExpressions(labelExpInfo.expression, n, basePath);
       }
     });
   });
@@ -3008,7 +2569,7 @@ export function _templatizeLabelingInfo(
  */
 export function _templatizeTemplates(layer: any, basePath: string): void {
   const templates: any[] = layer.templates || [];
-  templates.forEach(t => {
+  templates.forEach((t) => {
     const attributes: any = getProp(t, "prototype.attributes");
     const _attributes: any = _templatizeKeys(attributes, basePath, "name");
     /* istanbul ignore else */
@@ -3040,11 +2601,7 @@ export function _templatizeTypeTemplates(layer: any, basePath: string): void {
       if (templates && templates.length > 0) {
         templates.forEach((t: any) => {
           const attributes = getProp(t, "prototype.attributes");
-          const _attributes: any = _templatizeKeys(
-            attributes,
-            basePath,
-            "name"
-          );
+          const _attributes: any = _templatizeKeys(attributes, basePath, "name");
           /* istanbul ignore else */
           if (_attributes) {
             t.prototype.attributes = _attributes;
@@ -3063,11 +2620,7 @@ export function _templatizeTypeTemplates(layer: any, basePath: string): void {
  * @param suffix expected suffix for template variable
  * @private
  */
-export function _templatizeKeys(
-  obj: any,
-  basePath: string,
-  suffix: string
-): any {
+export function _templatizeKeys(obj: any, basePath: string, suffix: string): any {
   let _obj: any;
   /* istanbul ignore else */
   if (obj) {
@@ -3075,7 +2628,7 @@ export function _templatizeKeys(
     const objKeys: string[] = Object.keys(obj);
     /* istanbul ignore else */
     if (objKeys && objKeys.length > 0) {
-      objKeys.forEach(k => {
+      objKeys.forEach((k) => {
         _obj[_templatize(basePath, k, suffix)] = obj[k];
       });
     }
@@ -3094,12 +2647,8 @@ export function _templatizeKeys(
 export function _templatizeTimeInfo(layer: any, basePath: string): void {
   if (layer.timeInfo) {
     const timeInfo: any = layer.timeInfo;
-    const timeProps: string[] = [
-      "endTimeField",
-      "startTimeField",
-      "trackIdField"
-    ];
-    timeProps.forEach(t => {
+    const timeProps: string[] = ["endTimeField", "startTimeField", "trackIdField"];
+    timeProps.forEach((t) => {
       if (timeInfo[t] !== "") {
         _templatizeProperty(timeInfo, t, basePath, "name");
       } else {
@@ -3117,27 +2666,13 @@ export function _templatizeTimeInfo(layer: any, basePath: string): void {
  * @param fieldNames array of the layers field names
  * @private
  */
-export function _templatizeDefinitionQuery(
-  layer: any,
-  basePath: string,
-  fieldNames: string[]
-): void {
+export function _templatizeDefinitionQuery(layer: any, basePath: string, fieldNames: string[]): void {
   // templatize view definition query
   if (layer && layer.hasOwnProperty("viewDefinitionQuery")) {
-    layer.viewDefinitionQuery = _templatizeSimpleName(
-      layer.viewDefinitionQuery || "",
-      basePath,
-      fieldNames,
-      "name"
-    );
+    layer.viewDefinitionQuery = _templatizeSimpleName(layer.viewDefinitionQuery || "", basePath, fieldNames, "name");
   }
   if (layer && layer.hasOwnProperty("definitionQuery")) {
-    layer.definitionQuery = _templatizeSimpleName(
-      layer.definitionQuery || "",
-      basePath,
-      fieldNames,
-      "name"
-    );
+    layer.definitionQuery = _templatizeSimpleName(layer.definitionQuery || "", basePath, fieldNames, "name");
   }
 }
 
@@ -3154,24 +2689,19 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
   const fInfo: any = fieldInfos[id];
   const nameMapping: IStringValuePair = {};
   const newFields = fInfo.newFields;
-  const newFieldNames: string[] = newFields
-    ? newFields.map((f: any) => f.name)
-    : [];
+  const newFieldNames: string[] = newFields ? newFields.map((f: any) => f.name) : [];
   const sourceFields: any[] = fInfo.sourceFields || [];
   sourceFields.forEach((field: any) => {
     const lName = String(field.name).toLowerCase();
     newFields.forEach((f: any) => {
       // Names can change more than case
-      if (
-        newFieldNames.indexOf(field.name) === -1 &&
-        newFieldNames.indexOf(lName) === -1
-      ) {
+      if (newFieldNames.indexOf(field.name) === -1 && newFieldNames.indexOf(lName) === -1) {
         // If both new (f) and source (field) aliases are defined and are equal, map the source name to the new name
         if (f.alias && f.alias === field.alias) {
           nameMapping[lName] = {
             name: f.name,
             alias: f.alias,
-            type: f.type ? f.type : ""
+            type: f.type ? f.type : "",
           };
         }
       }
@@ -3179,7 +2709,7 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
         nameMapping[lName] = {
           name: f.name,
           alias: f.alias ? f.alias : "",
-          type: f.type ? f.type : ""
+          type: f.type ? f.type : "",
         };
       }
     });
@@ -3190,11 +2720,10 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
     const efi: any = JSON.parse(JSON.stringify(fInfo.editFieldsInfo));
     const newEfi: any = JSON.parse(JSON.stringify(fInfo.newEditFieldsInfo));
     const nameMappingKeys: string[] = Object.keys(nameMapping);
-    Object.keys(efi).forEach(k => {
+    Object.keys(efi).forEach((k) => {
       const lowerEfi: string = String(efi[k]).toLowerCase();
       if (
-        (nameMappingKeys.indexOf(lowerEfi) === -1 ||
-          nameMapping[lowerEfi].name !== newEfi[k]) &&
+        (nameMappingKeys.indexOf(lowerEfi) === -1 || nameMapping[lowerEfi].name !== newEfi[k]) &&
         newFieldNames.indexOf(lowerEfi) > -1
       ) {
         // Only add delete fields if source schema changes allowed
@@ -3219,9 +2748,8 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
         });
         nameMapping[lowerEfi] = {
           name: newEfi[k],
-          alias:
-            sourceEfiField && sourceEfiField.alias ? sourceEfiField.alias : "",
-          type: sourceEfiField && sourceEfiField.type ? sourceEfiField.type : ""
+          alias: sourceEfiField && sourceEfiField.alias ? sourceEfiField.alias : "",
+          type: sourceEfiField && sourceEfiField.type ? sourceEfiField.type : "",
         };
       }
     });

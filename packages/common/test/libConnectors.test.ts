@@ -27,55 +27,33 @@ import JSZip from "jszip";
 
 describe("Module `JSZip`: JavaScript-based zip utility", () => {
   describe("createZip", () => {
-    it("handles empty file list", done => {
-      libConnectors.createZip("zipfile", []).then(zipfile => {
-        expect(zipfile.name)
-          .withContext("zip created")
-          .toEqual("zipfile");
-        done();
-      }, done.fail);
+    it("handles empty file list", async () => {
+      const zipfile = await libConnectors.createZip("zipfile", []);
+      expect(zipfile.name).withContext("zip created").toEqual("zipfile");
     });
 
-    it("handles one file", done => {
-      libConnectors
-        .createZip("zipfile", [getSampleMetadataAsFile()])
-        .then(zipfile => {
-          expect(zipfile.name)
-            .withContext("zip created")
-            .toEqual("zipfile");
+    it("handles one file", async () => {
+      const zipfile = await libConnectors.createZip("zipfile", [getSampleMetadataAsFile()]);
+      expect(zipfile.name).withContext("zip created").toEqual("zipfile");
 
-          const zip = new JSZip();
-          zip.loadAsync(zipfile).then(() => {
-            expect(zip.folder(/info/).length)
-              .withContext("zip does not have folder")
-              .toEqual(0);
-            expect(zip.file(/metadata/).length)
-              .withContext("zip has file")
-              .toEqual(1);
-            done();
-          }, done.fail);
-        }, done.fail);
+      const zip = new JSZip();
+      await zip.loadAsync(zipfile);
+      expect(zip.folder(/info/).length).withContext("zip does not have folder").toEqual(0);
+      expect(zip.file(/metadata/).length)
+        .withContext("zip has file")
+        .toEqual(1);
     });
 
-    it("handles one file in a folder", done => {
-      libConnectors
-        .createZip("zipfile", [getSampleMetadataAsFile("metadata")], "info")
-        .then(zipfile => {
-          expect(zipfile.name)
-            .withContext("zip created")
-            .toEqual("zipfile");
+    it("handles one file in a folder", async () => {
+      const zipfile = await libConnectors.createZip("zipfile", [getSampleMetadataAsFile("metadata")], "info");
+      expect(zipfile.name).withContext("zip created").toEqual("zipfile");
 
-          const zip = new JSZip();
-          zip.loadAsync(zipfile).then(() => {
-            expect(zip.folder(/info/).length)
-              .withContext("zip has a folder")
-              .toEqual(1);
-            expect(zip.file(/metadata/).length)
-              .withContext("zip has file")
-              .toEqual(1);
-            done();
-          }, done.fail);
-        }, done.fail);
+      const zip = new JSZip();
+      await zip.loadAsync(zipfile);
+      expect(zip.folder(/info/).length).withContext("zip has a folder").toEqual(1);
+      expect(zip.file(/metadata/).length)
+        .withContext("zip has file")
+        .toEqual(1);
     });
   });
 });
@@ -89,11 +67,9 @@ describe("Module `arcgis-html-sanitizer`: HTML sanitizing", () => {
     it("sanitizes a string", () => {
       // from https://github.com/esri/arcgis-html-sanitizer
       const sanitized = libConnectors.sanitizeHTML(
-        '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />'
+        '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />',
       );
-      expect(sanitized).toEqual(
-        '<img src="https://example.com/fake-image.jpg" />'
-      );
+      expect(sanitized).toEqual('<img src="https://example.com/fake-image.jpg" />');
     });
 
     it("sanitizes a string, supplying a sanitizer", () => {
@@ -104,11 +80,9 @@ describe("Module `arcgis-html-sanitizer`: HTML sanitizing", () => {
       // from https://github.com/esri/arcgis-html-sanitizer
       const sanitized = libConnectors.sanitizeHTML(
         '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />',
-        sanitizer
+        sanitizer,
       );
-      expect(sanitized).toEqual(
-        '<img src="https://example.com/fake-image.jpg" />'
-      );
+      expect(sanitized).toEqual('<img src="https://example.com/fake-image.jpg" />');
     });
 
     it("sanitizes JSON", () => {
@@ -116,11 +90,11 @@ describe("Module `arcgis-html-sanitizer`: HTML sanitizing", () => {
       const sanitized = libConnectors.sanitizeJSON({
         sample: [
           '<img src="https://example.com/fake-image.jpg" onerror="alert(1);\
-          " />'
-        ]
+          " />',
+        ],
       });
       expect(sanitized).toEqual({
-        sample: ['<img src="https://example.com/fake-image.jpg" />']
+        sample: ['<img src="https://example.com/fake-image.jpg" />'],
       });
     });
 
@@ -134,13 +108,13 @@ describe("Module `arcgis-html-sanitizer`: HTML sanitizing", () => {
         {
           sample: [
             '<img src="https://example.com/fake-image.jpg" onerror="alert(1);\
-          " />'
-          ]
+          " />',
+          ],
         },
-        sanitizer
+        sanitizer,
       );
       expect(sanitized).toEqual({
-        sample: ['<img src="https://example.com/fake-image.jpg" />']
+        sample: ['<img src="https://example.com/fake-image.jpg" />'],
       });
     });
 
@@ -161,17 +135,13 @@ describe("Module `arcgis-html-sanitizer`: HTML sanitizing", () => {
 
     it("sanitizes an unsupported URL protocol", () => {
       // from https://github.com/esri/arcgis-html-sanitizer
-      const sanitized = libConnectors.sanitizeURLProtocol(
-        "smb://example.com/path/to/file.html"
-      );
+      const sanitized = libConnectors.sanitizeURLProtocol("smb://example.com/path/to/file.html");
       expect(sanitized).toEqual("");
     });
 
     it("sanitizes a supported URL protocol", () => {
       // from https://github.com/esri/arcgis-html-sanitizer
-      const sanitized = libConnectors.sanitizeURLProtocol(
-        "https://example.com/about/index.html"
-      );
+      const sanitized = libConnectors.sanitizeURLProtocol("https://example.com/about/index.html");
       expect(sanitized).toEqual("https://example.com/about/index.html");
     });
 
@@ -181,22 +151,17 @@ describe("Module `arcgis-html-sanitizer`: HTML sanitizing", () => {
 
       // Sanitize
       // from https://github.com/esri/arcgis-html-sanitizer
-      const sanitized = libConnectors.sanitizeURLProtocol(
-        "https://example.com/about/index.html",
-        sanitizer
-      );
+      const sanitized = libConnectors.sanitizeURLProtocol("https://example.com/about/index.html", sanitizer);
       expect(sanitized).toEqual("https://example.com/about/index.html");
     });
 
     it("validates a string containing valid HTML", () => {
       // Check if a string contains invalid HTML
       // from https://github.com/esri/arcgis-html-sanitizer
-      const validation = libConnectors.validateHTML(
-        '<img src="https://example.com/fake-image.jpg" />'
-      );
+      const validation = libConnectors.validateHTML('<img src="https://example.com/fake-image.jpg" />');
       expect(validation).toEqual({
         isValid: true,
-        sanitized: '<img src="https://example.com/fake-image.jpg" />'
+        sanitized: '<img src="https://example.com/fake-image.jpg" />',
       });
     });
 
@@ -204,11 +169,11 @@ describe("Module `arcgis-html-sanitizer`: HTML sanitizing", () => {
       // Check if a string contains invalid HTML
       // from https://github.com/esri/arcgis-html-sanitizer
       const validation = libConnectors.validateHTML(
-        '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />'
+        '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />',
       );
       expect(validation).toEqual({
         isValid: false,
-        sanitized: '<img src="https://example.com/fake-image.jpg" />'
+        sanitized: '<img src="https://example.com/fake-image.jpg" />',
       });
     });
 
@@ -220,24 +185,22 @@ describe("Module `arcgis-html-sanitizer`: HTML sanitizing", () => {
       // from https://github.com/esri/arcgis-html-sanitizer
       const validation = libConnectors.validateHTML(
         '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />',
-        sanitizer
+        sanitizer,
       );
       expect(validation).toEqual({
         isValid: false,
-        sanitized: '<img src="https://example.com/fake-image.jpg" />'
+        sanitized: '<img src="https://example.com/fake-image.jpg" />',
       });
     });
 
     it("tests XSS cases", () => {
       const sanitizer = new libConnectors.Sanitizer();
 
-      xssFilterEvasionTestCases.testCases.forEach(
-        (testCase: xssFilterEvasionTestCases.IXSSTestCase) => {
-          expect(libConnectors.sanitizeHTML(testCase.example, sanitizer))
-            .withContext(testCase.label)
-            .toEqual(testCase.cleanedHtml);
-        }
-      );
+      xssFilterEvasionTestCases.testCases.forEach((testCase: xssFilterEvasionTestCases.IXSSTestCase) => {
+        expect(libConnectors.sanitizeHTML(testCase.example, sanitizer))
+          .withContext(testCase.label)
+          .toEqual(testCase.cleanedHtml);
+      });
     });
   });
 });

@@ -16,7 +16,7 @@
 
 import { shareTemplatesToGroups } from "../../src/helpers/share-templates-to-groups";
 import * as common from "@esri/solution-common";
-import * as testUtils from "@esri/solution-common/test/mocks/utils";
+import * as testUtils from "../../../common/test/mocks/utils";
 
 let MOCK_USER_SESSION: common.UserSession;
 
@@ -28,21 +28,19 @@ describe("shareItemsToGroups", () => {
     const shareSpy = spyOn(common, "shareItemToGroups").and.resolveTo();
     const tmpl = {
       itemId: "3ef",
-      groups: ["bc3", "bc4"]
+      groups: ["bc3", "bc4"],
     } as common.IItemTemplate;
     const tmplDict = {
       bc3: {
-        itemId: "newBc3"
+        itemId: "newBc3",
       },
       bc4: {
-        itemId: "newBc4"
-      }
+        itemId: "newBc4",
+      },
     };
-    return shareTemplatesToGroups([tmpl], tmplDict, MOCK_USER_SESSION).then(
-      () => {
-        expect(shareSpy.calls.count()).toBe(1, "call shareItemToGroups once");
-      }
-    );
+    return shareTemplatesToGroups([tmpl], tmplDict, MOCK_USER_SESSION).then(() => {
+      expect(shareSpy.calls.count()).withContext("call shareItemToGroups once").toBe(1);
+    });
   });
 
   it("shares tracking template to tracking group", () => {
@@ -53,27 +51,25 @@ describe("shareItemsToGroups", () => {
       item: {
         typeKeywords: ["Location Tracking View"],
         properties: {
-          trackViewGroup: "{{ab4.itemId}}"
-        }
-      }
+          trackViewGroup: "{{ab4.itemId}}",
+        },
+      },
     } as common.IItemTemplate;
     const tmplDict = {
       bc3: {
-        itemId: "newBc3"
+        itemId: "newBc3",
       },
       ab4: {
-        itemId: "newAb4"
+        itemId: "newAb4",
       },
       locationTracking: {
         userIsOwner: false,
-        owner: "LocationTrackingServiceOwner"
-      }
+        owner: "LocationTrackingServiceOwner",
+      },
     };
-    return shareTemplatesToGroups([tmpl], tmplDict, MOCK_USER_SESSION).then(
-      () => {
-        expect(shareSpy.calls.count()).toBe(1, "call shareItemToGroups once");
-      }
-    );
+    return shareTemplatesToGroups([tmpl], tmplDict, MOCK_USER_SESSION).then(() => {
+      expect(shareSpy.calls.count()).withContext("call shareItemToGroups once").toBe(1);
+    });
   });
 
   it("shares tracking template to groups", () => {
@@ -84,27 +80,25 @@ describe("shareItemsToGroups", () => {
       item: {
         typeKeywords: ["Location Tracking View"],
         properties: {
-          trackViewGroup: "{{ab4.itemId}}"
-        }
-      }
+          trackViewGroup: "{{ab4.itemId}}",
+        },
+      },
     } as common.IItemTemplate;
     const tmplDict = {
       bc3: {
-        itemId: "newBc3"
+        itemId: "newBc3",
       },
       ab4: {
-        itemId: "newAb4"
+        itemId: "newAb4",
       },
       locationTracking: {
         userIsOwner: false,
-        owner: "LocationTrackingServiceOwner"
-      }
+        owner: "LocationTrackingServiceOwner",
+      },
     };
-    return shareTemplatesToGroups([tmpl], tmplDict, MOCK_USER_SESSION).then(
-      () => {
-        expect(shareSpy.calls.count()).toBe(2, "call shareItemToGroups once");
-      }
-    );
+    return shareTemplatesToGroups([tmpl], tmplDict, MOCK_USER_SESSION).then(() => {
+      expect(shareSpy.calls.count()).withContext("call shareItemToGroups once").toBe(2);
+    });
   });
 
   it("shares templates to groups", () => {
@@ -112,48 +106,47 @@ describe("shareItemsToGroups", () => {
     const tmpls = [
       {
         itemId: "3ef",
-        groups: ["bc3", "bc4"]
+        groups: ["bc3", "bc4"],
       },
       {
         itemId: "4ef",
-        groups: ["bc3", "bc4"]
+        groups: ["bc3", "bc4"],
       },
       {
-        itemId: "5ef"
-      }
+        itemId: "5ef",
+      },
     ] as common.IItemTemplate[];
     const tmplDict = {
       bc3: {
-        itemId: "newBc3"
+        itemId: "newBc3",
       },
       bc4: {
-        itemId: "newBc4"
-      }
+        itemId: "newBc4",
+      },
     };
-    return shareTemplatesToGroups(tmpls, tmplDict, MOCK_USER_SESSION).then(
-      () => {
-        expect(shareSpy.calls.count()).toBe(2, "call shareItemToGroups twice");
-      }
-    );
+    return shareTemplatesToGroups(tmpls, tmplDict, MOCK_USER_SESSION).then(() => {
+      expect(shareSpy.calls.count()).withContext("call shareItemToGroups twice").toBe(2);
+    });
   });
 
   it("handles a template without a groups property", () => {
     const shareSpy = spyOn(common, "shareItemToGroups").and.resolveTo();
     const tmpl = {
-      itemId: "3ef"
+      itemId: "3ef",
     } as common.IItemTemplate;
     return shareTemplatesToGroups([tmpl], {}, MOCK_USER_SESSION).then(() => {
-      expect(shareSpy.calls.count()).toBe(0, "should not attempt to share");
+      expect(shareSpy.calls.count()).withContext("should not attempt to share").toBe(0);
     });
   });
+
   it("handles empty groups array", () => {
     const shareSpy = spyOn(common, "shareItemToGroups").and.resolveTo();
     const tmpl = {
       itemId: "3ef",
-      groups: []
-    } as common.IItemTemplate;
+      groups: [],
+    } as any;
     return shareTemplatesToGroups([tmpl], {}, MOCK_USER_SESSION).then(() => {
-      expect(shareSpy.calls.count()).toBe(0, "should not attempt to share");
+      expect(shareSpy.calls.count()).withContext("should not attempt to share").toBe(0);
     });
   });
 });

@@ -21,13 +21,8 @@
  * @module deleteSolution
  */
 
-import {
-  IDeleteSolutionOptions,
-  IItemTemplate,
-  ISolutionItemPrecis,
-  ISolutionPrecis,
-  UserSession
-} from "./interfaces";
+import { IDeleteSolutionOptions, IItemTemplate, ISolutionItemPrecis, ISolutionPrecis } from "./interfaces";
+import { UserSession } from "./arcgisRestJS";
 import * as deleteSolutionContents from "./deleteHelpers/deleteSolutionContents";
 import * as getDeletableSolutionInfo from "./getDeletableSolutionInfo";
 
@@ -50,17 +45,12 @@ import * as getDeletableSolutionInfo from "./getDeletableSolutionInfo";
 export function deleteSolution(
   solutionItemId: string,
   authentication: UserSession,
-  options?: IDeleteSolutionOptions
+  options?: IDeleteSolutionOptions,
 ): Promise<ISolutionPrecis[]> {
   return getDeletableSolutionInfo
     .getDeletableSolutionInfo(solutionItemId, authentication)
     .then((solutionSummary: ISolutionPrecis) => {
-      return deleteSolutionContents.deleteSolutionContents(
-        solutionItemId,
-        solutionSummary,
-        authentication,
-        options
-      );
+      return deleteSolutionContents.deleteSolutionContents(solutionItemId, solutionSummary, authentication, options);
     })
     .catch(() => {
       return [undefined, undefined];
@@ -90,7 +80,7 @@ export function deleteSolutionByComponents(
   templates: IItemTemplate[],
   templateDictionary: any,
   authentication: UserSession,
-  options?: IDeleteSolutionOptions
+  options?: IDeleteSolutionOptions,
 ): Promise<ISolutionPrecis[]> {
   // Construct a description of the solution from its id and the itemIds using the templateDictionary to fill in details
   const solutionSummary: ISolutionPrecis = {
@@ -98,37 +88,34 @@ export function deleteSolutionByComponents(
     title: "",
     folder: templateDictionary.folderId,
     items: [] as ISolutionItemPrecis[],
-    groups: [] as string[]
+    groups: [] as string[],
   };
 
   // Combine the templates and templateDictionary to create summary items
   let summaries = templates
-    .map(template => {
+    .map((template) => {
       return {
         id: template.itemId,
         type: template.type,
         title: template.item.title,
         modified: 0,
-        owner: ""
+        owner: "",
       } as ISolutionItemPrecis;
     })
-    .map(summary => {
+    .map((summary) => {
       summary.id = templateDictionary[summary.id].itemId;
       return summary;
     })
-    .filter(summary => !!summary.id);
+    .filter((summary) => !!summary.id);
 
   // Filter to only include items in itemIds
-  summaries = summaries.filter(summary => itemIds.includes(summary.id));
+  summaries = summaries.filter((summary) => itemIds.includes(summary.id));
 
   // Sort into the order of itemIds (last created is first deleted)
-  summaries.sort(
-    (summary1, summary2) =>
-      itemIds.indexOf(summary1.id) - itemIds.indexOf(summary2.id)
-  );
+  summaries.sort((summary1, summary2) => itemIds.indexOf(summary1.id) - itemIds.indexOf(summary2.id));
 
   // Partition into items and groups
-  summaries.forEach(summary => {
+  summaries.forEach((summary) => {
     if (summary.type === "Group") {
       solutionSummary.groups.push(summary.id);
     } else {
@@ -137,10 +124,5 @@ export function deleteSolutionByComponents(
   });
 
   // Delete the solution
-  return deleteSolutionContents.deleteSolutionContents(
-    solutionItemId,
-    solutionSummary,
-    authentication,
-    options
-  );
+  return deleteSolutionContents.deleteSolutionContents(solutionItemId, solutionSummary, authentication, options);
 }

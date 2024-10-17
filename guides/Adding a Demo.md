@@ -26,6 +26,11 @@ If your demo includes images,
 * [ ] Run `npm install -D copy-webpack-plugin`
 
 To incorporate the demo with the other demos in the repository,
-* [ ] Edit the command file `build.bat` in the main repository folder and add your demo so that it is built along with the repository.
+* [ ] Edit the command files `build.bat` and `build.sh` in the main repository folder and add your demo so that it is built along with the repository.
 * [ ] Edit `demos\index.html` and add your demo.
 
+For debugging, add `--devtool=source-map` to the `build` script in package.json and change the "mode" to "development", e.g.,
+```
+    "build": "webpack --mode=development --node-env=production --devtool=source-map",
+```
+This makes the source in the debugger readable.

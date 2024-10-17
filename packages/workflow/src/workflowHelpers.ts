@@ -17,11 +17,10 @@
 /**
  * Manages the creation and deployment of workflow item types.
  *
- * @module workflow
+ * @module workflowHelpers
  */
 
 import * as common from "@esri/solution-common";
-import * as restRequest from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -29,35 +28,32 @@ import * as restRequest from "@esri/arcgis-rest-request";
  * Creates a new workflow item.
  *
  * @param item Item to add
+ * @param workflowBaseUrl URL of the workflow manager, e.g., "https://workflow.arcgis.com/orgId"
  * @param authentication Credentials for requests to the workflow manager
- * @param orgId Id of organization whose license is to be checked; only used if `enterpriseWebAdaptorUrl` is falsy
- * @param server URL of the server, e.g., "https://gisserver.domain.com/server"
  * @returns Promise resolving with new item's AGO id
  * @throws {WorkflowJsonExceptionDTO} if request to workflow manager fails
  */
 export async function addWorkflowItem(
   item: common.IItemTemplate,
+  workflowBaseUrl: string,
   authentication: common.UserSession,
-  orgId: string | undefined,
-  server: string
 ): Promise<string> {
   // Add the workflow item
-  const workflowUrlRoot = common.getWorkflowManagerUrlRoot(orgId, server);
-  const url = `${workflowUrlRoot}/admin/createWorkflowItem?name=${item.item.title}`;
+  const url = `${workflowBaseUrl}/admin/createWorkflowItem?name=${item.item.title}`;
 
-  const options: restRequest.IRequestOptions = {
+  const options: common.IRequestOptions = {
     authentication: authentication,
     headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${authentication.token}`,
+      "Accept": "application/json",
+      "Authorization": `Bearer ${authentication.token}`,
       "Content-Type": "application/json",
-      "X-Esri-Authorization": `Bearer ${authentication.token}`
+      "X-Esri-Authorization": `Bearer ${authentication.token}`,
     },
     params: {
-      name: `${item.item.title}`
-    }
+      name: `${item.item.title}`,
+    },
   };
-  const createdWorkflowResponse = await restRequest.request(url, options);
+  const createdWorkflowResponse = await common.request(url, options);
 
   return Promise.resolve(createdWorkflowResponse.itemId);
 }
@@ -71,7 +67,7 @@ export async function addWorkflowItem(
  */
 export async function fetchAuxiliaryItems(
   workflowItemId: string,
-  authentication: common.UserSession
+  authentication: common.UserSession,
 ): Promise<string[]> {
   const workflowItemName = `workflow_${workflowItemId}`;
   const workflowLocationsItemName = `WorkflowLocations_${workflowItemId}`;
@@ -79,7 +75,128 @@ export async function fetchAuxiliaryItems(
 
   const auxiliaryItemsResults = await common.searchItems({
     q: `title:${workflowItemName} OR title:${workflowLocationsItemName} OR title:${workflowViewsItemName}`,
-    authentication: authentication
+    authentication: authentication,
   });
-  return Promise.resolve(auxiliaryItemsResults.results.map(item => item.id));
+  return Promise.resolve(auxiliaryItemsResults.results.map((item) => item.id));
+}
+
+/**
+ * Updates the dependencies of the workflow item from its configuration.
+ *
+ * @param templates A collection of AGO item templates
+ * @returns Updated templates list
+ */
+export function postProcessFormItems(templates: common.IItemTemplate[]): common.IItemTemplate[] {
+  for (const template of templates) {
+    if (template.type === "Workflow") {
+      const ids = common.getTemplatedIds(JSON.stringify(template.properties.configuration));
+      template.dependencies = common.dedupe([...template.dependencies, ...ids]);
+    }
+  }
+  return templates;
+}
+
+/**
+ * Fetch the data from the new Workflow item and update the templateDictionary for variable replacement
+ *
+ * @param sourceId The id of the source Workflow item that was used to create the solution template
+ * @param newId The id of the Workflow item that has been deployed
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @param authentication Credentials for requests to the destination organization
+ *
+ */
+export async function updateTemplateDictionaryForWorkflow(
+  sourceId: string,
+  newId: string,
+  templateDictionary: any,
+  authentication: common.UserSession,
+): Promise<void> {
+  const workflowData = await common.getItemDataAsJson(newId, authentication);
+
+  const workflowLookup = common.getProp(templateDictionary, `workflows.${sourceId}`);
+  if (workflowLookup) {
+    await updateTempDictWorkflowId(templateDictionary, "viewSchema", workflowLookup, workflowData, authentication);
+    await updateTempDictWorkflowId(
+      templateDictionary,
+      "workflowLocations",
+      workflowLookup,
+      workflowData,
+      authentication,
+    );
+    await updateTempDictWorkflowId(templateDictionary, "workflowSchema", workflowLookup, workflowData, authentication);
+  }
+}
+
+/**
+ * Store ids and key values for variable replacement from the new Workflow item based on
+ * previously stored source IDs.
+ *
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @param key The property from the workflow items data that contains an item id for a supporting service
+ * @param workflowLookup The stored source item Ids from the templateDictionary
+ * @param workflowData The data object from the new Workflow item
+ * @param authentication Credentials for requests to the destination organization
+ *
+ */
+export async function updateTempDictWorkflowId(
+  templateDictionary: any,
+  key: string,
+  workflowLookup: any,
+  workflowData: any,
+  authentication: common.UserSession,
+): Promise<void> {
+  const id = workflowLookup[key];
+  const itemId = common.getProp(workflowData, `${key}.itemId`);
+  templateDictionary[id].itemId = itemId;
+
+  const item = await common.getCompleteItem(itemId, authentication);
+
+  const baseUrl = common.getProp(item, "base.url");
+  templateDictionary[id].url = baseUrl;
+  templateDictionary[id].name = common.getProp(item, "base.name");
+
+  const layers = common.getProp(item, "featureServiceProperties.layers");
+  _cacheLayerDetails(layers, templateDictionary, baseUrl, id, itemId);
+
+  const tables = common.getProp(item, "featureServiceProperties.tables");
+  _cacheLayerDetails(tables, templateDictionary, baseUrl, id, itemId);
+}
+
+/**
+ * Store key values for variable replacement from the new Workflow item
+ *
+ * @param layers
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @param baseUrl The base url of the new item
+ * @param srcId The id of the source item that was used to create the solution
+ * @param itemId The id of the new item that was created by workflow
+ *
+ */
+export function _cacheLayerDetails(
+  layers: any[],
+  templateDictionary: any,
+  baseUrl: string,
+  srcId: string,
+  itemId: string,
+): void {
+  if (layers) {
+    layers.forEach((layer) => {
+      const fields = layer.fields.reduce((prev, cur) => {
+        prev[cur.name.toLowerCase()] = {
+          alias: cur.alias,
+          name: cur.name,
+          type: cur.type,
+        };
+        return prev;
+      }, {});
+      const layerId = layer.id;
+      const url = `${baseUrl}/${layerId}`;
+      templateDictionary[srcId][`layer${layerId}`] = {
+        fields,
+        itemId,
+        layerId,
+        url,
+      };
+    });
+  }
 }

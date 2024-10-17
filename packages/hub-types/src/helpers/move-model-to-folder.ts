@@ -15,8 +15,7 @@
  */
 
 import { IModel, getProp, failSafe } from "@esri/hub-common";
-import { UserSession } from "@esri/solution-common";
-import { moveItem } from "@esri/arcgis-rest-portal";
+import { moveItem, UserSession } from "@esri/solution-common";
 
 /**
  * Move the created site item, and optionally the Initiative, into
@@ -26,11 +25,7 @@ import { moveItem } from "@esri/arcgis-rest-portal";
  * @param folderId
  * @param authentication
  */
-export function moveModelToFolder(
-  siteModel: IModel,
-  folderId: string,
-  authentication: UserSession
-): Promise<any> {
+export function moveModelToFolder(siteModel: IModel, folderId: string, authentication: UserSession): Promise<any> {
   // Fail-Safe the move call as it's not critical if it fails
   const failSafeMove = failSafe(moveItem, { success: true });
 
@@ -38,8 +33,8 @@ export function moveModelToFolder(
     failSafeMove({
       itemId: siteModel.item.id,
       folderId,
-      authentication
-    })
+      authentication,
+    }),
   ];
   // if an initiative was created...
   if (getProp(siteModel, "item.properties.parentInitiativeId")) {
@@ -47,8 +42,8 @@ export function moveModelToFolder(
       failSafeMove({
         itemId: siteModel.item.properties.parentInitiativeId,
         folderId,
-        authentication
-      })
+        authentication,
+      }),
     );
   }
 

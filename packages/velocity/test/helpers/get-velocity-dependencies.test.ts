@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  getVelocityDependencies,
-  _getDependencies
-} from "../../src/helpers/get-velocity-dependencies";
-import * as interfaces from "../../../common/src/interfaces";
-import * as fetchMock from "fetch-mock";
+import { getVelocityDependencies, _getDependencies } from "../../src/helpers/get-velocity-dependencies";
+import { UserSession } from "../../../common/src/arcgisRestJS";
+const fetchMock = require("fetch-mock");
 import * as templates from "../../../common/test/mocks/templates";
 import * as utils from "../../../common/test/mocks/utils";
 import * as agolItems from "../../../common/test/mocks/agolItems";
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -37,7 +34,7 @@ afterEach(() => {
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 describe("getVelocityDependencies", () => {
-  it("handles standalone source, feed, and output", done => {
+  it("handles standalone source, feed, and output", async () => {
     const type = "Real Time Analytic";
     const template = templates.getItemTemplate(type, []);
 
@@ -59,36 +56,33 @@ describe("getVelocityDependencies", () => {
     fetchMock
       .get(
         `https://myorg.maps.arcgis.com/sharing/rest/content/items/${feedId}?f=json&token=fake-token`,
-        agolItems.getAGOLItem(type, feedId)
+        agolItems.getAGOLItem(type, feedId),
       )
       .get(
         `https://myorg.maps.arcgis.com/sharing/rest/content/items/${sourceId}?f=json&token=fake-token`,
-        agolItems.getAGOLItem(type, sourceId)
+        agolItems.getAGOLItem(type, sourceId),
       )
       .get(
         `https://myorg.maps.arcgis.com/sharing/rest/content/items/${outputId}?f=json&token=fake-token`,
-        agolItems.getAGOLItem(type, outputId)
+        agolItems.getAGOLItem(type, outputId),
       );
 
-    getVelocityDependencies(template, MOCK_USER_SESSION).then(actual => {
-      expect(actual.length).toEqual(3);
-      done();
-    }, done.fail);
+    const actual = await getVelocityDependencies(template, MOCK_USER_SESSION);
+    expect(actual.length).toEqual(3);
   });
 
-  it("handles misssing sources and feeds", done => {
+  it("handles misssing sources and feeds", async () => {
     const type = "Real Time Analytic";
     const template = templates.getItemTemplate(type, []);
     delete template.data.sources;
     delete template.data.feeds;
     delete template.data.outputs;
-    getVelocityDependencies(template, MOCK_USER_SESSION).then(actual => {
-      expect(actual.length).toEqual(0);
-      done();
-    }, done.fail);
+
+    const actual = await getVelocityDependencies(template, MOCK_USER_SESSION);
+    expect(actual.length).toEqual(0);
   });
 
-  it("handles misssing portalItemId", done => {
+  it("handles misssing portalItemId", async () => {
     const type = "Real Time Analytic";
     const template = templates.getItemTemplate(type, []);
     delete template.data.source;
@@ -100,20 +94,19 @@ describe("getVelocityDependencies", () => {
         "https://myorg.maps.arcgis.com/sharing/rest/content/items/%7B%7Bccc6347e0c4f4dc8909da399418cafbe.itemId%7D%7D?f=json&token=fake-token",
         {
           id: "ccc6347e0c4f4dc8909da399418cafbe",
-          typeKeywords: []
-        }
+          typeKeywords: [],
+        },
       )
       .get(
         "https://myorg.maps.arcgis.com/sharing/rest/content/items/%7B%7Baaaaf0cf8bdc4fb19749cc1cbad1651b.itemId%7D%7D?f=json&token=fake-token",
         {
           id: "aaaaf0cf8bdc4fb19749cc1cbad1651b",
-          typeKeywords: []
-        }
+          typeKeywords: [],
+        },
       );
-    getVelocityDependencies(template, MOCK_USER_SESSION).then(actual => {
-      expect(actual.length).toEqual(2);
-      done();
-    }, done.fail);
+
+    const actual = await getVelocityDependencies(template, MOCK_USER_SESSION);
+    expect(actual.length).toEqual(2);
   });
 });
 
@@ -132,12 +125,11 @@ describe("_getDependencies", () => {
     const type = "Real Time Analytic";
     const template = templates.getItemTemplate(type, []);
     const dataSources = template.data.sources;
-    delete(dataSources[0].name);
+    delete dataSources[0].name;
     dataSources[0].properties = {
-      "feat-lyr-new.portalItemId":
-        "aaaaf0cf8bdc4fb19749cc1cbad1651b",
-      "feature-layer.outSR": "4326"
-    }
+      "feat-lyr-new.portalItemId": "aaaaf0cf8bdc4fb19749cc1cbad1651b",
+      "feature-layer.outSR": "4326",
+    };
     const deps: string[] = [];
     _getDependencies(dataSources, deps);
     expect(deps.length).toEqual(1);

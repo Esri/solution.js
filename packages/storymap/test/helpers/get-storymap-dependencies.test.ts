@@ -16,42 +16,40 @@
 
 import { getStoryMapDependencies } from "../../src/helpers/get-storymap-dependencies";
 import { IModel } from "@esri/hub-common";
-import { IItem } from "@esri/arcgis-rest-portal";
+import { IItem } from "../../../common/src/arcgisRestJS";
 
 describe("get-storymap-dependencies", () => {
   it("should extract webmaps from resources", () => {
     const m = {
       item: {
         id: "3ef",
-        owner: "steve"
+        owner: "steve",
       } as IItem,
       data: {
         resources: {
-          foo: { type: "bar" },
-          "r-bc4-123144": { type: "webmap", data: { itemId: "bc7" } }
-        }
-      }
+          "foo": { type: "bar" },
+          "r-bc4-123144": { type: "webmap", data: { itemId: "bc7" } },
+        },
+      },
     } as IModel;
 
     const chk = getStoryMapDependencies(m);
-    expect(Array.isArray(chk)).toBe(true, "should return an array");
-    expect(chk.length).toBe(
-      1,
-      "should return the should only return the webmap"
-    );
-    expect(chk[0]).toBe("bc7", "should return the id of the");
+    expect(Array.isArray(chk)).withContext("should return an array").toBe(true);
+    expect(chk.length).withContext("should return the should only return the webmap").toBe(1);
+    expect(chk[0]).withContext("should return the id of the").toBe("bc7");
   });
+
   it("handles undefined resource hash", () => {
     const m = {
       item: {
         id: "3ef",
-        owner: "steve"
+        owner: "steve",
       } as IItem,
-      data: {}
+      data: {},
     } as IModel;
 
     const chk = getStoryMapDependencies(m);
-    expect(Array.isArray(chk)).toBe(true, "should return an array");
-    expect(chk.length).toBe(0, "should return tno resources");
+    expect(Array.isArray(chk)).withContext("should return an array").toBe(true);
+    expect(chk.length).withContext("should return tno resources").toBe(0);
   });
 });

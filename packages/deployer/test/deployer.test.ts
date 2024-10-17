@@ -20,7 +20,7 @@
 
 import * as testUtils from "../../common/test/mocks/utils";
 import * as mockItems from "../../common/test/mocks/agolItems";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require("fetch-mock");
 import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
 import * as deployUtils from "../src/deployerUtils";
@@ -29,7 +29,6 @@ import * as sinon from "sinon";
 import * as deploySolutionFromTemplate from "../src/deploySolutionFromTemplate";
 import { cloneObject } from "@esri/hub-common";
 import * as postProcessModule from "../src/helpers/post-process";
-import * as portalHelper from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -43,37 +42,23 @@ afterEach(() => {
   fetchMock.restore();
 });
 
-const geometryServiceUrl: string =
-  "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer";
-
-const projectedGeometries: any[] = [
-  {
-    x: -131,
-    y: 16
-  },
-  {
-    x: -57,
-    y: 58
-  }
-];
-
 describe("Module `deployer`", () => {
   afterEach(() => {
     sinon.restore();
   });
   describe("deploy solution orchestration", () => {
-    it("should reject if no maybeModel passed", done => {
-      deployer
+    it("should reject if no maybeModel passed", async () => {
+      return deployer
         .deploySolution("", MOCK_USER_SESSION)
-        .then(_ => {
+        .then(() => {
           fail("deploySolution should reject if passed null");
         })
-        .catch(ex => {
+        .catch((ex) => {
           expect(ex).toEqual({
             success: false,
-            error: "The Solution Template id is missing"
+            error: "The Solution Template id is missing",
           });
-          done();
+          return Promise.resolve();
         });
     });
     describe("happy pathing", () => {
@@ -85,116 +70,85 @@ describe("Module `deployer`", () => {
       // setup the stubs in before each... ensures they are clean each time
       beforeEach(() => {
         itemInfo = cloneObject(templates.getSolutionTemplateItem([]));
-        sinon
-          .stub(common, "getUser")
-          .resolves({ orgId: "abcdefghij" } as any);
-        solTmplStub = sinon
-          .stub(deployUtils, "getSolutionTemplateItem")
-          .resolves({
-            item: itemInfo.item,
-            data: itemInfo.data
-          });
+        sinon.stub(common, "getUser").resolves({ orgId: "abcdefghij" } as any);
+        solTmplStub = sinon.stub(deployUtils, "getSolutionTemplateItem").resolves({
+          item: itemInfo.item,
+          data: itemInfo.data,
+        });
         // create a fake file
         const xmlFile = new File(["xml"], "metadata.xml", {
-          type: "application/xml"
+          type: "application/xml",
         });
-        metaStub = sinon
-          .stub(common, "getItemMetadataAsFile")
-          .resolves(xmlFile);
+        metaStub = sinon.stub(common, "getItemMetadataAsFile").resolves(xmlFile);
 
-        deployFnStub = sinon
-          .stub(deploySolutionFromTemplate, "deploySolutionFromTemplate")
-          .resolves("3ef");
+        deployFnStub = sinon.stub(deploySolutionFromTemplate, "deploySolutionFromTemplate").resolves("3ef");
       });
 
-      it("ensure main fns are called using stubs", done => {
+      it("ensure main fns are called using stubs", async () => {
         // this test assumes all is good and simply checks that
         // the expected delegation occurs
-        deployer
-          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION)
-          .then(() => {
-            expect(solTmplStub.calledOnce).withContext("getSolutionTemplateItem should be called").toBe(true);
-            expect(metaStub.calledOnce).withContext("getItemMetadataAsFile should not be called because item id is not a GUID").toBe(false);
-            expect(deployFnStub.calledOnce).withContext("deploySolutionFromTemplate should be called once").toBe(true);
-            // TODO: verify inputs to deployFn
-            done();
-          })
-          .catch(err => {
-            fail(err.error);
-          });
+        await deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION);
+        expect(solTmplStub.calledOnce).withContext("getSolutionTemplateItem should be called").toBe(true);
+        expect(metaStub.calledOnce)
+          .withContext("getItemMetadataAsFile should not be called because item id is not a GUID")
+          .toBe(false);
+        expect(deployFnStub.calledOnce).withContext("deploySolutionFromTemplate should be called once").toBe(true);
+        // TODO: verify inputs to deployFn
       });
-      it("should default to using supplied authentication for solution source", done => {
-        deployer
-          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION)
-          .then(() => {
-            expect(solTmplStub.args[0][1]).withContext("destination authentication should be used").toBe(MOCK_USER_SESSION);
-            done();
-          })
-          .catch(err => {
-            fail(err.error);
-          });
+      it("should default to using supplied authentication for solution source", async () => {
+        await deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION);
+        expect(solTmplStub.args[0][1]).withContext("destination authentication should be used").toBe(MOCK_USER_SESSION);
       });
-      it("should use solution-source authentication if supplied", done => {
+      it("should use solution-source authentication if supplied", async () => {
         const opts = {
           storageAuthentication: testUtils.createRuntimeMockUserSession(
             undefined,
-            "https://myotherorg.maps.arcgis.com"
-          )
+            "https://myotherorg.maps.arcgis.com",
+          ),
         };
-        deployer
-          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, opts)
-          .then(() => {
-            expect(solTmplStub.args[0][1]).withContext("source authentication should be used").toBe(opts.storageAuthentication);
-            done();
-          })
-          .catch(err => {
-            fail(err.error);
-          });
+        await deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION, opts);
+        expect(solTmplStub.args[0][1])
+          .withContext("source authentication should be used")
+          .toBe(opts.storageAuthentication);
       });
-      it("calls progress callback if passed", done => {
+      it("calls progress callback if passed", async () => {
         // create options hash w/ progress callback
         const opts = {
-          progressCallback: (pct: number) => pct
+          progressCallback: (pct: number) => pct,
         };
 
         // itemInfo that has not been mutated
         const _itemInfo = cloneObject(templates.getSolutionTemplateItem([]));
-        itemInfo.item.id = _itemInfo.item.id =
-          "11181d776d164656836f2fc3c23512b8";
+        itemInfo.item.id = _itemInfo.item.id = "11181d776d164656836f2fc3c23512b8";
 
         // create stub...
         const pgStub = sinon.stub(opts, "progressCallback");
-        deployer
-          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, opts)
-          .then(() => {
-            expect(solTmplStub.calledOnce).withContext("getSolutionTemplateItem should be called").toBe(true);
-            expect(deployFnStub.calledOnce).withContext("deploySolutionFromTemplate should be called once").toBe(true);
-            expect(deployFnStub.args[0][0]).withContext("deploySolutionFromTemplate should be called with an item id").toBe(_itemInfo.item.id);
-            // TODO: verify inputs to deployFn
-            expect(pgStub.calledTwice).withContext("progressCallback should be called twice").toBe(true);
-            done();
-          })
-          .catch(err => {
-            fail(err.error);
-          });
+        await deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION, opts);
+        expect(solTmplStub.calledOnce).withContext("getSolutionTemplateItem should be called").toBe(true);
+        expect(deployFnStub.calledOnce).withContext("deploySolutionFromTemplate should be called once").toBe(true);
+        expect(deployFnStub.args[0][0])
+          .withContext("deploySolutionFromTemplate should be called with an item id")
+          .toBe(_itemInfo.item.id);
+        // TODO: verify inputs to deployFn
+        expect(pgStub.calledTwice).withContext("progressCallback should be called twice").toBe(true);
       });
     });
   });
   describe("deploySolution", () => {
-    it("reports an error if the solution id is not supplied", done => {
-      deployer
+    it("reports an error if the solution id is not supplied", async () => {
+      return deployer
         .deploySolution("", MOCK_USER_SESSION)
-        .then(() => done.fail())
-        .catch(err => {
+        .then(() => fail())
+        .catch((err) => {
           expect(err).toEqual({
             success: false,
-            error: "The Solution Template id is missing"
+            error: "The Solution Template id is missing",
           });
-          done();
+          return Promise.resolve();
         });
     });
 
-    it("can deploy webmap with dependencies", done => {
+    it("can deploy webmap with dependencies", async () => {
       const groupId: string = "aa4a6047326243b290f625e80ebe6531";
       const newGroupId: string = "ba4a6047326243b290f625e80ebe6531";
       const groupTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
@@ -204,31 +158,20 @@ describe("Module `deployer`", () => {
       const user: any = testUtils.getUserResponse();
 
       // get templates
-      const featureServiceTemplate: any = templates.getItemTemplate(
-        "Feature Service"
-      );
-      featureServiceTemplate.properties.layers[0].someProperty =
-        "{{ params.testProperty }}";
-      const webmapTemplate: any = templates.getItemTemplate(
-        "Web Map",
-        [featureServiceTemplate.itemId],
-        ""
-      );
+      const featureServiceTemplate: any = templates.getItemTemplate("Feature Service");
+      featureServiceTemplate.properties.layers[0].someProperty = "{{ params.testProperty }}";
+      const webmapTemplate: any = templates.getItemTemplate("Web Map", [featureServiceTemplate.itemId], "");
       webmapTemplate.groups = [groupId];
-      const itemInfo: any = templates.getSolutionTemplateItem([
-        webmapTemplate,
-        featureServiceTemplate,
-        groupTemplate
-      ]);
+      const itemInfo: any = templates.getSolutionTemplateItem([webmapTemplate, featureServiceTemplate, groupTemplate]);
       itemInfo.item.thumbnail = "thumbnail/ago_downloaded.png";
 
       const templateDictionary: any = {
         params: {
-          testProperty: "ABC"
+          testProperty: "ABC",
         },
         thumbnailurl:
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/sln1234567890/info/thumbnail/ago_downloaded.png",
-        locationTrackingEnabled: true
+        locationTrackingEnabled: true,
       };
       const featureServerAdminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
@@ -242,17 +185,17 @@ describe("Module `deployer`", () => {
         "Feature Layer",
         [
           {
-            id: 0,
-            name: "",
-            relatedTableId: 1,
-            cardinality: "esriRelCardinalityOneToMany",
-            role: "esriRelRoleOrigin",
+            "id": 0,
+            "name": "",
+            "relatedTableId": 1,
+            "cardinality": "esriRelCardinalityOneToMany",
+            "role": "esriRelRoleOrigin",
             "": "globalid",
-            composite: true,
-            keyField: "globalid"
-          }
+            "composite": true,
+            "keyField": "globalid",
+          },
         ],
-        true
+        true,
       );
       const table: any = mockItems.getAGOLLayerOrTable(
         1,
@@ -260,30 +203,28 @@ describe("Module `deployer`", () => {
         "Table",
         [
           {
-            id: 0,
-            name: "",
-            relatedTableId: 1,
-            cardinality: "esriRelCardinalityOneToMany",
-            role: "esriRelRoleDestination",
+            "id": 0,
+            "name": "",
+            "relatedTableId": 1,
+            "cardinality": "esriRelCardinalityOneToMany",
+            "role": "esriRelRoleDestination",
             "": "globalid",
-            composite: true,
-            keyField: "globalid"
-          }
+            "composite": true,
+            "keyField": "globalid",
+          },
         ],
-        true
+        true,
       );
 
       const expectedMap: any = mockItems.getTrimmedAGOLItem(
         mockItems.getAGOLItem(
           "Web Map",
-          testUtils.PORTAL_SUBSET.portalUrl +
-            "/home/webmap/viewer.html?webmap=map1234567890"
-        )
+          testUtils.PORTAL_SUBSET.portalUrl + "/home/webmap/viewer.html?webmap=map1234567890",
+        ),
       );
       expectedMap.extent = "-88.226,41.708,-88.009,41.844";
       expectedMap.thumbnail =
-        testUtils.ORG_URL +
-        "/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png";
+        testUtils.ORG_URL + "/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png";
 
       const communitySelfResponse: any = testUtils.getUserResponse();
       const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
@@ -291,207 +232,133 @@ describe("Module `deployer`", () => {
         id: "aaa2c6105dc243a2ad1377245722e312",
         url: "https://locationtracking.arcgis.com/arcgis/rest/services/LocationTracking/FeatureServer",
         owner: "LocationTrackingServiceOwner",
-        userIsOwner: false
+        userIsOwner: false,
       };
-      const geometryServer: string =
-        portalsSelfResponse.helperServices.geometry.url;
+      const geometryServer: string = portalsSelfResponse.helperServices.geometry.url;
 
-      const relationshipSpy = spyOn(
-        portalHelper,
-        "addItemRelationship"
-      ).and.resolveTo();
+      spyOn(common, "addItemRelationship").and.resolveTo();
 
       spyOn(common, "getUser").and.resolveTo({ orgId: "abcdefghij" });
 
       fetchMock
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
-          itemInfo.item
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "?f=json&token=fake-token",
+          itemInfo.item,
         )
+        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/data", itemInfo.data)
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
-          itemInfo.data
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/sln1234567890/info/thumbnail/ago_downloaded.png?w=400",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/sln1234567890/info/thumbnail/ago_downloaded.png?w=400",
           testUtils.getSampleImageAsFile(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
-          mockItems.get400Failure()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/info/metadata/metadata.xml",
+          mockItems.get400Failure(),
         )
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/map1234567890?f=json&token=fake-token",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890?f=json&token=fake-token",
           mockItems.getAGOLItem(
             "Web Map",
-            testUtils.PORTAL_SUBSET.portalUrl +
-              "/home/webmap/viewer.html?webmap=map1234567890"
-          )
+            testUtils.PORTAL_SUBSET.portalUrl + "/home/webmap/viewer.html?webmap=map1234567890",
+          ),
         )
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", portalsSelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json&token=fake-token", portalsSelfResponse)
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
+          testUtils.PORTAL_SUBSET.restUrl + "/community/users/casey?f=json&token=fake-token",
+          testUtils.getUserResponse(),
         )
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token", user)
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
-          testUtils.getUserResponse()
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
-          user
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/groups/" +
-            newGroupId +
-            "?f=json&token=fake-token",
-          mockItems.getAGOLGroup(newGroupId)
+          testUtils.PORTAL_SUBSET.restUrl + "/community/groups/" + newGroupId + "?f=json&token=fake-token",
+          mockItems.getAGOLGroup(newGroupId),
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-          testUtils.getCreateFolderResponse()
+          testUtils.getCreateFolderResponse(),
         )
-        .post(
-          "https://utility.arcgisonline.com/arcgis/rest/info",
-          testUtils.UTILITY_SERVER_INFO
-        )
-        .post(
-          geometryServer + "/findTransformations",
-          testUtils.getTransformationsResponse()
-        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
+        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
         .post(geometryServer + "/project", testUtils.getProjectResponse())
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           testUtils.getSuccessResponse({
             id: "map1234567890",
-            folder: "44468da125a64526b359b70d8ba4a9dd"
-          })
+            folder: "44468da125a64526b359b70d8ba4a9dd",
+          }),
         )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl + "/community/createGroup",
-          testUtils.getCreateGroupResponse(newGroupId)
-        )
+        .post(testUtils.PORTAL_SUBSET.restUrl + "/community/createGroup", testUtils.getCreateGroupResponse(newGroupId))
         .post(testUtils.PORTAL_SUBSET.restUrl + "/search", { results: [] })
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/share",
-          testUtils.getShareResponse("map1234567890")
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/share",
+          testUtils.getShareResponse("map1234567890"),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
-          testUtils.getCreateServiceResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
+          testUtils.getCreateServiceResponse(),
         )
         .post(
           featureServerAdminUrl + "/addToDefinition",
           testUtils.getSuccessResponse({
             layers: [{ name: "ROW Permits", id: 0 }],
-            tables: [{ name: "ROW Permit Comment", id: 1 }]
-          })
+            tables: [{ name: "ROW Permit Comment", id: 1 }],
+          }),
         )
         .post(featureServerAdminUrl + "/0?f=json", layer)
         .post(featureServerAdminUrl + "/1?f=json", table)
+        .post(featureServerAdminUrl + "/refresh", testUtils.getSuccessResponse())
+        .post(featureServerAdminUrl + "/0/updateDefinition", testUtils.getSuccessResponse())
+        .post(featureServerAdminUrl + "/1/updateDefinition", testUtils.getSuccessResponse())
+        .post(featureServerAdminUrl + "/updateDefinition", testUtils.getSuccessResponse())
         .post(
-          featureServerAdminUrl + "/refresh",
-          testUtils.getSuccessResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update",
+          testUtils.getSuccessResponse({ id: "svc1234567890" }),
         )
         .post(
-          featureServerAdminUrl + "/0/updateDefinition",
-          testUtils.getSuccessResponse()
-        )
-        .post(
-          featureServerAdminUrl + "/1/updateDefinition",
-          testUtils.getSuccessResponse()
-        )
-        .post(
-          featureServerAdminUrl + "/updateDefinition",
-          testUtils.getSuccessResponse()
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          testUtils.getSuccessResponse({ id: "svc1234567890" })
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/update",
-          testUtils.getSuccessResponse({ id: "map1234567890" })
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/update",
+          testUtils.getSuccessResponse({ id: "map1234567890" }),
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/items/map1234567890/update",
-          testUtils.getSuccessResponse({ id: "map1234567890" })
+          testUtils.getSuccessResponse({ id: "map1234567890" }),
         )
+        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data", {})
+        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data", {})
         .post(
-          testUtils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data",
-          {}
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
-          {}
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/addResources",
-          testUtils.getSuccessResponse({ id: "sln1234567890" })
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/addResources",
+          testUtils.getSuccessResponse({ id: "sln1234567890" }),
         )
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
-          testUtils.getCreateServiceResponse()
+          testUtils.getCreateServiceResponse(),
         )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
-          { success: true }
-        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect", {
+          success: true,
+        })
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/aaa2c6105dc243a2ad1377245722e312?f=json&token=fake-token",
-          { owner: "LocationTrackingServiceOwner", id: "aaa2c6105dc243a2ad1377245722e312" }
+          {
+            owner: "LocationTrackingServiceOwner",
+            id: "aaa2c6105dc243a2ad1377245722e312",
+          },
         )
-        .post(
-          "https://survey123.arcgis.com/api/survey/frm1234567891/webhook/add",
-          { success: true }
-        )
+        .post("https://survey123.arcgis.com/api/survey/frm1234567891/webhook/add", { success: true })
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
-          mockItems.urlsResponse
+          mockItems.urlsResponse,
         );
       spyOn(console, "log").and.callFake(() => {});
 
       const expected: string = "map1234567890";
 
       delete portalsSelfResponse.portalThumbnail;
-      delete portalsSelfResponse.defaultBasemap.baseMapLayers[0].resourceInfo
-        .layers[0].subLayerIds;
+      delete portalsSelfResponse.defaultBasemap.baseMapLayers[0].resourceInfo.layers[0].subLayerIds;
       delete portalsSelfResponse.portalProperties.sharedTheme.logo.small;
       portalsSelfResponse.defaultExtentBBox = [
         [-88.226, 41.708],
-        [-88.009, 41.844]
+        [-88.009, 41.844],
       ];
 
       const expectedTemplate: any = {
@@ -509,14 +376,14 @@ describe("Module `deployer`", () => {
         svc1234567890: {
           def: {},
           defaultSpatialReference: {
-            wkid: 102100
+            wkid: 102100,
           },
           solutionExtent: {
             xmin: -9821384.714217981,
             ymin: 5117339.123090005,
             xmax: -9797228.384715842,
             ymax: 5137789.39951188,
-            spatialReference: { wkid: 102100 }
+            spatialReference: { wkid: 102100 },
           },
           itemId: "svc1234567890",
           url: featureServerUrl + "/",
@@ -529,44 +396,44 @@ describe("Module `deployer`", () => {
               globalid: {
                 name: "globalid",
                 alias: "globalid",
-                type: "esriFieldTypeGlobalID"
+                type: "esriFieldTypeGlobalID",
               },
               creationdate: {
                 name: "CreationDate",
                 alias: "CreationDate",
-                type: "esriFieldTypeDate"
+                type: "esriFieldTypeDate",
               },
               creator: {
                 name: "Creator",
                 alias: "Creator",
-                type: "esriFieldTypeString"
+                type: "esriFieldTypeString",
               },
               editdate: {
                 name: "EditDate",
                 alias: "EditDate",
-                type: "esriFieldTypeDate"
+                type: "esriFieldTypeDate",
               },
               editor: {
                 name: "Editor",
                 alias: "Editor",
-                type: "esriFieldTypeString"
+                type: "esriFieldTypeString",
               },
               objectid: {
                 name: "OBJECTID",
                 alias: "OBJECTID",
-                type: "esriFieldTypeOID"
+                type: "esriFieldTypeOID",
               },
               appname: {
                 name: "appname",
                 alias: "appname",
-                type: "esriFieldTypeString"
+                type: "esriFieldTypeString",
               },
               boardreview: {
                 name: "BoardReview",
                 alias: "Board Review",
-                type: "esriFieldTypeString"
-              }
-            }
+                type: "esriFieldTypeString",
+              },
+            },
           },
           layer1: {
             itemId: "svc1234567890",
@@ -576,70 +443,68 @@ describe("Module `deployer`", () => {
               globalid: {
                 name: "globalid",
                 alias: "globalid",
-                type: "esriFieldTypeGlobalID"
+                type: "esriFieldTypeGlobalID",
               },
               creationdate: {
                 name: "CreationDate",
                 alias: "CreationDate",
-                type: "esriFieldTypeDate"
+                type: "esriFieldTypeDate",
               },
               creator: {
                 name: "Creator",
                 alias: "Creator",
-                type: "esriFieldTypeString"
+                type: "esriFieldTypeString",
               },
               editdate: {
                 name: "EditDate",
                 alias: "EditDate",
-                type: "esriFieldTypeDate"
+                type: "esriFieldTypeDate",
               },
               editor: {
                 name: "Editor",
                 alias: "Editor",
-                type: "esriFieldTypeString"
+                type: "esriFieldTypeString",
               },
               objectid: {
                 name: "OBJECTID",
                 alias: "OBJECTID",
-                type: "esriFieldTypeOID"
+                type: "esriFieldTypeOID",
               },
               appname: {
                 name: "appname",
                 alias: "appname",
-                type: "esriFieldTypeString"
+                type: "esriFieldTypeString",
               },
               boardreview: {
                 name: "BoardReview",
                 alias: "Board Review",
-                type: "esriFieldTypeString"
-              }
-            }
-          }
+                type: "esriFieldTypeString",
+              },
+            },
+          },
         },
         map1234567890: {
           itemId: "map1234567890",
           itemUrl: testUtils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890",
-          url:
-            "https://myorg.maps.arcgis.com/home/webmap/viewer.html?webmap=map1234567890"
+          url: "https://myorg.maps.arcgis.com/home/webmap/viewer.html?webmap=map1234567890",
         },
         params: {
-          testProperty: "ABC"
+          testProperty: "ABC",
         },
         locationTrackingEnabled: true,
         locationTracking: {
           id: "aaa2c6105dc243a2ad1377245722e312",
           url: "https://locationtracking.arcgis.com/arcgis/rest/services/LocationTracking/FeatureServer",
           owner: "LocationTrackingServiceOwner",
-          userIsOwner: false
+          userIsOwner: false,
         },
         allGroups: user.groups,
-        "aaa2c6105dc243a2ad1377245722e312": {
-          itemId: "aaa2c6105dc243a2ad1377245722e312"
+        aaa2c6105dc243a2ad1377245722e312: {
+          itemId: "aaa2c6105dc243a2ad1377245722e312",
         },
-
       };
       expectedTemplate[groupId] = {
-        itemId: newGroupId
+        itemId: newGroupId,
       };
 
       const expectedUpdateBody: string =
@@ -648,67 +513,41 @@ describe("Module `deployer`", () => {
       const options: common.IDeploySolutionOptions = {
         templateDictionary: templateDictionary,
         progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK,
-        consoleProgress: true
+        consoleProgress: true,
       };
-      deployer
-        .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
-        .then(
-          function(actual) {
-            // not concerned with the def here
-            templateDictionary["svc1234567890"].def = {};
+      const actual = await deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options);
+      // not concerned with the def here
+      templateDictionary["svc1234567890"].def = {};
 
-            expect(actual)
-              .withContext("test actual === expected")
-              .toEqual(expected);
+      expect(actual).withContext("test actual === expected").toEqual(expected);
 
-            const addToDefCalls: any[] = fetchMock.calls(/addToDefinition/);
-            const customParams = /someProperty%22%3A%22ABC/.test(
-              JSON.stringify(addToDefCalls[0][1].body)
-            );
-            expect(customParams)
-              .withContext("test that we have custom params")
-              .toBeTrue();
+      const addToDefCalls: any[] = fetchMock.calls(/addToDefinition/);
+      const customParams = /someProperty%22%3A%22ABC/.test(JSON.stringify(addToDefCalls[0][1].body));
+      expect(customParams).withContext("test that we have custom params").toBeTrue();
 
-            const updateCalls: any[] = fetchMock.calls(
-              testUtils.PORTAL_SUBSET.restUrl +
-                "/content/users/casey/items/map1234567890/update"
-            );
+      const updateCalls: any[] = fetchMock.calls(
+        testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/update",
+      );
 
-            const actualUpdateBody = updateCalls[0][1].body;
-            expect(actualUpdateBody === expectedUpdateBody)
-              .withContext("test the expected update body")
-              .toBeTruthy();
+      const actualUpdateBody = updateCalls[0][1].body;
+      expect(actualUpdateBody === expectedUpdateBody)
+        .withContext("test the expected update body")
+        .toBeTruthy();
 
-            // Repeat with progress callback
-            options.progressCallback = testUtils.SOLUTION_PROGRESS_CALLBACK;
-            options.templateDictionary = {
-              locationTrackingEnabled: true
-            };
-            deployer
-              .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
-              .then(
-                () => {
-                  done();
-                },
-                e => {
-                  done.fail(e);
-                }
-              );
-          },
-          e => {
-            done.fail(e);
-          }
-        );
+      // Repeat with progress callback
+      options.progressCallback = testUtils.SOLUTION_PROGRESS_CALLBACK;
+      options.templateDictionary = {
+        locationTrackingEnabled: true,
+      };
+      return deployer;
     });
 
-    it("can handle error on postProcess", done => {
+    it("can handle error on postProcess", async () => {
       const itemInfoCard: any = {
         id: "c38e59126368495694ca23b7ccacefba",
         title: "Election Management",
         description: "",
-        url:
-          testUtils.PORTAL_SUBSET.portalUrl +
-          "/home/item.html?id=c38e59126368495694ca23b7ccacefba",
+        url: testUtils.PORTAL_SUBSET.portalUrl + "/home/item.html?id=c38e59126368495694ca23b7ccacefba",
         thumbnailurl:
           testUtils.PORTAL_SUBSET.restUrl +
           "/content/items/c38e59126368495694ca23b7ccacefba/info/thumbnail/ago_downloaded_orig.png",
@@ -718,11 +557,11 @@ describe("Module `deployer`", () => {
           "deploy.commonid.00292a52-00b7-4719-00e4-163c008d16b2",
           "Government",
           "deploy.solution",
-          "deploy.version.2.0"
+          "deploy.version.2.0",
         ],
         categories: [],
         deployCommonId: "00292a52-00b7-4719-00e4-163c008d16b2",
-        deployVersion: 2
+        deployVersion: 2,
       };
       const templateDictionary: any = {};
 
@@ -758,36 +597,30 @@ describe("Module `deployer`", () => {
                 "Voting Centers",
                 "Election Day",
                 "Election Officials",
-                "Clerks"
+                "Clerks",
               ],
               thumbnail: "thumbnail/thumbnail1552919935720.png",
               title: "Election Manager",
-              typeKeywords: [
-                "source-e4f57a8460b14b46a54e4519325f5ded",
-                "Workforce Project"
-              ],
-              url: null
+              typeKeywords: ["source-e4f57a8460b14b46a54e4519325f5ded", "Workforce Project"],
+              url: null,
             },
             data: {
               version: "1.2.0",
               workerWebMapId: "{{b95616555b16437f8435e079033128d0.itemId}}",
               dispatcherWebMapId: "{{7d4b6a244163430590151395821fb845.itemId}}",
               assignments: {
-                serviceItemId:
-                  "{{2860494043c3459faabcfd0e1ab557fc.layer0.itemId}}",
-                url: "{{2860494043c3459faabcfd0e1ab557fc.layer0.url}}"
+                serviceItemId: "{{2860494043c3459faabcfd0e1ab557fc.layer0.itemId}}",
+                url: "{{2860494043c3459faabcfd0e1ab557fc.layer0.url}}",
               },
               workers: {
-                serviceItemId:
-                  "{{bf4bdd4bdd18437f8d5ff1aa2d25fd7c.layer0.itemId}}",
-                url: "{{bf4bdd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
+                serviceItemId: "{{bf4bdd4bdd18437f8d5ff1aa2d25fd7c.layer0.itemId}}",
+                url: "{{bf4bdd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}",
               },
               tracks: {
-                serviceItemId:
-                  "{{5e514329e69144c59f69f3f3e0d45269.layer0.itemId}}",
+                serviceItemId: "{{5e514329e69144c59f69f3f3e0d45269.layer0.itemId}}",
                 url: "{{5e514329e69144c59f69f3f3e0d45269.layer0.url}}",
                 enabled: true,
-                updateInterval: 300
+                updateInterval: 300,
               },
               groupId: "{{47bb15c2df2b466da05577776e82d044.itemId}}",
               folderId: "{{folderId}}",
@@ -796,17 +629,15 @@ describe("Module `deployer`", () => {
                   id: "default-navigator",
                   prompt: "Navigate to Assignment",
                   urlTemplate:
-                    "arcgis-navigator://?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce"
-                }
-              ]
+                    "arcgis-navigator://?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce",
+                },
+              ],
             },
-            resources: [
-              "cc2ccab401af4828a25cc6eaeb59fb69_info_thumbnail/thumbnail1552919935720.png"
-            ],
+            resources: ["cc2ccab401af4828a25cc6eaeb59fb69_info_thumbnail/thumbnail1552919935720.png"],
             dependencies: ["47bb15c2df2b466da05577776e82d044"],
             properties: {},
             estimatedDeploymentCostFactor: 2,
-            groups: ["47bb15c2df2b466da05577776e82d044"]
+            groups: ["47bb15c2df2b466da05577776e82d044"],
           },
           {
             itemId: "47bb15c2df2b466da05577776e82d044",
@@ -827,7 +658,7 @@ describe("Module `deployer`", () => {
                 "Secretary of State",
                 "Polling Places",
                 "Early Voting",
-                "Voting Centers"
+                "Voting Centers",
               ],
               thumbnail: "thumbnail1552923181520.png",
               title: "Election Manager",
@@ -851,24 +682,22 @@ describe("Module `deployer`", () => {
               leavingDisallowed: false,
               hiddenMembers: false,
               displaySettings: {
-                itemTypes: ""
+                itemTypes: "",
               },
               userMembership: {
                 username: "casey",
-                memberType: "none"
+                memberType: "none",
               },
-              collaborationInfo: {}
+              collaborationInfo: {},
             },
             data: {},
-            resources: [
-              "47bb15c2df2b466da05577776e82d044_info_thumbnail/thumbnail1552923181520.png"
-            ],
+            resources: ["47bb15c2df2b466da05577776e82d044_info_thumbnail/thumbnail1552923181520.png"],
             dependencies: [],
             properties: {},
             estimatedDeploymentCostFactor: 2,
-            groups: []
-          }
-        ]
+            groups: [],
+          },
+        ],
       };
 
       const folderId: string = "bd610311e0e84e41b96f54df2da54f82";
@@ -882,507 +711,344 @@ describe("Module `deployer`", () => {
 
       const communitySelfResponse: any = testUtils.getUserResponse();
       const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
-      const geometryServer: string =
-        portalsSelfResponse.helperServices.geometry.url;
+      const geometryServer: string = portalsSelfResponse.helperServices.geometry.url;
 
       fetchMock
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/c38e59126368495694ca23b7ccacefba/data",
-          solutionResponse
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/c38e59126368495694ca23b7ccacefba/data",
+          solutionResponse,
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl +
             "/content/items/c38e59126368495694ca23b7ccacefba/info/metadata/metadata.xml",
           testUtils.getSampleMetadataAsFile(),
-          { sendAsJson: false }
+          { sendAsJson: false },
         )
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/c38e59126368495694ca23b7ccacefba?f=json&token=fake-token",
-          itemInfoCard
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/c38e59126368495694ca23b7ccacefba?f=json&token=fake-token",
+          itemInfoCard,
         )
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/org1234567890?f=json&token=fake-token",
-          testUtils.getPortalsSelfResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/portals/org1234567890?f=json&token=fake-token",
+          testUtils.getPortalsSelfResponse(),
+        )
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token",
+          testUtils.getPortalsSelfResponse(),
         )
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
+          testUtils.PORTAL_SUBSET.restUrl + "/community/users/casey?f=json&token=fake-token",
+          testUtils.getUserResponse(),
         )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
-          testUtils.getPortalsSelfResponse()
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
-          testUtils.getUserResponse()
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
-          []
-        )
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token", [])
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-          testUtils.getCreateFolderResponse(folderId)
+          testUtils.getCreateFolderResponse(folderId),
         )
         .post(imageUrl, expectedImage)
         .post(imageUrl2, expectedImage)
-        .post(
-          geometryServer + "/findTransformations",
-          testUtils.getTransformationsResponse()
-        )
+        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
         .post(
           "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project",
-          testUtils.getProjectResponse()
+          testUtils.getProjectResponse(),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/" +
-            folderId +
-            "/addItem",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/" + folderId + "/addItem",
           testUtils.getSuccessResponse({
             id: "57a059ec717c4b1282705132fd4720a0",
-            folder: folderId
+            folder: folderId,
           }),
-          { overwriteRoutes: false }
+          { overwriteRoutes: false },
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/" +
-            folderId +
-            "/addItem",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/" + folderId + "/addItem",
           testUtils.getSuccessResponse({
             id: "82601685fd3c444397d252116d7a3dc0",
-            folder: folderId
+            folder: folderId,
           }),
-          { overwriteRoutes: false }
+          { overwriteRoutes: false },
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/community/createGroup",
           testUtils.getSuccessResponse({
-            group: { id: "987eaa6a496546a58f04796266589ec5" }
-          })
+            group: { id: "987eaa6a496546a58f04796266589ec5" },
+          }),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/groups/987eaa6a496546a58f04796266589ec5/update",
+          testUtils.PORTAL_SUBSET.restUrl + "/community/groups/987eaa6a496546a58f04796266589ec5/update",
           testUtils.getSuccessResponse({
-            groupId: "987eaa6a496546a58f04796266589ec5"
-          })
+            groupId: "987eaa6a496546a58f04796266589ec5",
+          }),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/57a059ec717c4b1282705132fd4720a0/update",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/57a059ec717c4b1282705132fd4720a0/update",
           testUtils.getSuccessResponse({
-            id: "57a059ec717c4b1282705132fd4720a0"
-          })
+            id: "57a059ec717c4b1282705132fd4720a0",
+          }),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/82601685fd3c444397d252116d7a3dc0/update",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/82601685fd3c444397d252116d7a3dc0/update",
           testUtils.getSuccessResponse({
-            id: "82601685fd3c444397d252116d7a3dc0"
-          })
+            id: "82601685fd3c444397d252116d7a3dc0",
+          }),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/bd610311e0e84e41b96f54df2da54f82/delete",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/bd610311e0e84e41b96f54df2da54f82/delete",
           testUtils.getSuccessResponse({
-            folder: { username: "casey", id: folderId }
-          })
+            folder: { username: "casey", id: folderId },
+          }),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/57a059ec717c4b1282705132fd4720a0/delete",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/57a059ec717c4b1282705132fd4720a0/delete",
           testUtils.getSuccessResponse({
-            itemId: "57a059ec717c4b1282705132fd4720a0"
-          })
+            itemId: "57a059ec717c4b1282705132fd4720a0",
+          }),
         );
 
-      spyOn(postProcessModule, "postProcess").and.callFake(() =>
-        Promise.reject()
-      );
+      spyOn(postProcessModule, "postProcess").and.callFake(() => Promise.reject());
 
       const options: common.IDeploySolutionOptions = {
-        templateDictionary: templateDictionary
+        templateDictionary: templateDictionary,
       };
 
-      deployer
-        .deploySolution(itemInfoCard.id, MOCK_USER_SESSION, options)
-        .then(
-          () => {
-            done.fail();
-          },
-          () => {
-            done();
-          }
-        );
+      return deployer.deploySolution(itemInfoCard.id, MOCK_USER_SESSION, options).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
     });
 
-    it("can handle error on createItemWithData", done => {
+    it("can handle error on createItemWithData", async () => {
       // get templates
-      const itemInfo: any = templates.getSolutionTemplateItem([
-        templates.getItemTemplate("Feature Service")
-      ]);
+      const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
 
       const communitySelfResponse: any = testUtils.getUserResponse();
       const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
-      const geometryServer: string =
-        portalsSelfResponse.helperServices.geometry.url;
+      const geometryServer: string = portalsSelfResponse.helperServices.geometry.url;
 
       fetchMock
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
-          itemInfo.item
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "?f=json&token=fake-token",
+          itemInfo.item,
         )
+        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/data", itemInfo.data)
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
-          itemInfo.data
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/info/metadata/metadata.xml",
+          mockItems.get400Failure(),
         )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
-          mockItems.get400Failure()
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", portalsSelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json&token=fake-token", portalsSelfResponse)
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl + "/community/users/casey?f=json&token=fake-token",
+          testUtils.getUserResponse(),
         )
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
-          testUtils.getUserResponse()
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
-          testUtils.getContentUser()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token",
+          testUtils.getContentUser(),
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-          testUtils.getCreateFolderResponse()
+          testUtils.getCreateFolderResponse(),
         )
-        .post(
-          "https://utility.arcgisonline.com/arcgis/rest/info",
-          testUtils.UTILITY_SERVER_INFO
-        )
-        .post(
-          geometryServer + "/findTransformations",
-          testUtils.getTransformationsResponse()
-        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
+        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
         .post(geometryServer + "/project", testUtils.getProjectResponse())
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
-          mockItems.get200Failure()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+          mockItems.get200Failure(),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
           testUtils.getSuccessResponse({
             folder: {
               username: "casey",
-              id: "a4468da125a64526b359b70d8ba4a9dd"
-            }
-          })
+              id: "a4468da125a64526b359b70d8ba4a9dd",
+            },
+          }),
         )
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
-          mockItems.urlsResponse
+          mockItems.urlsResponse,
         );
 
-      deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION).then(
-        () => {
-          done.fail();
-        },
-        () => {
-          done();
-        }
+      return deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION).then(
+        () => fail(),
+        () => Promise.resolve(),
       );
     });
 
-    it("can handle error on get solution item", done => {
+    it("can handle error on get solution item", async () => {
       // get templates
-      const itemInfo: any = templates.getSolutionTemplateItem([
-        templates.getItemTemplate("Feature Service")
-      ]);
+      const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
 
       const communitySelfResponse: any = testUtils.getUserResponse();
       const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
 
       fetchMock
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", portalsSelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json&token=fake-token", portalsSelfResponse)
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
+          testUtils.PORTAL_SUBSET.restUrl + "/community/users/casey?f=json&token=fake-token",
+          testUtils.getUserResponse(),
         )
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
-          testUtils.getUserResponse()
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
-          testUtils.getContentUser()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token",
+          testUtils.getContentUser(),
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-          testUtils.getCreateFolderResponse()
+          testUtils.getCreateFolderResponse(),
         )
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
-          itemInfo.item
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "?f=json&token=fake-token",
+          itemInfo.item,
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
-          mockItems.get400Failure()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/info/metadata/metadata.xml",
+          mockItems.get400Failure(),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
-          mockItems.get400Failure()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/data",
+          mockItems.get400Failure(),
         )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
-          { success: true }
-        );
+        .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect", {
+          success: true,
+        });
 
       const options: common.IDeploySolutionOptions = {
-        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK
+        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK,
       };
-      deployer
-        .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
-        .then(
-          () => {
-            done.fail();
-          },
-          () => {
-            done();
-          }
-        );
+      return deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
     });
 
-    it("can handle error on project", done => {
+    it("can handle error on project", async () => {
       // TODO: This test is making unmocked calls, however because
       // this is so complex, it's extremely difficult to understand
       // what the expected responses should be.
       // get templates
-      const itemInfo: any = templates.getSolutionTemplateItem([
-        templates.getItemTemplate("Feature Service")
-      ]);
+      const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
 
       const communitySelfResponse: any = testUtils.getUserResponse();
       const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
-      const geometryServer: string =
-        portalsSelfResponse.helperServices.geometry.url;
+      const geometryServer: string = portalsSelfResponse.helperServices.geometry.url;
 
-      const relationshipSpy = spyOn(
-        portalHelper,
-        "addItemRelationship"
-      ).and.resolveTo();
+      spyOn(common, "addItemRelationship").and.resolveTo();
 
       fetchMock
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
-          itemInfo.item
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "?f=json&token=fake-token",
+          itemInfo.item,
         )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
-          itemInfo.data
+        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/data", itemInfo.data)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", portalsSelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json&token=fake-token", portalsSelfResponse)
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl + "/community/users/casey?f=json&token=fake-token",
+          testUtils.getUserResponse(),
         )
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
-          testUtils.getUserResponse()
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
-          testUtils.getContentUser()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token",
+          testUtils.getContentUser(),
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-          testUtils.getCreateFolderResponse()
+          testUtils.getCreateFolderResponse(),
         )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
         .post(
-          "https://utility.arcgisonline.com/arcgis/rest/info",
-          testUtils.UTILITY_SERVER_INFO
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/info/metadata/metadata.xml",
+          mockItems.get400Failure(),
         )
+        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
-          mockItems.get400Failure()
-        )
-        .post(
-          geometryServer + "/findTransformations",
-          testUtils.getTransformationsResponse()
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           testUtils.getSuccessResponse({
             id: "map1234567890",
-            folder: "44468da125a64526b359b70d8ba4a9dd"
-          })
+            folder: "44468da125a64526b359b70d8ba4a9dd",
+          }),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
-          testUtils.getCreateServiceResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
+          testUtils.getCreateServiceResponse(),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
-          testUtils.getSuccessResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+          testUtils.getSuccessResponse(),
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
-          testUtils.getFailureResponse()
+          testUtils.getFailureResponse(),
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/items/map1234567890/update",
-          testUtils.getFailureResponse()
+          testUtils.getFailureResponse(),
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          testUtils.getSuccessResponse()
+          testUtils.getSuccessResponse(),
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
-          testUtils.getSuccessResponse()
+          testUtils.getSuccessResponse(),
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
-          testUtils.getSuccessResponse()
+          testUtils.getSuccessResponse(),
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/updateDefinition",
-          testUtils.getSuccessResponse()
+          testUtils.getSuccessResponse(),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
-          testUtils.getSuccessResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/delete",
+          testUtils.getSuccessResponse(),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/groups/svc1234567890/delete",
-          testUtils.getSuccessResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/community/groups/svc1234567890/delete",
+          testUtils.getSuccessResponse(),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/delete",
-          testUtils.getSuccessResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/delete",
+          testUtils.getSuccessResponse(),
         )
         .post(
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
-          testUtils.getSuccessResponse()
+          testUtils.getSuccessResponse(),
         )
         .post(geometryServer + "/project", mockItems.get400Failure())
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
-          testUtils.getCreateServiceResponse()
+          testUtils.getCreateServiceResponse(),
         )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
-          { success: true }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect",
-          { success: true }
-        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect", {
+          success: true,
+        })
+        .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect", {
+          success: true,
+        })
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
-          mockItems.urlsResponse
+          mockItems.urlsResponse,
         );
 
       const options: common.IDeploySolutionOptions = {
-        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK
+        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK,
       };
-      deployer
-        .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
-        .then(
-          () => {
-            done.fail();
-          },
-          () => {
-            done();
-          }
-        );
+      return deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
     });
 
-    it("can handle error on updateItem", done => {
+    it("can handle error on updateItem", async () => {
       // get templates
-      const itemInfo: any = templates.getSolutionTemplateItem([
-        templates.getItemTemplate("Feature Service")
-      ]);
+      const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
 
       const featureServerAdminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
@@ -1394,17 +1060,17 @@ describe("Module `deployer`", () => {
         "Feature Layer",
         [
           {
-            id: 0,
-            name: "",
-            relatedTableId: 1,
-            cardinality: "esriRelCardinalityOneToMany",
-            role: "esriRelRoleOrigin",
+            "id": 0,
+            "name": "",
+            "relatedTableId": 1,
+            "cardinality": "esriRelCardinalityOneToMany",
+            "role": "esriRelRoleOrigin",
             "": "globalid",
-            composite: true,
-            keyField: "globalid"
-          }
+            "composite": true,
+            "keyField": "globalid",
+          },
         ],
-        true
+        true,
       );
       const table: any = mockItems.getAGOLLayerOrTable(
         1,
@@ -1412,181 +1078,122 @@ describe("Module `deployer`", () => {
         "Table",
         [
           {
-            id: 0,
-            name: "",
-            relatedTableId: 1,
-            cardinality: "esriRelCardinalityOneToMany",
-            role: "esriRelRoleDestination",
+            "id": 0,
+            "name": "",
+            "relatedTableId": 1,
+            "cardinality": "esriRelCardinalityOneToMany",
+            "role": "esriRelRoleDestination",
             "": "globalid",
-            composite: true,
-            keyField: "globalid"
-          }
+            "composite": true,
+            "keyField": "globalid",
+          },
         ],
-        true
+        true,
       );
 
       const communitySelfResponse: any = testUtils.getUserResponse();
       const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
       portalsSelfResponse.urlKey = null;
-      const geometryServer: string =
-        portalsSelfResponse.helperServices.geometry.url;
+      const geometryServer: string = portalsSelfResponse.helperServices.geometry.url;
 
-      const relationshipSpy = spyOn(
-        portalHelper,
-        "addItemRelationship"
-      ).and.resolveTo();
+      spyOn(common, "addItemRelationship").and.resolveTo();
 
       fetchMock
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
-          itemInfo.item
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "?f=json&token=fake-token",
+          itemInfo.item,
         )
+        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/data", itemInfo.data)
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
-          itemInfo.data
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/info/metadata/metadata.xml",
+          mockItems.get400Failure(),
         )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
-          mockItems.get400Failure()
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", portalsSelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json&token=fake-token", portalsSelfResponse)
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl + "/community/users/casey?f=json&token=fake-token",
+          testUtils.getUserResponse(),
         )
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
-          testUtils.getUserResponse()
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
-          testUtils.getContentUser()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token",
+          testUtils.getContentUser(),
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-          testUtils.getCreateFolderResponse()
+          testUtils.getCreateFolderResponse(),
         )
-        .post(
-          "https://utility.arcgisonline.com/arcgis/rest/info",
-          testUtils.UTILITY_SERVER_INFO
-        )
-        .post(
-          geometryServer + "/findTransformations",
-          testUtils.getTransformationsResponse()
-        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
+        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
         .post(geometryServer + "/project", testUtils.getProjectResponse())
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           testUtils.getSuccessResponse({
             id: "map1234567890",
-            folder: "44468da125a64526b359b70d8ba4a9dd"
-          })
+            folder: "44468da125a64526b359b70d8ba4a9dd",
+          }),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
-          testUtils.getCreateServiceResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
+          testUtils.getCreateServiceResponse(),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/move",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/move",
           testUtils.getSuccessResponse({
             itemId: "svc1234567890",
             owner: "casey",
-            folder: "44468da125a64526b359b70d8ba4a9dd"
-          })
+            folder: "44468da125a64526b359b70d8ba4a9dd",
+          }),
         )
         .post(
           featureServerAdminUrl + "/addToDefinition",
           testUtils.getSuccessResponse({
             layers: [{ name: "ROW Permits", id: 0 }],
-            tables: [{ name: "ROW Permit Comment", id: 1 }]
-          })
+            tables: [{ name: "ROW Permit Comment", id: 1 }],
+          }),
         )
         .post(featureServerAdminUrl + "/0?f=json", layer)
         .post(featureServerAdminUrl + "/1?f=json", table)
+        .post(featureServerAdminUrl + "/refresh", testUtils.getSuccessResponse())
+        .post(featureServerAdminUrl + "/0/updateDefinition", testUtils.getSuccessResponse())
+        .post(featureServerAdminUrl + "/1/updateDefinition", testUtils.getSuccessResponse())
+        .post(featureServerAdminUrl + "/updateDefinition", testUtils.getSuccessResponse())
         .post(
-          featureServerAdminUrl + "/refresh",
-          testUtils.getSuccessResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update",
+          testUtils.getSuccessResponse({ id: "svc1234567890" }),
         )
-        .post(
-          featureServerAdminUrl + "/0/updateDefinition",
-          testUtils.getSuccessResponse()
-        )
-        .post(
-          featureServerAdminUrl + "/1/updateDefinition",
-          testUtils.getSuccessResponse()
-        )
-        .post(
-          featureServerAdminUrl + "/updateDefinition",
-          testUtils.getSuccessResponse()
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          testUtils.getSuccessResponse({ id: "svc1234567890" })
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data",
-          {}
-        )
+        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data", {})
         .post(
           testUtils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/items/map1234567890/update",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
           testUtils.getSuccessResponse({
             folder: {
               username: "casey",
-              id: "a4468da125a64526b359b70d8ba4a9dd"
-            }
-          })
+              id: "a4468da125a64526b359b70d8ba4a9dd",
+            },
+          }),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/delete",
-          testUtils.getSuccessResponse({ itemId: "map1234567890" })
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/delete",
+          testUtils.getSuccessResponse({ itemId: "map1234567890" }),
         )
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
-          testUtils.getCreateServiceResponse()
+          testUtils.getCreateServiceResponse(),
         )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
-          { success: true }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect",
-          { success: true }
-        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect", {
+          success: true,
+        })
+        .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect", {
+          success: true,
+        })
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
-          mockItems.urlsResponse
+          mockItems.urlsResponse,
         );
 
       const options: common.IDeploySolutionOptions = {
@@ -1597,25 +1204,17 @@ describe("Module `deployer`", () => {
         thumbnailurl: "a thumbnailurl",
         templateDictionary: null,
         additionalTypeKeywords: ["UnitTest"],
-        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK
+        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK,
       };
-      deployer
-        .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
-        .then(
-          () => {
-            done.fail();
-          },
-          () => {
-            done();
-          }
-        );
+      return deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
     });
 
-    it("can handle error on deploySolutionItems update", done => {
+    it("can handle error on deploySolutionItems update", async () => {
       // get templates
-      const itemInfo: any = templates.getSolutionTemplateItem([
-        templates.getItemTemplate("Feature Service")
-      ]);
+      const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
 
       const featureServerAdminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
@@ -1627,17 +1226,17 @@ describe("Module `deployer`", () => {
         "Feature Layer",
         [
           {
-            id: 0,
-            name: "",
-            relatedTableId: 1,
-            cardinality: "esriRelCardinalityOneToMany",
-            role: "esriRelRoleOrigin",
+            "id": 0,
+            "name": "",
+            "relatedTableId": 1,
+            "cardinality": "esriRelCardinalityOneToMany",
+            "role": "esriRelRoleOrigin",
             "": "globalid",
-            composite: true,
-            keyField: "globalid"
-          }
+            "composite": true,
+            "keyField": "globalid",
+          },
         ],
-        true
+        true,
       );
       const table: any = mockItems.getAGOLLayerOrTable(
         1,
@@ -1645,192 +1244,129 @@ describe("Module `deployer`", () => {
         "Table",
         [
           {
-            id: 0,
-            name: "",
-            relatedTableId: 1,
-            cardinality: "esriRelCardinalityOneToMany",
-            role: "esriRelRoleDestination",
+            "id": 0,
+            "name": "",
+            "relatedTableId": 1,
+            "cardinality": "esriRelCardinalityOneToMany",
+            "role": "esriRelRoleDestination",
             "": "globalid",
-            composite: true,
-            keyField: "globalid"
-          }
+            "composite": true,
+            "keyField": "globalid",
+          },
         ],
-        true
+        true,
       );
 
       const communitySelfResponse: any = testUtils.getUserResponse();
       const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
-      const geometryServer: string =
-        portalsSelfResponse.helperServices.geometry.url;
+      const geometryServer: string = portalsSelfResponse.helperServices.geometry.url;
 
-      const consoleSpy = spyOn(console, "log");
+      spyOn(console, "log");
       fetchMock
+        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/data", itemInfo.data)
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
-          itemInfo.data
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/info/metadata/metadata.xml",
+          mockItems.get400Failure(),
         )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
-          mockItems.get400Failure()
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", portalsSelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json&token=fake-token", portalsSelfResponse)
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl + "/community/users/casey?f=json&token=fake-token",
+          testUtils.getUserResponse(),
         )
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
-          testUtils.getUserResponse()
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
-          testUtils.getContentUser()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token",
+          testUtils.getContentUser(),
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-          testUtils.getCreateFolderResponse()
+          testUtils.getCreateFolderResponse(),
         )
-        .post(
-          "https://utility.arcgisonline.com/arcgis/rest/info",
-          testUtils.UTILITY_SERVER_INFO
-        )
-        .post(
-          geometryServer + "/findTransformations",
-          testUtils.getTransformationsResponse()
-        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
+        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
         .post(geometryServer + "/project", testUtils.getProjectResponse())
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           testUtils.getSuccessResponse({
             id: "map1234567890",
-            folder: "44468da125a64526b359b70d8ba4a9dd"
-          })
+            folder: "44468da125a64526b359b70d8ba4a9dd",
+          }),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
-          testUtils.getCreateServiceResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/createService",
+          testUtils.getCreateServiceResponse(),
         )
         .post(
           featureServerAdminUrl + "/addToDefinition",
           testUtils.getSuccessResponse({
             layers: [{ name: "ROW Permits", id: 0 }],
-            tables: [{ name: "ROW Permit Comment", id: 1 }]
-          })
+            tables: [{ name: "ROW Permit Comment", id: 1 }],
+          }),
         )
         .post(featureServerAdminUrl + "/0?f=json", layer)
         .post(featureServerAdminUrl + "/1?f=json", table)
+        .post(featureServerAdminUrl + "/refresh", testUtils.getSuccessResponse())
+        .post(featureServerAdminUrl + "/0/updateDefinition", testUtils.getSuccessResponse())
+        .post(featureServerAdminUrl + "/1/updateDefinition", testUtils.getSuccessResponse())
+        .post(featureServerAdminUrl + "/updateDefinition", testUtils.getSuccessResponse())
         .post(
-          featureServerAdminUrl + "/refresh",
-          testUtils.getSuccessResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/update",
+          mockItems.get400Failure(),
         )
         .post(
-          featureServerAdminUrl + "/0/updateDefinition",
-          testUtils.getSuccessResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/svc1234567890/delete",
+          testUtils.getSuccessResponse({ itemId: "svc1234567890" }),
         )
         .post(
-          featureServerAdminUrl + "/1/updateDefinition",
-          testUtils.getSuccessResponse()
+          testUtils.PORTAL_SUBSET.restUrl + "/community/groups/svc1234567890/delete",
+          testUtils.getSuccessResponse({ groupId: "svc1234567890" }),
         )
         .post(
-          featureServerAdminUrl + "/updateDefinition",
-          testUtils.getSuccessResponse()
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/update",
-          mockItems.get400Failure()
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/svc1234567890/delete",
-          testUtils.getSuccessResponse({ itemId: "svc1234567890" })
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/groups/svc1234567890/delete",
-          testUtils.getSuccessResponse({ groupId: "svc1234567890" })
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
           testUtils.getFailureResponse({
             folder: {
               username: "casey",
-              id: "a4468da125a64526b359b70d8ba4a9dd"
-            }
-          })
+              id: "a4468da125a64526b359b70d8ba4a9dd",
+            },
+          }),
         )
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/sln1234567890?f=json&token=fake-token",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/delete",
-          testUtils.getSuccessResponse({ itemId: "map1234567890" })
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/map1234567890/delete",
+          testUtils.getSuccessResponse({ itemId: "map1234567890" }),
         )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect",
-          { success: true }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect",
-          { success: true }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/unprotect",
-          { success: true }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items//delete",
-          { success: true }
-        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/protect", {
+          success: true,
+        })
+        .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/unprotect", {
+          success: true,
+        })
+        .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/unprotect", {
+          success: true,
+        })
+        .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items//delete", { success: true })
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/search?f=json&q=owner%3Acasey%20AND%20orgid%3Aorg1234567890%20AND%20ownerfolder%3Aa4468da125a64526b359b70d8ba4a9dd&token=fake-token",
-          {}
+          {},
         );
       spyOn(console, "error").and.callFake(() => {});
 
       const options: common.IDeploySolutionOptions = {
-        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK
+        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK,
       };
-      deployer
-        .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
-        .then(
-          () => {
-            done.fail();
-          },
-          () => {
-            done();
-          }
-        );
+      return deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
     });
 
-    it("can handle error on create Folder", done => {
+    it("can handle error on create Folder", async () => {
       // get templates
-      const itemInfo: any = templates.getSolutionTemplateItem([
-        templates.getItemTemplate("Feature Service")
-      ]);
+      const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
 
       const communitySelfResponse: any = testUtils.getUserResponse();
       const portalsSelfResponse: any = testUtils.getPortalsSelfResponse();
@@ -1838,86 +1374,45 @@ describe("Module `deployer`", () => {
 
       fetchMock
         .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "?f=json&token=fake-token",
-          itemInfo.item
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "?f=json&token=fake-token",
+          itemInfo.item,
+        )
+        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/data", itemInfo.data)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token", communitySelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/self?f=json&token=fake-token", portalsSelfResponse)
+        .get(testUtils.PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json&token=fake-token", portalsSelfResponse)
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl + "/community/users/casey?f=json&token=fake-token",
+          testUtils.getUserResponse(),
+        )
+        .get(
+          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey?f=json&token=fake-token",
+          testUtils.getContentUser(),
         )
         .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/data",
-          itemInfo.data
+          testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/info/metadata/metadata.xml",
+          mockItems.get400Failure(),
         )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/self?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/portals/abCDefG123456?f=json&token=fake-token",
-          portalsSelfResponse
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/community/users/casey?f=json&token=fake-token",
-          testUtils.getUserResponse()
-        )
-        .get(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey?f=json&token=fake-token",
-          testUtils.getContentUser()
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemInfo.item.id +
-            "/info/metadata/metadata.xml",
-          mockItems.get400Failure()
-        )
-        .post(
-          testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-          mockItems.get400Failure()
-        )
-        .post(
-          "https://utility.arcgisonline.com/arcgis/rest/info",
-          testUtils.UTILITY_SERVER_INFO
-        )
+        .post(testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder", mockItems.get400Failure())
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/portals/self/urls?f=json&token=fake-token",
-          mockItems.urlsResponse
+          mockItems.urlsResponse,
         );
 
       const options: common.IDeploySolutionOptions = {
-        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK
+        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK,
       };
-      deployer
-        .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
-        .then(
-          () => {
-            done.fail();
-          },
-          () => {
-            done();
-          }
-        );
+      return deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
     });
   });
   describe("_replaceParamVariables", () => {
     it("should update custom sr prop", () => {
-      const featureServiceTemplate: any = templates.getItemTemplate(
-        "Feature Service"
-      );
-      featureServiceTemplate.properties.service.spatialReference.wkid =
-        "{{params.wkid||4326}}";
+      const featureServiceTemplate: any = templates.getItemTemplate("Feature Service");
+      featureServiceTemplate.properties.service.spatialReference.wkid = "{{params.wkid||4326}}";
 
       const templateDictionary: any = {
         params: {
@@ -1927,25 +1422,20 @@ describe("Module `deployer`", () => {
             xmax: 20037507.0671618,
             ymax: 20037507.0671618,
             spatialReference: {
-              wkid: 102100
-            }
+              wkid: 102100,
+            },
           },
-          wkid: 102100
-        }
+          wkid: 102100,
+        },
       };
 
       const solutionData: any = {
-        templates: [featureServiceTemplate]
+        templates: [featureServiceTemplate],
       };
 
-      deploySolutionFromTemplate._replaceParamVariables(
-        solutionData,
-        templateDictionary
-      );
+      deploySolutionFromTemplate._replaceParamVariables(solutionData, templateDictionary);
 
-      expect(
-        solutionData.templates[0].properties.service.spatialReference.wkid
-      ).toEqual(102100);
+      expect(solutionData.templates[0].properties.service.spatialReference.wkid).toEqual(102100);
     });
   });
 });

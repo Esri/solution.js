@@ -18,19 +18,27 @@
 
 import * as generalHelpers from "../../src/generalHelpers";
 import * as getItemTypeAbbrev from "../../src/getItemTypeAbbrev";
-import * as interfaces from "../../src/interfaces";
+import { IItem } from "../../src/arcgisRestJS";
+import {
+  IItemGeneralized,
+  ICreateItemFromTemplateResponse,
+  IItemTemplate,
+  ISolutionItem,
+  ISourceFile,
+  IAssociatedFileInfo,
+} from "../../src/interfaces";
 import * as utils from "./utils";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
-export function getEmptyGeneralizedItem(): interfaces.IItemGeneralized {
+export function getEmptyGeneralizedItem(): IItemGeneralized {
   return {
     id: "",
-    type: ""
+    type: "",
   };
 }
 
-export function getEmptyItem(): interfaces.IItem {
+export function getEmptyItem(): IItem {
   return {
     created: 0,
     id: "",
@@ -40,7 +48,7 @@ export function getEmptyItem(): interfaces.IItem {
     size: 0,
     tags: [] as string[],
     title: "",
-    type: ""
+    type: "",
   };
 }
 
@@ -48,24 +56,20 @@ export function getFailedDeployment(failedItemIds: string[] = []): any {
   return {
     success: false,
     itemIds: failedItemIds,
-    error: "One or more items cannot be deployed"
+    error: "One or more items cannot be deployed",
   };
 }
 
-export function getFailedItem(
-  itemType: string
-): interfaces.ICreateItemFromTemplateResponse {
+export function getFailedItem(itemType: string): ICreateItemFromTemplateResponse {
   return {
     item: null as any,
     id: "",
     type: itemType,
-    postProcess: false
+    postProcess: false,
   };
 }
 
-export function getSolutionTemplateItem(
-  templates = [] as interfaces.IItemTemplate[]
-): interfaces.ISolutionItem {
+export function getSolutionTemplateItem(templates = [] as IItemTemplate[]): ISolutionItem {
   return {
     item: {
       commentsEnabled: false,
@@ -75,19 +79,19 @@ export function getSolutionTemplateItem(
       title: "title",
       type: "Solution",
       typeKeywords: ["Solution", "Template"],
-      url: utils.PORTAL_SUBSET.portalUrl + "/home/item.html?id=sln1234567890"
+      url: utils.PORTAL_SUBSET.portalUrl + "/home/item.html?id=sln1234567890",
     },
     data: {
       metadata: {
         version: "x",
-        resourceStorageItemId: "sln1234567890"
+        resourceStorageItemId: "sln1234567890",
       },
-      templates
-    }
+      templates,
+    },
   };
 }
 
-export function getItemTemplateSkeleton(): interfaces.IItemTemplate {
+export function getItemTemplateSkeleton(): IItemTemplate {
   return {
     itemId: "",
     type: "",
@@ -95,7 +99,7 @@ export function getItemTemplateSkeleton(): interfaces.IItemTemplate {
     item: {
       id: "",
       type: "",
-      typeKeywords: []
+      typeKeywords: [],
     },
     data: {},
     resources: [],
@@ -103,29 +107,21 @@ export function getItemTemplateSkeleton(): interfaces.IItemTemplate {
     dependencies: [],
     relatedItems: [],
     groups: [],
-    estimatedDeploymentCostFactor: 0
+    estimatedDeploymentCostFactor: 0,
   };
 }
 
-export function getDeployedItemTemplate(
-  itemId: string,
-  type: string,
-  dependencies = [] as string[]
-): any {
+export function getDeployedItemTemplate(itemId: string, type: string, dependencies = [] as string[]): any {
   return {
     itemId,
     type,
     dependencies,
-    groups: []
+    groups: [],
   };
 }
 
-export function getItemTemplate(
-  type: string,
-  dependencies = [] as string[],
-  url = ""
-): interfaces.IItemTemplate {
-  let templatePart: interfaces.IItemTemplate = {} as any;
+export function getItemTemplate(type: string, dependencies = [] as string[], url = ""): IItemTemplate {
+  let templatePart: IItemTemplate = {} as any;
 
   // Supported item types
   switch (type) {
@@ -139,12 +135,7 @@ export function getItemTemplate(
       break;
 
     case "Dashboard":
-      templatePart = getItemTemplateFundamentals(
-        type,
-        getItemTypeAbbrev.getItemTypeAbbrev(type),
-        dependencies,
-        url
-      );
+      templatePart = getItemTemplateFundamentals(type, getItemTypeAbbrev.getItemTypeAbbrev(type), dependencies, url);
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
       break;
@@ -166,7 +157,7 @@ export function getItemTemplate(
         type,
         getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
-        url || "{{svc1234567890.itemId}}"
+        url || "{{svc1234567890.itemId}}",
       );
       templatePart.item.url = url || "{{svc1234567890.url}}";
       templatePart.data = getItemTemplateData(type);
@@ -178,7 +169,7 @@ export function getItemTemplate(
         0,
         "ROW Permits",
         "Feature Layer",
-        [createItemTemplateRelationship(0, 1, "esriRelRoleOrigin")]
+        [createItemTemplateRelationship(0, 1, "esriRelRoleOrigin")],
       );
       // );
 
@@ -187,26 +178,21 @@ export function getItemTemplate(
         1,
         "ROW Permit Comment",
         "Table",
-        [createItemTemplateRelationship(0, 1, "esriRelRoleDestination")]
+        [createItemTemplateRelationship(0, 1, "esriRelRoleDestination")],
       );
       // );
 
       const properties: any = {
         service: getServiceTemplate(),
         layers: [layer0],
-        tables: [table1]
+        tables: [table1],
       };
 
       templatePart.properties = properties;
       break;
 
     case "Form":
-      templatePart = getItemTemplateFundamentals(
-        type,
-        getItemTypeAbbrev.getItemTypeAbbrev(type),
-        dependencies,
-        url
-      );
+      templatePart = getItemTemplateFundamentals(type, getItemTypeAbbrev.getItemTypeAbbrev(type), dependencies, url);
       break;
 
     case "Geoprocessing Package":
@@ -216,12 +202,7 @@ export function getItemTemplate(
       break;
 
     case "Geoprocessing Service":
-      templatePart = getItemTemplateFundamentals(
-        type,
-        getItemTypeAbbrev.getItemTypeAbbrev(type),
-        dependencies,
-        url
-      );
+      templatePart = getItemTemplateFundamentals(type, getItemTypeAbbrev.getItemTypeAbbrev(type), dependencies, url);
       break;
 
     case "Group":
@@ -229,34 +210,19 @@ export function getItemTemplate(
       break;
 
     case "Hub Site Application":
-      templatePart = getItemTemplateFundamentals(
-        type,
-        getItemTypeAbbrev.getItemTypeAbbrev(type),
-        dependencies,
-        url
-      );
+      templatePart = getItemTemplateFundamentals(type, getItemTypeAbbrev.getItemTypeAbbrev(type), dependencies, url);
       break;
 
     case "Layer Package":
       break;
 
     case "Map Template": // // ??? temporary definition
-      templatePart = getItemTemplateFundamentals(
-        type,
-        getItemTypeAbbrev.getItemTypeAbbrev(type),
-        dependencies,
-        url
-      );
+      templatePart = getItemTemplateFundamentals(type, getItemTypeAbbrev.getItemTypeAbbrev(type), dependencies, url);
       templatePart.resources = [];
       break;
 
     case "Notebook":
-      templatePart = getItemTemplateFundamentals(
-        type,
-        getItemTypeAbbrev.getItemTypeAbbrev(type),
-        dependencies,
-        url
-      );
+      templatePart = getItemTemplateFundamentals(type, getItemTypeAbbrev.getItemTypeAbbrev(type), dependencies, url);
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
       break;
@@ -265,12 +231,7 @@ export function getItemTemplate(
       break;
 
     case "Oriented Imagery Catalog":
-      templatePart = getItemTemplateFundamentals(
-        type,
-        getItemTypeAbbrev.getItemTypeAbbrev(type),
-        dependencies,
-        url
-      );
+      templatePart = getItemTemplateFundamentals(type, getItemTypeAbbrev.getItemTypeAbbrev(type), dependencies, url);
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
       break;
@@ -285,22 +246,12 @@ export function getItemTemplate(
       break;
 
     case "QuickCapture Project":
-      templatePart = getItemTemplateFundamentals(
-        type,
-        getItemTypeAbbrev.getItemTypeAbbrev(type),
-        dependencies,
-        url
-      );
+      templatePart = getItemTemplateFundamentals(type, getItemTypeAbbrev.getItemTypeAbbrev(type), dependencies, url);
       templatePart.data = getItemTemplateData(type);
       break;
 
     case "Real Time Analytic":
-      templatePart = getItemTemplateFundamentals(
-        type,
-        getItemTypeAbbrev.getItemTypeAbbrev(type),
-        dependencies,
-        url
-      );
+      templatePart = getItemTemplateFundamentals(type, getItemTypeAbbrev.getItemTypeAbbrev(type), dependencies, url);
       templatePart.data = getItemTemplateData(type);
       break;
 
@@ -309,7 +260,7 @@ export function getItemTemplate(
         type,
         getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
-        url || "https://storymaps.arcgis.com/stories/{{sto1234567890.itemId}}"
+        url || "https://storymaps.arcgis.com/stories/{{sto1234567890.itemId}}",
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
@@ -320,8 +271,7 @@ export function getItemTemplate(
         type,
         getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
-        url ||
-          "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer"
+        url || "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer",
       );
       templatePart.resources = getItemTemplateResources(type, templatePart.itemId);
       break;
@@ -331,8 +281,7 @@ export function getItemTemplate(
         type,
         getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
-        url ||
-          "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
+        url || "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}",
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
@@ -343,51 +292,30 @@ export function getItemTemplate(
         type,
         getItemTypeAbbrev.getItemTypeAbbrev(type),
         dependencies,
-        url ||
-          "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
+        url || "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}",
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
       break;
 
     case "Workflow":
-      templatePart = getItemTemplateFundamentals(
-        type,
-        getItemTypeAbbrev.getItemTypeAbbrev(type),
-        dependencies,
-        url
-      );
+      templatePart = getItemTemplateFundamentals(type, getItemTypeAbbrev.getItemTypeAbbrev(type), dependencies, url);
       break;
 
     case "Workforce Project":
-      templatePart = getItemTemplateFundamentals(
-        type,
-        getItemTypeAbbrev.getItemTypeAbbrev(type),
-        dependencies,
-        url
-      );
+      templatePart = getItemTemplateFundamentals(type, getItemTypeAbbrev.getItemTypeAbbrev(type), dependencies, url);
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
       break;
 
     case "Undefined":
-      templatePart = getItemTemplateFundamentals(
-        type,
-        "und",
-        dependencies,
-        url
-      );
+      templatePart = getItemTemplateFundamentals(type, "und", dependencies, url);
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
       break;
 
     case "Unsupported":
-      templatePart = getItemTemplateFundamentals(
-        type,
-        "unk",
-        dependencies,
-        url
-      );
+      templatePart = getItemTemplateFundamentals(type, "unk", dependencies, url);
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
       break;
@@ -492,9 +420,7 @@ export function getGroupTemplatePart(dependencies = [] as string[]): any {
       sortField: "title",
       sortOrder: "asc",
       isViewOnly: true,
-      thumbnail:
-        utils.PORTAL_SUBSET.restUrl +
-        "/community/groups/grp1234567890/info/ROWPermitManager.png",
+      thumbnail: utils.PORTAL_SUBSET.restUrl + "/community/groups/grp1234567890/info/ROWPermitManager.png",
       access: "public",
       capabilities: [],
       isFav: false,
@@ -506,48 +432,48 @@ export function getGroupTemplatePart(dependencies = [] as string[]): any {
       providerGroupName: null,
       userMembership: {
         username: "casey",
-        memberType: "none"
+        memberType: "none",
       },
       collaborationInfo: {},
-      type: "Group"
+      type: "Group",
     },
     groups: [],
     dependencies: dependencies,
-    estimatedDeploymentCostFactor: 2
+    estimatedDeploymentCostFactor: 2,
   };
 }
 
-export function getWebMappingApplicationTemplate(): interfaces.IItemTemplate[] {
-  const template: interfaces.IItemTemplate[] = [
+export function getWebMappingApplicationTemplate(): IItemTemplate[] {
+  const template: IItemTemplate[] = [
     getItemTemplate(
       "Web Mapping Application",
       ["map1234567890"],
-      "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
+      "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}",
     ),
     getItemTemplate(
       "Web Map",
       ["svc1234567890"],
-      "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
+      "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}",
     ),
-    getItemTemplate("Feature Service")
+    getItemTemplate("Feature Service"),
   ];
 
   return template;
 }
 
-export function getWebMappingApplicationTemplateGroup(): interfaces.IItemTemplate[] {
-  const template: interfaces.IItemTemplate[] = [
+export function getWebMappingApplicationTemplateGroup(): IItemTemplate[] {
+  const template: IItemTemplate[] = [
     getItemTemplate(
       "Web Mapping Application",
       ["map1234567890"],
-      "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
+      "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}",
     ),
     getItemTemplate(
       "Web Map",
       ["svc1234567890"],
-      "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
+      "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}",
     ),
-    getItemTemplate("Feature Service", [])
+    getItemTemplate("Feature Service", []),
   ];
 
   // Switch from webmap to group
@@ -555,21 +481,18 @@ export function getWebMappingApplicationTemplateGroup(): interfaces.IItemTemplat
   delete template[0].data.values.webmap;
 
   //  Give the WMA a resource
-  template[0].resources = [
-    utils.PORTAL_SUBSET.restUrl +
-      "/content/items/wma1234567890/resources/anImage.png"
-  ];
+  template[0].resources = [utils.PORTAL_SUBSET.restUrl + "/content/items/wma1234567890/resources/anImage.png"];
 
   return template;
 }
 
-export function getWebMappingApplicationTemplateNoWebmapOrGroup(): interfaces.IItemTemplate[] {
-  const template: interfaces.IItemTemplate[] = [
+export function getWebMappingApplicationTemplateNoWebmapOrGroup(): IItemTemplate[] {
+  const template: IItemTemplate[] = [
     getItemTemplate(
       "Web Mapping Application",
       undefined,
-      "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
-    )
+      "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}",
+    ),
   ];
 
   // Change the dependencies from null to an empty array
@@ -584,19 +507,15 @@ export function getWebMappingApplicationTemplateNoWebmapOrGroup(): interfaces.II
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
 
-function createItemTemplateRelationship(
-  id: number,
-  relatedTableId: number,
-  role: string
-): any {
+function createItemTemplateRelationship(id: number, relatedTableId: number, role: string): any {
   const relationship: any = {
-    id: id,
-    name: "",
-    relatedTableId: relatedTableId,
-    cardinality: "esriRelCardinalityOneToMany",
-    role: role,
+    "id": id,
+    "name": "",
+    "relatedTableId": relatedTableId,
+    "cardinality": "esriRelCardinalityOneToMany",
+    "role": role,
     "": "globalid",
-    composite: true
+    "composite": true,
   };
   relationship.keyField =
     role === "esriRelRoleOrigin"
@@ -624,7 +543,7 @@ function getServiceTemplate(): any {
     copyrightText: "",
     spatialReference: {
       wkid: 102100,
-      latestWkid: 3857
+      latestWkid: 3857,
     },
     initialExtent: {
       xmin: -14999999.999989873,
@@ -633,8 +552,8 @@ function getServiceTemplate(): any {
       ymax: 6499999.99999407,
       spatialReference: {
         wkid: 102100,
-        latestWkid: 3857
-      }
+        latestWkid: 3857,
+      },
     },
     fullExtent: {
       xmin: -14999999.999989873,
@@ -643,8 +562,8 @@ function getServiceTemplate(): any {
       ymax: 6499999.99999407,
       spatialReference: {
         wkid: 102100,
-        latestWkid: 3857
-      }
+        latestWkid: 3857,
+      },
     },
     allowGeometryUpdates: true,
     units: "esriMeters",
@@ -659,24 +578,19 @@ function getServiceTemplate(): any {
       allowOthersToDelete: true,
       allowAnonymousToQuery: true,
       allowAnonymousToUpdate: true,
-      allowAnonymousToDelete: true
+      allowAnonymousToDelete: true,
     },
     xssPreventionInfo: {
       xssPreventionEnabled: true,
       xssPreventionRule: "InputOnly",
-      xssInputRule: "rejectInvalid"
-    }
+      xssInputRule: "rejectInvalid",
+    },
   };
 
   return service;
 }
 
-function getLayerOrTableTemplate(
-  id: number,
-  name: string,
-  type: string,
-  relationships = [] as any
-): any {
+function getLayerOrTableTemplate(id: number, name: string, type: string, relationships = [] as any): any {
   return {
     currentVersion: 10.61,
     id: id,
@@ -694,10 +608,10 @@ function getLayerOrTableTemplate(
       creationDateField: "CreationDate",
       creatorField: "Creator",
       editDateField: "EditDate",
-      editorField: "Editor"
+      editorField: "Editor",
     },
     editingInfo: {
-      lastEditDate: 1538579807130
+      lastEditDate: 1538579807130,
     },
     fields: [
       {
@@ -710,7 +624,7 @@ function getLayerOrTableTemplate(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "BoardReview",
@@ -722,7 +636,7 @@ function getLayerOrTableTemplate(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "globalid",
@@ -734,7 +648,7 @@ function getLayerOrTableTemplate(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "CreationDate",
@@ -746,7 +660,7 @@ function getLayerOrTableTemplate(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "Creator",
@@ -758,7 +672,7 @@ function getLayerOrTableTemplate(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "EditDate",
@@ -770,7 +684,7 @@ function getLayerOrTableTemplate(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "Editor",
@@ -782,7 +696,7 @@ function getLayerOrTableTemplate(
         editable: true,
         visible: true,
         domain: null,
-        defaultValue: null
+        defaultValue: null,
       },
       {
         name: "OBJECTID",
@@ -794,8 +708,8 @@ function getLayerOrTableTemplate(
         editable: false,
         visible: true,
         domain: null,
-        defaultValue: null
-      }
+        defaultValue: null,
+      },
     ],
     relationships: relationships,
     geometryType: "esriGeometryPoint",
@@ -808,8 +722,8 @@ function getLayerOrTableTemplate(
       ymax: 6499999.99999407,
       spatialReference: {
         wkid: 102100,
-        latestWkid: 3857
-      }
+        latestWkid: 3857,
+      },
     },
     allowGeometryUpdates: true,
     hasAttachments: true,
@@ -817,31 +731,30 @@ function getLayerOrTableTemplate(
     attachmentProperties: [
       {
         name: "name",
-        isEnabled: true
+        isEnabled: true,
       },
       {
         name: "size",
-        isEnabled: true
+        isEnabled: true,
       },
       {
         name: "contentType",
-        isEnabled: true
+        isEnabled: true,
       },
       {
         name: "keywords",
-        isEnabled: true
-      }
+        isEnabled: true,
+      },
     ],
     objectIdField: "OBJECTID",
     uniqueIdField: {
       name: "OBJECTID",
-      isSystemMaintained: true
+      isSystemMaintained: true,
     },
     globalIdField: "globalid",
     capabilities: "Create,Query,Editing",
-    viewDefinitionQuery:
-      "status = '{{svc1234567890.layer" + id + ".fields.boardreview.name}}'",
-    definitionQuery: "status = 'BoardReview'"
+    viewDefinitionQuery: "status = '{{svc1234567890.layer" + id + ".fields.boardreview.name}}'",
+    definitionQuery: "status = 'BoardReview'",
   };
 }
 
@@ -850,8 +763,8 @@ function getItemTemplateFundamentals(
   typePrefix: string,
   dependencies = [] as string[],
   url = "",
-  groups = [] as string[]
-): interfaces.IItemTemplate {
+  groups = [] as string[],
+): IItemTemplate {
   return {
     itemId: typePrefix + "1234567890",
     type: type,
@@ -866,10 +779,7 @@ function getItemTemplateFundamentals(
       tags: ["test"],
       snippet: "Snippet of an AGOL item",
       thumbnail:
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/" +
-        typePrefix +
-        "1234567890/info/thumbnail/ago_downloaded.png",
+        utils.PORTAL_SUBSET.restUrl + "/content/items/" + typePrefix + "1234567890/info/thumbnail/ago_downloaded.png",
       extent: "{{solutionItemExtent}}",
       categories: [],
       contentStatus: null,
@@ -881,7 +791,7 @@ function getItemTemplateFundamentals(
       culture: "en-us",
       url: url,
       created: 1520968147000,
-      modified: 1522178539000
+      modified: 1522178539000,
     },
     data: undefined,
     resources: [],
@@ -889,20 +799,18 @@ function getItemTemplateFundamentals(
     relatedItems: [],
     groups: groups,
     properties: {},
-    estimatedDeploymentCostFactor: 2
+    estimatedDeploymentCostFactor: 2,
   };
 }
 
-export function getItemTemplateData(
-  type: string
-): any {
+export function getItemTemplateData(type: string): any {
   let data: any = {
     error: {
       code: 400,
       messageCode: "CONT_0001",
       message: "Item does not exist or is inaccessible.",
-      details: []
-    }
+      details: [],
+    },
   };
 
   // Supported item types
@@ -923,16 +831,16 @@ export function getItemTemplateData(
           rootElement: {
             type: "stackLayoutElement",
             orientation: "col",
-            elements: []
-          }
+            elements: [],
+          },
         },
         headerPanel: {
-          type: "headerPanel"
+          type: "headerPanel",
         },
         leftPanel: {
           type: "leftPanel",
           title: "<p>left panel description</p>\n",
-          selectors: []
+          selectors: [],
         },
         widgets: [
           {
@@ -942,8 +850,8 @@ export function getItemTemplateData(
             itemId: "{{map1234567890.itemId}}",
             mapTools: [
               {
-                type: "bookmarksTool"
-              }
+                type: "bookmarksTool",
+              },
             ],
             type: "mapWidget",
             showPopup: true,
@@ -951,37 +859,37 @@ export function getItemTemplateData(
               {
                 type: "featureLayerDataSource",
                 layerId: "ROWPermitApplication_4605",
-                name: "ROW Permits"
-              }
+                name: "ROW Permits",
+              },
             ],
             id: "1200f3f1-8f72-4ea6-af16-14f19e9a4517",
-            name: "ROW Permit Map"
+            name: "ROW Permit Map",
           },
           {
             type: "indicatorWidget",
             id: "3e796f16-722b-437f-89a4-e3787e105b24",
-            name: "ROW Permit Count"
+            name: "ROW Permit Count",
           },
           {
             type: "listWidget",
             id: "0f994268-e553-4d11-b8d1-afecf0818841",
-            name: "ROW Permit List"
+            name: "ROW Permit List",
           },
           {
             type: "serialChartWidget",
             id: "ff698ea5-2812-4ba5-a0ba-d89fc302f8f4",
-            name: "Permit Type"
+            name: "Permit Type",
           },
           {
             type: "serialChartWidget",
             id: "d2e11f43-8d61-422c-b7fe-00dc8a9c2b14",
-            name: "Submission Date"
-          }
+            name: "Submission Date",
+          },
         ],
         settings: {
-          maxPaginationRecords: 50000
+          maxPaginationRecords: 50000,
         },
-        theme: "light"
+        theme: "light",
       };
       break;
 
@@ -1003,21 +911,21 @@ export function getItemTemplateData(
           {
             id: 1,
             popupInfo: {
-              title: "table 1"
-            }
-          }
+              title: "table 1",
+            },
+          },
         ],
         layers: [
           {
             id: 0,
             popupInfo: {
-              title: "layer 0"
+              title: "layer 0",
             },
             layerDefinition: {
-              defaultVisibility: true
-            }
-          }
-        ]
+              defaultVisibility: true,
+            },
+          },
+        ],
       };
       break;
 
@@ -1042,11 +950,11 @@ export function getItemTemplateData(
           kernelspec: {
             name: "python3",
             display_name: "Python 3",
-            language: "python"
+            language: "python",
           },
           esriNotebookRuntime: {
             notebookRuntimeName: "ArcGIS Notebook Python 3 Advanced",
-            notebookRuntimeVersion: "3.0"
+            notebookRuntimeVersion: "3.0",
           },
           language_info: {
             name: "python",
@@ -1054,26 +962,26 @@ export function getItemTemplateData(
             mimetype: "text/x-python",
             codemirror_mode: {
               name: "ipython",
-              version: 3
+              version: 3,
             },
             pygments_lexer: "ipython3",
             nbconvert_exporter: "python",
-            file_extension: ".py"
-          }
+            file_extension: ".py",
+          },
         },
         cells: [
           {
             metadata: {
-              trusted: true
+              trusted: true,
             },
             cell_type: "code",
-            source: "{{3b927de78a784a5aa3981469d85cf45d.itemId}}",
+            source: "3b927de78a784a5aa3981469d85cf45d",
             execution_count: null,
-            outputs: []
-          }
+            outputs: [],
+          },
         ],
         nbformat: 4,
-        nbformat_minor: 2
+        nbformat_minor: 2,
       };
       break;
 
@@ -1106,7 +1014,7 @@ export function getItemTemplateData(
             ImgPyramids: "",
             DepthImg: "",
             ExternalViewer: "",
-            ImgRot: ""
+            ImgRot: "",
           },
           About: "",
           ImageField: "image_",
@@ -1118,18 +1026,18 @@ export function getItemTemplateData(
           DEMPrefix: "",
           Credentials: {
             Username: "",
-            Password: ""
+            Password: "",
           },
           Variables: {},
           Filters: {},
           Copyright: {
             text: "",
-            url: ""
+            url: "",
           },
           PointsSource: "",
           CoverageSource: "",
-          imageField: "Image_"
-        }
+          imageField: "Image_",
+        },
       };
       break;
 
@@ -1146,7 +1054,7 @@ export function getItemTemplateData(
       data = {
         root: "n-guGGJg",
         nodes: {},
-        resources: {}
+        resources: {},
       };
       break;
 
@@ -1162,25 +1070,24 @@ export function getItemTemplateData(
             label: "Active_Snowplow_Driver",
             schemaTransformation: {},
             properties: {
-              "feature-layer.portalItemId":
-                "{{aaaaf0cf8bdc4fb19749cc1cbad1651b.itemId}}",
-              "feature-layer.outSR": "4326"
-            }
-          }
+              "feature-layer.portalItemId": "{{aaaaf0cf8bdc4fb19749cc1cbad1651b.itemId}}",
+              "feature-layer.outSR": "4326",
+            },
+          },
         ],
         feeds: [
           {
             id: "{{bbb9398bcf8c4dc5a50cceaa59baf513.itemId}}",
             label: "WWO Simulation Provider AVL Feed",
             name: "simulator",
-            properties: {}
+            properties: {},
           },
           {
             id: "{{ccc6347e0c4f4dc8909da399418cafbe.itemId}}",
             label: "WWO Simulation ArcGIS Tracking Feed",
             name: "simulator",
-            properties: {}
-          }
+            properties: {},
+          },
         ],
         outputs: [
           {
@@ -1191,10 +1098,10 @@ export function getItemTemplateData(
               "feat-lyr-new.editorTrackingEnabled": false,
               "feat-lyr-new.updateExistingFeatures": true,
               "feat-lyr-new.name": "Custom Velocity Update",
-              "feat-lyr-new.useSpatiotemporal": true
-            }
-          }
-        ]
+              "feat-lyr-new.useSpatiotemporal": true,
+            },
+          },
+        ],
       };
       break;
 
@@ -1208,35 +1115,31 @@ export function getItemTemplateData(
             title: "ROW Permits",
             itemId: "{{svc1234567890.itemId}}",
             popupInfo: {},
-            capabilities: "Query"
-          }
+            capabilities: "Query",
+          },
         ],
         baseMap: {
           baseMapLayers: [
             {
               id: "World_Hillshade_3689",
               layerType: "ArcGISTiledMapServiceLayer",
-              url:
-                "http://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer",
-              title: "World Hillshade"
+              url: "http://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer",
+              title: "World Hillshade",
             },
             {
               id: "VectorTile_6451",
               type: "VectorTileLayer",
               layerType: "VectorTileLayer",
               title: "World Topographic Map",
-              styleUrl:
-                utils.PORTAL_SUBSET.restUrl +
-                "/content/items/" +
-                "vts1234567980/resources/styles/root.json",
-              itemId: "7dc6cea0b1764a1f9af2e679f642f0f5"
-            }
+              styleUrl: utils.PORTAL_SUBSET.restUrl + "/content/items/" + "vts1234567980/resources/styles/root.json",
+              itemId: "7dc6cea0b1764a1f9af2e679f642f0f5",
+            },
           ],
-          title: "Topographic"
+          title: "Topographic",
         },
         spatialReference: {
           wkid: 102100,
-          latestWkid: 3857
+          latestWkid: 3857,
         },
         tables: [
           {
@@ -1245,9 +1148,9 @@ export function getItemTemplateData(
             title: "ROW Permit Comment",
             layerDefinition: {},
             itemId: "{{svc1234567890.itemId}}",
-            popupInfo: {}
-          }
-        ]
+            popupInfo: {},
+          },
+        ],
       };
       break;
 
@@ -1265,9 +1168,9 @@ export function getItemTemplateData(
             fields: [
               {
                 id: "sortField",
-                fields: ["submitdt"]
-              }
-            ]
+                fields: ["submitdt"],
+              },
+            ],
           },
           showAllFeatures: "true",
           customUrlLayer: {
@@ -1275,12 +1178,12 @@ export function getItemTemplateData(
             fields: [
               {
                 id: "urlField",
-                fields: ["OBJECTID"]
-              }
-            ]
+                fields: ["OBJECTID"],
+              },
+            ],
           },
-          customUrlParam: "id"
-        }
+          customUrlParam: "id",
+        },
       };
       break;
 
@@ -1290,21 +1193,21 @@ export function getItemTemplateData(
         dispatcherWebMapId: "{{abc26a244163430590151395821fb845.itemId}}",
         dispatchers: {
           serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.itemId}}",
-          url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}"
+          url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}",
         },
         assignments: {
           serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.itemId}}",
-          url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}"
+          url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}",
         },
         workers: {
           serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.itemId}}",
-          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
+          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}",
         },
         tracks: {
           serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.layer0.itemId}}",
           url: "{{abc64329e69144c59f69f3f3e0d45269.layer0.url}}",
           enabled: true,
-          updateInterval: 300
+          updateInterval: 300,
         },
         version: "1.2.0",
         groupId: "{{abc715c2df2b466da05577776e82d044.itemId}}",
@@ -1318,11 +1221,11 @@ export function getItemTemplateData(
             assignmentTypes: [
               {
                 urlTemplate:
-                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce"
-              }
-            ]
-          }
-        ]
+                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce",
+              },
+            ],
+          },
+        ],
       };
       break;
 
@@ -1334,10 +1237,7 @@ export function getItemTemplateData(
   return data;
 }
 
-export function getItemTemplateResources(
-  type: string,
-  itemId: string
-): string[] {
+export function getItemTemplateResources(type: string, itemId: string): string[] {
   let resources: any[] = [];
 
   // Supported item types
@@ -1346,7 +1246,7 @@ export function getItemTemplateResources(
       resources = [
         itemId + "/info/root.json",
         itemId + "/styles/root.json",
-        itemId + "_info_thumbnail/ago_downloaded.png"
+        itemId + "_info_thumbnail/ago_downloaded.png",
       ];
       break;
   }
@@ -1354,73 +1254,98 @@ export function getItemTemplateResources(
   return resources;
 }
 
-export function getItemTemplateResourcesAsSourceFiles(
-  type: string,
-  itemId: string
-): interfaces.ISourceFile[] {
-  let resources: interfaces.ISourceFile[] = [];
+export function getItemTemplateResourcesAsSourceFiles(type: string, itemId: string, hasService = true): ISourceFile[] {
+  let resources: ISourceFile[] = [];
 
   // Supported item types
   switch (type) {
     case "Vector Tile Service":
-      resources = [{
-        itemId,
-        file: generalHelpers.jsonToFile(sampleInfoRootJson, "root.json"),
-        folder: itemId + "/info",
-        filename: "root.json"
-      }, {
-        itemId,
-        file: generalHelpers.jsonToFile(sampleStylesRootJson, "root.json"),
-        folder: itemId + "/styles",
-        filename: "root.json"
-      }, {
-        itemId,
-        file: utils.getSampleImageAsFile("ago_downloaded.png"),
-        folder: "_info_thumbnail",
-        filename: "ago_downloaded.png"
-      }];
+      resources = [
+        {
+          itemId,
+          file: generalHelpers.jsonToFile(sampleInfoRootJson, "root.json"),
+          folder: itemId + "/info",
+          filename: "root.json",
+        },
+        {
+          itemId,
+          file: generalHelpers.jsonToFile(sampleStylesRootJson, "root.json"),
+          folder: itemId + "/styles",
+          filename: "root.json",
+        },
+        {
+          itemId,
+          file: utils.getSampleImageAsFile("ago_downloaded.png"),
+          folder: "_info_thumbnail",
+          filename: "ago_downloaded.png",
+        },
+      ];
       break;
     case "Geoprocessing Service":
-      resources = [{
-        itemId,
-        file: generalHelpers.jsonToFile(sampleWebToolJson, "webtoolDefinition.json"),
-        folder: itemId + "/info",
-        filename: "webtoolDefinition.json"
-      }];
+      resources = [
+        {
+          itemId,
+          file: generalHelpers.jsonToFile(
+            hasService ? sampleWebToolJson : emptySampleWebToolJson,
+            "webtoolDefinition.json",
+          ),
+          folder: itemId + "/info",
+          filename: "webtoolDefinition.json",
+        },
+        {
+          itemId,
+          file: utils.getSampleImageAsFile("ago_downloaded.png"),
+          folder: "_info_thumbnail",
+          filename: "ago_downloaded.png",
+        },
+        {
+          itemId,
+          file: generalHelpers.jsonToFile(
+            hasService ? sampleWebToolJson : emptySampleWebToolJson,
+            "webtoolService.json",
+          ),
+          folder: itemId + "/info",
+          filename: "webtoolService.json",
+        },
+      ];
       break;
   }
 
   return resources;
 }
 
-export function getItemTemplateResourcesAsTemplatizedFiles(
-  type: string,
-): interfaces.IAssociatedFileInfo[] {
-  let resources: interfaces.IAssociatedFileInfo[] = [];
+export function getItemTemplateResourcesAsTemplatizedFiles(type: string): IAssociatedFileInfo[] {
+  let resources: IAssociatedFileInfo[] = [];
 
   // Supported item types
   switch (type) {
     case "Vector Tile Service":
-      resources = [{
-        filename: "root.json",
-        folder: "info",
-        url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/info/root.json"
-      }, {
-        filename: "root.json",
-        folder: "styles",
-        url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/styles/root.json"
-      }, {
-        filename: "ago_downloaded.png",
-        folder: "_info_thumbnail",
-        url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/ago_downloaded.png"
-      }];
+      resources = [
+        {
+          filename: "root.json",
+          folder: "info",
+          url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/info/root.json",
+        },
+        {
+          filename: "root.json",
+          folder: "styles",
+          url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/styles/root.json",
+        },
+        {
+          filename: "ago_downloaded.png",
+          folder: "_info_thumbnail",
+          url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/vts1234567890/ago_downloaded.png",
+        },
+      ];
       break;
     case "Geoprocessing Service":
-      resources = [{
-        filename: "webtoolDefinition.json",
-        folder: "info",
-        url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/gs1234567890/info/webtoolDefinition.json"
-      }];
+      resources = [
+        {
+          filename: "webtoolDefinition.json",
+          folder: "info",
+          url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/gs1234567890/info/webtoolDefinition.json",
+        },
+      ];
       break;
   }
 
@@ -1435,147 +1360,177 @@ export function removeEditFieldsInfoField(layerOrTable: any): any {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export const sampleInfoRootJson = {
-  "resourceInfo": [
+  resourceInfo: [
     "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Arial%20Regular/0-255.pbf",
     "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Arial%20Regular/256-511.pbf",
     "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Palatino%20Linotype%20Regular/64512-64767.pbf",
     "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Palatino%20Linotype%20Regular/64768-65023.pbf",
     "https://myorg.maps.arcgis.com/sharing/rest/content/items/vts1234567890/resources/sprites/sprite-1682528799750@2x.json",
-    "https://myorg.maps.arcgis.com/sharing/rest/content/items/vts1234567890/resources/sprites/sprite-1682528799750@2x.png"
-  ]
+    "https://myorg.maps.arcgis.com/sharing/rest/content/items/vts1234567890/resources/sprites/sprite-1682528799750@2x.png",
+  ],
 };
 
 export const sampleStylesRootJson = {
-  "version": 8,
-  "sprite": "https://myorg.maps.arcgis.com/sharing/rest/content/items/vts1234567890/resources/sprites/sprite-1682528799750",
-  "glyphs": "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf",
-  "sources": {
-    "esri": {
-      "type": "vector",
-      "url": "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer",
-      "tiles": [
-        "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/tile/{z}/{y}/{x}.pbf"
-      ]
-    }
+  version: 8,
+  sprite:
+    "https://myorg.maps.arcgis.com/sharing/rest/content/items/vts1234567890/resources/sprites/sprite-1682528799750",
+  glyphs:
+    "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf",
+  sources: {
+    esri: {
+      type: "vector",
+      url: "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer",
+      tiles: [
+        "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+      ],
+    },
   },
-  "layers": [],
-  "metadata": {}
+  layers: [],
+  metadata: {},
 };
 
 export const sampleInfoRootTemplatizedJson = {
-  "resourceInfo": [
+  resourceInfo: [
     "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Arial%20Regular/0-255.pbf",
     "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Arial%20Regular/256-511.pbf",
     "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Palatino%20Linotype%20Regular/64512-64767.pbf",
     "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/Palatino%20Linotype%20Regular/64768-65023.pbf",
     "{{vts1234567890.url}}/resources/sprites/sprite-1682528799750@2x.json",
-    "{{vts1234567890.url}}/resources/sprites/sprite-1682528799750@2x.png"
-  ]
+    "{{vts1234567890.url}}/resources/sprites/sprite-1682528799750@2x.png",
+  ],
 };
 
 export const sampleStylesRootTemplatizedJson = {
-  "version": 8,
-  "sprite": "{{vts1234567890.url}}/resources/sprites/sprite-1682528799750",
-  "glyphs": "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf",
-  "sources": {
-    "esri": {
-      "type": "vector",
-      "url": "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer",
-      "tiles": [
-        "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/tile/{z}/{y}/{x}.pbf"
-      ]
-    }
+  version: 8,
+  sprite: "{{vts1234567890.url}}/resources/sprites/sprite-1682528799750",
+  glyphs:
+    "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/resources/fonts/{fontstack}/{range}.pbf",
+  sources: {
+    esri: {
+      type: "vector",
+      url: "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer",
+      tiles: [
+        "https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+      ],
+    },
   },
-  "layers": [],
-  "metadata": {}
+  layers: [],
+  metadata: {},
 };
 
 export const sampleWebToolJson = {
-  "datasets": [],
-  "portalProperties": {
-      "isHosted": false,
-      "portalItems": [
-          {
-              "itemId": "aaaeefbeb43245ccbe00a948e87ccdfa",
-              "type": "GPServer"
-          }
-      ]
+  datasets: [],
+  portalProperties: {
+    isHosted: false,
+    portalItems: [
+      {
+        itemId: "aaaeefbeb43245ccbe00a948e87ccdfa",
+        type: "GPServer",
+      },
+    ],
   },
-  "properties": {},
-  "jsonProperties": {
-      "title": "Test Web Tool",
-      "notebookId": "aaa637ded3a74a7f9c2325a043f59fb6",
-      "snapshotId": "notebook.json",
-      "timeoutInMinutes": 0,
-      "tasks": [
-          {
-              "type": "notebook",
-              "name": "Test_Notebook"
-          }
-      ]
+  properties: {},
+  jsonProperties: {
+    title: "Test Web Tool",
+    notebookId: "aaa637ded3a74a7f9c2325a043f59fb6",
+    snapshotId: "notebook.json",
+    timeoutInMinutes: 0,
+    tasks: [
+      {
+        type: "notebook",
+        name: "Test_Notebook",
+      },
+    ],
   },
-  "serviceName": "aaaeefbeb43245ccbe00a948e87ccdfa",
-  "type": "GPServer",
-  "description": "Test Web Tool",
-  "provider": "notebooks"
-}
+  serviceName: "aaaeefbeb43245ccbe00a948e87ccdfa",
+  type: "GPServer",
+  description: "Test Web Tool",
+  provider: "notebooks",
+};
+
+export const emptySampleWebToolJson = {
+  datasets: [],
+  portalProperties: {
+    isHosted: false,
+    portalItems: [
+      {
+        itemId: "",
+        type: "GPServer",
+      },
+    ],
+  },
+  properties: {},
+  jsonProperties: {
+    title: "Test Web Tool",
+    notebookId: "",
+    snapshotId: "notebook.json",
+    timeoutInMinutes: 0,
+    tasks: [
+      {
+        type: "notebook",
+        name: "Test_Notebook",
+      },
+    ],
+  },
+  serviceName: "",
+  type: "GPServer",
+  description: "Test Web Tool",
+  provider: "notebooks",
+};
 
 export const sampleWebToolTemplatizedJson = {
-  "datasets": [],
-  "portalProperties": {
-      "isHosted": false,
-      "portalItems": [
-          {
-              "itemId": "{{aaaeefbeb43245ccbe00a948e87ccdfa.itemId}}",
-              "type": "GPServer"
-          }
-      ]
+  datasets: [],
+  portalProperties: {
+    isHosted: false,
+    portalItems: [
+      {
+        itemId: "{{aaaeefbeb43245ccbe00a948e87ccdfa.itemId}}",
+        type: "GPServer",
+      },
+    ],
   },
-  "properties": {},
-  "jsonProperties": {
-      "title": "Test Web Tool",
-      "notebookId": "{{aaa637ded3a74a7f9c2325a043f59fb6.itemId}}",
-      "snapshotId": "notebook.json",
-      "timeoutInMinutes": 0,
-      "tasks": [
-          {
-              "type": "notebook",
-              "name": "Test_Notebook"
-          }
-      ]
+  properties: {},
+  jsonProperties: {
+    title: "Test Web Tool",
+    notebookId: "{{aaa637ded3a74a7f9c2325a043f59fb6.itemId}}",
+    snapshotId: "notebook.json",
+    timeoutInMinutes: 0,
+    tasks: [
+      {
+        type: "notebook",
+        name: "Test_Notebook",
+      },
+    ],
   },
-  "serviceName": "{{aaaeefbeb43245ccbe00a948e87ccdfa.itemId}}",
-  "type": "GPServer",
-  "description": "Test Web Tool",
-  "provider": "notebooks"
-}
+  serviceName: "{{aaaeefbeb43245ccbe00a948e87ccdfa.itemId}}",
+  type: "GPServer",
+  description: "Test Web Tool",
+  provider: "notebooks",
+};
 
 export const sampleWebToolServiceJson = {
-  "currentVersion": 11.2,
-  "cimVersion": "2.9.0",
-  "serviceDescription": "Test Web Tool",
-  "executionType": "esriExecutionTypeAsynchronous",
-  "resultMapServerName": "",
-  "maximumRecords": 1000,
-  "capabilities": "",
-  "tasks": [
-      "Test_Notebook"
-  ],
-  "serviceUrl": "https://notebookswebtoolsdev.arcgis.com/arcgis/rest/services/aaaeefbeb43245ccbe00a948e87ccdfa/GPServer",
-  "timeoutInMinutes": 100
+  currentVersion: 11.2,
+  cimVersion: "2.9.0",
+  serviceDescription: "Test Web Tool",
+  executionType: "esriExecutionTypeAsynchronous",
+  resultMapServerName: "",
+  maximumRecords: 1000,
+  capabilities: "",
+  tasks: ["Test_Notebook"],
+  serviceUrl: "https://notebookswebtoolsdev.arcgis.com/arcgis/rest/services/aaaeefbeb43245ccbe00a948e87ccdfa/GPServer",
+  timeoutInMinutes: 100,
 };
 
 export const sampleWebToolServiceTemplatizedJson = {
-  "currentVersion": 11.2,
-  "cimVersion": "2.9.0",
-  "serviceDescription": "Test Web Tool",
-  "executionType": "esriExecutionTypeAsynchronous",
-  "resultMapServerName": "",
-  "maximumRecords": 1000,
-  "capabilities": "",
-  "tasks": [
-      "Test_Notebook"
-  ],
-  "serviceUrl": "https://notebookswebtoolsdev.arcgis.com/arcgis/rest/services/{{aaaeefbeb43245ccbe00a948e87ccdfa.itemId}}/GPServer",
-  "timeoutInMinutes": 100
+  currentVersion: 11.2,
+  cimVersion: "2.9.0",
+  serviceDescription: "Test Web Tool",
+  executionType: "esriExecutionTypeAsynchronous",
+  resultMapServerName: "",
+  maximumRecords: 1000,
+  capabilities: "",
+  tasks: ["Test_Notebook"],
+  serviceUrl:
+    "https://notebookswebtoolsdev.arcgis.com/arcgis/rest/services/{{aaaeefbeb43245ccbe00a948e87ccdfa.itemId}}/GPServer",
+  timeoutInMinutes: 100,
 };

@@ -25,14 +25,15 @@
  * Long term...would like to work these into the standard mocks.
  */
 
-import * as fetchMock from "fetch-mock";
-import * as interfaces from "../../src/interfaces";
+const fetchMock = require("fetch-mock");
+import { IGetRelatedItemsResponse } from "../../src/arcgisRestJS";
+import { IGetRelatedItemsResponseFull } from "../../src/interfaces";
 import * as utils from "./utils";
 
 export function fetchMockRelatedItems(
   itemId: string,
-  desiredResponse: interfaces.IGetRelatedItemsResponse,
-  excludedTypes?: string[]
+  desiredResponse: IGetRelatedItemsResponse,
+  excludedTypes?: string[],
 ): void {
   const relationshipTypes = [
     // from interfaces.ItemRelationshipType
@@ -61,12 +62,12 @@ export function fetchMockRelatedItems(
     "TrackView2Map",
     "WebStyle2DesktopStyle",
     "WMA2Code",
-    "WorkforceMap2FeatureService"
+    "WorkforceMap2FeatureService",
   ];
 
   // Remove excluded types
   if (excludedTypes) {
-    excludedTypes.forEach(typeToRemove => {
+    excludedTypes.forEach((typeToRemove) => {
       const iTypeToRemove = relationshipTypes.indexOf(typeToRemove);
       if (iTypeToRemove >= 0) {
         relationshipTypes.splice(iTypeToRemove, 1);
@@ -75,13 +76,15 @@ export function fetchMockRelatedItems(
   }
 
   // Add the new properties returned by portal function `getRelatedItems`
-  const desiredResponseSupplemented: interfaces.IGetRelatedItemsResponseFull = {
+  const desiredResponseSupplemented: IGetRelatedItemsResponseFull = {
     aggregations: { total: { count: 0, name: "total" } },
-    nextkey: null, num: 100, ...desiredResponse
-  }
+    nextkey: null,
+    num: 100,
+    ...desiredResponse,
+  };
 
   // Set up fetches
-  relationshipTypes.forEach(relationshipType => {
+  relationshipTypes.forEach((relationshipType) => {
     fetchMock.get(
       utils.PORTAL_SUBSET.restUrl +
         "/content/items/" +
@@ -89,7 +92,7 @@ export function fetchMockRelatedItems(
         "/relatedItems?f=json&direction=forward&start=1&num=100&relationshipType=" +
         relationshipType +
         "&token=fake-token",
-      desiredResponseSupplemented
+      desiredResponseSupplemented,
     );
   });
 }

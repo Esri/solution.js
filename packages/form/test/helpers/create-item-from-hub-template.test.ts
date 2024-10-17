@@ -15,7 +15,6 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as restPortal from "@esri/arcgis-rest-portal";
 import { createItemFromHubTemplate } from "../../src/helpers/create-item-from-hub-template";
 import * as createSurveyHelper from "../../src/helpers/create-survey";
 import * as buildParamsHelper from "../../src/helpers/build-create-params";
@@ -39,7 +38,7 @@ describe("createItemFromHubTemplate", () => {
     templateDictionary = {
       portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
       user: items.getAGOLUser("myUser"),
-      folderId: "h7bf45f98d114c3ab85fd63bb44e240d"
+      folderId: "h7bf45f98d114c3ab85fd63bb44e240d",
     };
 
     const baseTemplate = templates.getItemTemplate("Form");
@@ -47,37 +46,37 @@ describe("createItemFromHubTemplate", () => {
       ...baseTemplate,
       item: {
         ...baseTemplate.item,
-        thumbnail: "thumbnail/ago_downloaded.png"
+        thumbnail: "thumbnail/ago_downloaded.png",
       },
       properties: {
         ...baseTemplate.properties,
         info: {
           ...baseTemplate.properties.info,
           serviceInfo: {
-            itemId: "i7bf45f98d114c3ab85fd63bb44e240d"
-          }
+            itemId: "i7bf45f98d114c3ab85fd63bb44e240d",
+          },
         },
         form: {
           portalUrl: "{{portalBaseUrl}}",
           header: {
-            content: "<p title='Whos the best cat'>Whos the best cat</p>"
+            content: "<p title='Whos the best cat'>Whos the best cat</p>",
           },
           subHeader: {
-            content: "This is encoded"
+            content: "This is encoded",
           },
           footer: {
-            content: "This is encoded"
+            content: "This is encoded",
           },
           questions: [
             {
-              description: "This is encoded"
-            }
+              description: "This is encoded",
+            },
           ],
           settings: {
-            thankYouScreenContent: "This is encoded"
-          }
-        }
-      }
+            thankYouScreenContent: "This is encoded",
+          },
+        },
+      },
     };
 
     interpolatedTemplate = {
@@ -86,9 +85,9 @@ describe("createItemFromHubTemplate", () => {
         ...template.properties,
         form: {
           ...template.properties.form,
-          portalUrl: utils.PORTAL_SUBSET.portalUrl
-        }
-      }
+          portalUrl: utils.PORTAL_SUBSET.portalUrl,
+        },
+      },
     };
 
     paramResults = {
@@ -99,214 +98,147 @@ describe("createItemFromHubTemplate", () => {
       title: "An AGOL item",
       token: "my-token",
       typeKeywords: ["JavaScript"],
-      username: "myUser"
+      username: "myUser",
     };
 
     createResult = {
       formId: "e7bf45f98d114c3ab85fd63bb44e240d",
       featureServiceId: "f7bf45f98d114c3ab85fd63bb44e240d",
-      folderId: "g7bf45f98d114c3ab85fd63bb44e240d"
+      folderId: "g7bf45f98d114c3ab85fd63bb44e240d",
     };
 
     getItemBaseResult = {
       ...items.getAGOLItem("form"),
-      id: createResult.formId
+      id: createResult.formId,
     };
   });
 
-  it("should resolve a ISurvey123CreateParams", done => {
-    const replaceInTemplateSpy = spyOn(
-      common,
-      "replaceInTemplate"
-    ).and.returnValue(interpolatedTemplate);
-    const buildCreateParamsSpy = spyOn(
-      buildParamsHelper,
-      "buildCreateParams"
-    ).and.resolveTo(paramResults);
-    const createSurveySpy = spyOn(
-      createSurveyHelper,
-      "createSurvey"
-    ).and.resolveTo(createResult);
-    const updateItemExtendedSpy = spyOn(
-      common,
-      "updateItemExtended"
-    ).and.resolveTo();
+  it("should resolve a ISurvey123CreateParams", async () => {
+    const replaceInTemplateSpy = spyOn(common, "replaceInTemplate").and.returnValue(interpolatedTemplate);
+    const buildCreateParamsSpy = spyOn(buildParamsHelper, "buildCreateParams").and.resolveTo(paramResults);
+    const createSurveySpy = spyOn(createSurveyHelper, "createSurvey").and.resolveTo(createResult);
+    const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
-    const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(
-      getItemBaseResult
-    );
-    createItemFromHubTemplate(
+    const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(getItemBaseResult);
+    const results = await createItemFromHubTemplate(
       template,
       templateDictionary,
       MOCK_USER_SESSION,
-      itemProgressCallbackSpy
-    )
-      .then(results => {
-        expect(replaceInTemplateSpy.calls.count()).toEqual(1);
-        expect(replaceInTemplateSpy.calls.first().args).toEqual([
-          template,
-          templateDictionary
-        ]);
-        expect(buildCreateParamsSpy.calls.count()).toEqual(1);
-        expect(buildCreateParamsSpy.calls.first().args).toEqual([
-          interpolatedTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION
-        ]);
-        expect(createSurveySpy.calls.count()).toEqual(1);
-        expect(createSurveySpy.calls.first().args).toEqual([
-          paramResults,
-          undefined
-        ]);
-        expect(updateItemExtendedSpy.calls.count()).toEqual(1);
-        expect(updateItemExtendedSpy.calls.argsFor(0)[0].id).toBe(
-          createResult.formId
-        );
-        expect(getItemBaseSpy.calls.count()).toEqual(1);
-        expect(getItemBaseSpy.calls.first().args).toEqual([
-          createResult.formId,
-          MOCK_USER_SESSION
-        ]);
-        expect(templateDictionary[template.itemId]).toEqual({
-          itemId: createResult.formId
-        });
-        expect(
-          templateDictionary[template.properties.info.serviceInfo.itemId]
-        ).toEqual({ itemId: createResult.featureServiceId });
-        expect(itemProgressCallbackSpy.calls.count()).toEqual(1);
-        expect(itemProgressCallbackSpy.calls.first().args).toEqual([
-          template.itemId,
-          common.EItemProgressStatus.Finished,
-          template.estimatedDeploymentCostFactor,
-          createResult.formId
-        ]);
-        expect(results).toEqual({
-          item: {
-            ...template,
-            item: getItemBaseResult,
-            itemId: createResult.formId
-          } as common.IItemTemplate,
-          id: createResult.formId,
-          type: "Form",
-          postProcess: true
-        });
-        done();
-      })
-      .catch(e => {
-        done.fail(e);
-      });
+      itemProgressCallbackSpy,
+    );
+    expect(replaceInTemplateSpy.calls.count()).toEqual(1);
+    expect(replaceInTemplateSpy.calls.first().args).toEqual([template, templateDictionary]);
+    expect(buildCreateParamsSpy.calls.count()).toEqual(1);
+    expect(buildCreateParamsSpy.calls.first().args).toEqual([
+      interpolatedTemplate,
+      templateDictionary,
+      MOCK_USER_SESSION,
+    ]);
+    expect(createSurveySpy.calls.count()).toEqual(1);
+    expect(createSurveySpy.calls.first().args).toEqual([paramResults, undefined]);
+    expect(updateItemExtendedSpy.calls.count()).toEqual(1);
+    expect(updateItemExtendedSpy.calls.argsFor(0)[0].id).toBe(createResult.formId);
+    expect(getItemBaseSpy.calls.count()).toEqual(1);
+    expect(getItemBaseSpy.calls.first().args).toEqual([createResult.formId, MOCK_USER_SESSION]);
+    expect(templateDictionary[template.itemId]).toEqual({
+      itemId: createResult.formId,
+    });
+    expect(templateDictionary[template.properties.info.serviceInfo.itemId]).toEqual({
+      itemId: createResult.featureServiceId,
+    });
+    expect(itemProgressCallbackSpy.calls.count()).toEqual(1);
+    expect(itemProgressCallbackSpy.calls.first().args).toEqual([
+      template.itemId,
+      common.EItemProgressStatus.Finished,
+      template.estimatedDeploymentCostFactor,
+      createResult.formId,
+    ]);
+    expect(results).toEqual({
+      item: {
+        ...template,
+        item: getItemBaseResult,
+        itemId: createResult.formId,
+      } as common.IItemTemplate,
+      id: createResult.formId,
+      type: "Form",
+      postProcess: true,
+    });
   });
 
-  it("should allow survey123Url override from templateDictionary", done => {
-    const replaceInTemplateSpy = spyOn(
-      common,
-      "replaceInTemplate"
-    ).and.returnValue(interpolatedTemplate);
-    const buildCreateParamsSpy = spyOn(
-      buildParamsHelper,
-      "buildCreateParams"
-    ).and.resolveTo(paramResults);
-    const createSurveySpy = spyOn(
-      createSurveyHelper,
-      "createSurvey"
-    ).and.resolveTo(createResult);
-    const updateItemExtendedSpy = spyOn(
-      common,
-      "updateItemExtended"
-    ).and.resolveTo();
+  it("should allow survey123Url override from templateDictionary", async () => {
+    const replaceInTemplateSpy = spyOn(common, "replaceInTemplate").and.returnValue(interpolatedTemplate);
+    const buildCreateParamsSpy = spyOn(buildParamsHelper, "buildCreateParams").and.resolveTo(paramResults);
+    const createSurveySpy = spyOn(createSurveyHelper, "createSurvey").and.resolveTo(createResult);
+    const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
-    const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(
-      getItemBaseResult
-    );
+    const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(getItemBaseResult);
     templateDictionary.survey123Url = "https://survey123qa.arcgis.com";
-    createItemFromHubTemplate(
+    const results = await createItemFromHubTemplate(
       template,
       templateDictionary,
       MOCK_USER_SESSION,
-      itemProgressCallbackSpy
-    )
-      .then(results => {
-        expect(replaceInTemplateSpy.calls.count()).toEqual(1);
-        expect(replaceInTemplateSpy.calls.first().args).toEqual([
-          template,
-          templateDictionary
-        ]);
-        expect(buildCreateParamsSpy.calls.count()).toEqual(1);
-        expect(buildCreateParamsSpy.calls.first().args).toEqual([
-          interpolatedTemplate,
-          templateDictionary,
-          MOCK_USER_SESSION
-        ]);
-        expect(createSurveySpy.calls.count()).toEqual(1);
-        expect(createSurveySpy.calls.first().args).toEqual([
-          paramResults,
-          "https://survey123qa.arcgis.com"
-        ]);
-        expect(updateItemExtendedSpy.calls.count()).toEqual(1);
-        expect(updateItemExtendedSpy.calls.argsFor(0)[0].id).toBe(
-          createResult.formId
-        );
-        expect(getItemBaseSpy.calls.count()).toEqual(1);
-        expect(getItemBaseSpy.calls.first().args).toEqual([
-          createResult.formId,
-          MOCK_USER_SESSION
-        ]);
-        expect(templateDictionary[template.itemId]).toEqual({
-          itemId: createResult.formId
-        });
-        expect(
-          templateDictionary[template.properties.info.serviceInfo.itemId]
-        ).toEqual({ itemId: createResult.featureServiceId });
-        expect(itemProgressCallbackSpy.calls.count()).toEqual(1);
-        expect(itemProgressCallbackSpy.calls.first().args).toEqual([
-          template.itemId,
-          common.EItemProgressStatus.Finished,
-          template.estimatedDeploymentCostFactor,
-          createResult.formId
-        ]);
-        expect(results).toEqual({
-          item: {
-            ...template,
-            item: getItemBaseResult,
-            itemId: createResult.formId
-          } as common.IItemTemplate,
-          id: createResult.formId,
-          type: "Form",
-          postProcess: true
-        });
-        done();
-      })
-      .catch(e => {
-        done.fail(e);
-      });
+      itemProgressCallbackSpy,
+    );
+    expect(replaceInTemplateSpy.calls.count()).toEqual(1);
+    expect(replaceInTemplateSpy.calls.first().args).toEqual([template, templateDictionary]);
+    expect(buildCreateParamsSpy.calls.count()).toEqual(1);
+    expect(buildCreateParamsSpy.calls.first().args).toEqual([
+      interpolatedTemplate,
+      templateDictionary,
+      MOCK_USER_SESSION,
+    ]);
+    expect(createSurveySpy.calls.count()).toEqual(1);
+    expect(createSurveySpy.calls.first().args).toEqual([paramResults, "https://survey123qa.arcgis.com"]);
+    expect(updateItemExtendedSpy.calls.count()).toEqual(1);
+    expect(updateItemExtendedSpy.calls.argsFor(0)[0].id).toBe(createResult.formId);
+    expect(getItemBaseSpy.calls.count()).toEqual(1);
+    expect(getItemBaseSpy.calls.first().args).toEqual([createResult.formId, MOCK_USER_SESSION]);
+    expect(templateDictionary[template.itemId]).toEqual({
+      itemId: createResult.formId,
+    });
+    expect(templateDictionary[template.properties.info.serviceInfo.itemId]).toEqual({
+      itemId: createResult.featureServiceId,
+    });
+    expect(itemProgressCallbackSpy.calls.count()).toEqual(1);
+    expect(itemProgressCallbackSpy.calls.first().args).toEqual([
+      template.itemId,
+      common.EItemProgressStatus.Finished,
+      template.estimatedDeploymentCostFactor,
+      createResult.formId,
+    ]);
+    expect(results).toEqual({
+      item: {
+        ...template,
+        item: getItemBaseResult,
+        itemId: createResult.formId,
+      } as common.IItemTemplate,
+      id: createResult.formId,
+      type: "Form",
+      postProcess: true,
+    });
   });
 
-  it("should call itemProgressCallback with Failed then reject", done => {
+  it("should call itemProgressCallback with Failed then reject", async () => {
     const error = new Error("Failed to build params");
     spyOn(common, "replaceInTemplate").and.returnValue(interpolatedTemplate);
     spyOn(buildParamsHelper, "buildCreateParams").and.rejectWith(error);
     spyOn(createSurveyHelper, "createSurvey").and.resolveTo(createResult);
-    spyOn(restPortal, "moveItem").and.resolveTo();
+    spyOn(common, "moveItem").and.resolveTo();
     spyOn(common, "removeFolder").and.resolveTo();
     const itemProgressCallbackSpy = jasmine.createSpy();
-    createItemFromHubTemplate(
-      template,
-      templateDictionary,
-      MOCK_USER_SESSION,
-      itemProgressCallbackSpy
-    )
-      .then(_ => {
-        done.fail("Should have rejected");
+    return createItemFromHubTemplate(template, templateDictionary, MOCK_USER_SESSION, itemProgressCallbackSpy)
+      .then(() => {
+        fail("Should have rejected");
       })
-      .catch(e => {
+      .catch((e) => {
         expect(itemProgressCallbackSpy.calls.count()).toEqual(1);
         expect(itemProgressCallbackSpy.calls.first().args).toEqual([
           template.itemId,
           common.EItemProgressStatus.Failed,
-          0
+          0,
         ]);
         expect(e).toBe(error);
-        done();
+        return Promise.resolve();
       });
   });
 });

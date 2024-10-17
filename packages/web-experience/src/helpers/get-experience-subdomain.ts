@@ -22,8 +22,7 @@ import { UserSession } from "@esri/solution-common";
  * @param authentication UserSession
  */
 export function getExperienceSubdomain(authentication: UserSession): string {
-  const portalUrl =
-    authentication.portal || "https://www.arcgis.com/sharing/rest";
+  const portalUrl = authentication.portal || "https://www.arcgis.com/sharing/rest";
   // TODO: Sort out how we locate experiences on portal?
   let result;
   if (portalUrl.match(/(qaext|\.mapsqa)\.arcgis.com/)) {

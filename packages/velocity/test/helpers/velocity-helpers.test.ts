@@ -21,15 +21,15 @@ import {
   _updateFeed,
   _updateDataOutput,
   _validateOutputs,
-  _getOutputLabel,
-  getUniqueTitle
+  getUniqueTitle,
 } from "../../src/helpers/velocity-helpers";
-import * as interfaces from "../../../common/src/interfaces";
-import * as fetchMock from "fetch-mock";
+import { UserSession } from "../../../common/src/arcgisRestJS";
+import { IItemTemplate } from "../../../common/src/interfaces";
+const fetchMock = require("fetch-mock");
 import * as templates from "../../../common/test/mocks/templates";
 import * as utils from "../../../common/test/mocks/utils";
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -42,41 +42,26 @@ afterEach(() => {
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 describe("getVelocityUrl", () => {
-  it("gets standard url with suffix", done => {
-    const velocityUrl: string =
-      "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
+  it("gets standard url with suffix", async () => {
+    const velocityUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
     const expected: string = `${velocityUrl}/iot/feed/ABC123/suffix/?f=json&token=fake-token`;
     const templateDictionary: any = {
-      velocityUrl
+      velocityUrl,
     };
-    getVelocityUrl(
-      MOCK_USER_SESSION,
-      templateDictionary,
-      "Feed",
-      "ABC123",
-      false,
-      "",
-      "suffix"
-    ).then(actual => {
-      expect(actual).toEqual(expected);
-      done();
-    }, done.fail);
+
+    const actual = await getVelocityUrl(MOCK_USER_SESSION, templateDictionary, "Feed", "ABC123", false, "", "suffix");
+    expect(actual).toEqual(expected);
   });
 });
 
 describe("postVelocityData", () => {
-  it("supports autoStart", done => {
-    const velocityUrl: string =
-      "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
-    const realtimeUrl: string =
-      `${velocityUrl}/iot/analytics/realtime`;
+  it("supports autoStart", async () => {
+    const velocityUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
+    const realtimeUrl: string = `${velocityUrl}/iot/analytics/realtime`;
 
     const type: string = "Real Time Analytic";
     const id: string = "aaabbbccc123";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(
-      type,
-      []
-    );
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
     const data: any = template.data;
     delete data.outputs;
     const feeds: any = data.feeds;
@@ -87,7 +72,7 @@ describe("postVelocityData", () => {
     delete data.feed.label;
 
     const templateDictionary: any = {
-      velocityUrl
+      velocityUrl,
     };
     templateDictionary[template.itemId] = {};
 
@@ -96,57 +81,34 @@ describe("postVelocityData", () => {
     const validateResults: any = {
       id: "",
       validation: {
-        messages: []
+        messages: [],
       },
       nodes: [],
-      executable: false
+      executable: false,
     };
 
     fetchMock
-      .get(
-        `${realtimeUrl}StatusList?view=admin`,
-        {}
-      )
-      .post(
-        `${realtimeUrl}/validate/${id}/?f=json&token=fake-token`,
-        validateResults
-      )
-      .post(realtimeUrl, { id }
-      )
-      .post(
-        `${realtimeUrl}/validate/?f=json&token=fake-token`,
-        validateResults
-      )
+      .get(`${realtimeUrl}StatusList?view=admin`, {})
+      .post(`${realtimeUrl}/validate/${id}/?f=json&token=fake-token`, validateResults)
+      .post(realtimeUrl, { id })
+      .post(`${realtimeUrl}/validate/?f=json&token=fake-token`, validateResults)
       .get(startUrl, {});
 
-    postVelocityData(
-      MOCK_USER_SESSION,
-      template,
-      data,
-      templateDictionary,
-      true
-    ).then(() => {
-      done();
-    }, done.fail);
+    return postVelocityData(MOCK_USER_SESSION, template, data, templateDictionary, true);
   });
 
-  it("handles non executable in autoStart", done => {
-    const velocityUrl: string =
-      "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
-    const realtimeUrl: string =
-      "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
+  it("handles non executable in autoStart", async () => {
+    const velocityUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
+    const realtimeUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
     const type: string = "Real Time Analytic";
     const id: string = "aaabbbccc123";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(
-      type,
-      []
-    );
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
     const data: any = template.data;
     delete data.outputs;
     delete data.feeds[0].id;
     delete data.feeds[1].id;
     const templateDictionary: any = {
-      velocityUrl
+      velocityUrl,
     };
     templateDictionary[template.itemId] = {};
 
@@ -155,56 +117,37 @@ describe("postVelocityData", () => {
     const validateResults: any = {
       id: "",
       validation: {
-        messages: []
+        messages: [],
       },
       nodes: [],
-      executable: false
+      executable: false,
     };
 
     fetchMock
       .get(`${realtimeUrl}StatusList?view=admin`, ["A"])
-      .post(
-        `${realtimeUrl}/validate/${id}/?f=json&token=fake-token`,
-        validateResults
-      )
-      .post(
-        `${realtimeUrl}/validate/?f=json&token=fake-token`,
-        validateResults
-      )
+      .post(`${realtimeUrl}/validate/${id}/?f=json&token=fake-token`, validateResults)
+      .post(`${realtimeUrl}/validate/?f=json&token=fake-token`, validateResults)
       .post(realtimeUrl, {
-        id
+        id,
       })
       .get(startUrl, {});
 
-    postVelocityData(
-      MOCK_USER_SESSION,
-      template,
-      data,
-      templateDictionary,
-      true
-    ).then(() => {
-      done();
-    }, done.fail);
+    return postVelocityData(MOCK_USER_SESSION, template, data, templateDictionary, true);
   });
 
-  it("name errors", done => {
-    const velocityUrl: string =
-      "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
-    const realtimeUrl: string =
-      "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
+  it("name errors", async () => {
+    const velocityUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
+    const realtimeUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
     const type: string = "Real Time Analytic";
     const id: string = "aaabbbccc123";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(
-      type,
-      []
-    );
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
     const data: any = template.data;
     const outputs = data.outputs;
-    delete(data.outputs);
+    delete data.outputs;
     data.output = outputs[0];
-    delete(data.feeds);
+    delete data.feeds;
     const templateDictionary: any = {
-      velocityUrl
+      velocityUrl,
     };
     templateDictionary[template.itemId] = {};
 
@@ -217,19 +160,18 @@ describe("postVelocityData", () => {
         validation: {
           messages: [
             {
-              key:
-                "VALIDATION_ANALYTICS__MULTIPLE_CREATE_FEATURE_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
-              args: [type]
-            }
-          ]
+              key: "VALIDATION_ANALYTICS__MULTIPLE_CREATE_FEATURE_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
+              args: [type],
+            },
+          ],
         },
         nodes: [
           {
             validation: {
-              messages: []
-            }
-          }
-        ]
+              messages: [],
+            },
+          },
+        ],
       })
       .postOnce(
         "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime/validate/?f=json&token=fake-token",
@@ -238,73 +180,59 @@ describe("postVelocityData", () => {
           validation: {
             messages: [
               {
-                key:
-                  "VALIDATION_ANALYTICS__MULTIPLE_CREATE_FEATURE_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
-                args: [type]
-              }
-            ]
+                key: "VALIDATION_ANALYTICS__MULTIPLE_CREATE_FEATURE_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
+                args: [type],
+              },
+            ],
           },
           nodes: [
             {
               validation: {
-                messages: []
-              }
-            }
-          ]
+                messages: [],
+              },
+            },
+          ],
         },
-        { overwriteRoutes: false }
+        { overwriteRoutes: false },
       )
       .postOnce(
         "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime/validate/?f=json&token=fake-token",
         {
           executable: true,
           validation: {
-            messages: []
+            messages: [],
           },
           nodes: [
             {
               validation: {
-                messages: []
-              }
-            }
-          ]
+                messages: [],
+              },
+            },
+          ],
         },
-        { overwriteRoutes: false }
+        { overwriteRoutes: false },
       )
       .post(realtimeUrl, {
-        id
+        id,
       })
       .get(startUrl, {});
 
-    postVelocityData(
-      MOCK_USER_SESSION,
-      template,
-      data,
-      templateDictionary,
-      true
-    ).then(() => {
-      done();
-    }, done.fail);
+    return postVelocityData(MOCK_USER_SESSION, template, data, templateDictionary, true);
   });
 
-  it("name errors on feeds", done => {
-    const velocityUrl: string =
-      "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
-    const realtimeUrl: string =
-      "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
+  it("name errors on feeds", async () => {
+    const velocityUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn";
+    const realtimeUrl: string = "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime";
     const type: string = "Real Time Analytic";
     const id: string = "aaabbbccc123";
-    const template: interfaces.IItemTemplate = templates.getItemTemplate(
-      type,
-      []
-    );
+    const template: IItemTemplate = templates.getItemTemplate(type, []);
     const data: any = template.data;
     //const outputs = data.outputs;
-    delete(data.outputs);
+    delete data.outputs;
     //data.output = outputs[0];
     //delete(data.feeds);
     const templateDictionary: any = {
-      velocityUrl
+      velocityUrl,
     };
     templateDictionary[template.itemId] = {};
 
@@ -312,15 +240,15 @@ describe("postVelocityData", () => {
 
     const statusList = [
       {
-        "label": type,
-        "id": "b1f40dfb69d94a96ac5127dc6d4b01cc",
-        "status": "stopped",
-        "avgRateIn": 0,
-        "executionMode": "direct",
-        "executable": true,
-        "startTime": 1634932075739,
-        "lastStartTime": 1634928915641
-      }
+        label: type,
+        id: "b1f40dfb69d94a96ac5127dc6d4b01cc",
+        status: "stopped",
+        avgRateIn: 0,
+        executionMode: "direct",
+        executable: true,
+        startTime: 1634932075739,
+        lastStartTime: 1634928915641,
+      },
     ];
 
     fetchMock
@@ -330,19 +258,18 @@ describe("postVelocityData", () => {
         validation: {
           messages: [
             {
-              key:
-                "VALIDATION_ANALYTICS__MULTIPLE_CREATE_FEATURE_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
-              args: [type]
-            }
-          ]
+              key: "VALIDATION_ANALYTICS__MULTIPLE_CREATE_FEATURE_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
+              args: [type],
+            },
+          ],
         },
         nodes: [
           {
             validation: {
-              messages: []
-            }
-          }
-        ]
+              messages: [],
+            },
+          },
+        ],
       })
       .postOnce(
         "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime/validate/?f=json&token=fake-token",
@@ -351,70 +278,54 @@ describe("postVelocityData", () => {
           validation: {
             messages: [
               {
-                key:
-                  "VALIDATION_ANALYTICS__MULTIPLE_CREATE_FEATURE_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
-                args: [type]
-              }
-            ]
+                key: "VALIDATION_ANALYTICS__MULTIPLE_CREATE_FEATURE_LAYER_OUTPUTS_REFERENCE_SAME_LAYER_NAME",
+                args: [type],
+              },
+            ],
           },
           nodes: [
             {
               validation: {
-                messages: []
-              }
-            }
-          ]
+                messages: [],
+              },
+            },
+          ],
         },
-        { overwriteRoutes: false }
+        { overwriteRoutes: false },
       )
       .postOnce(
         "https://us-iot.arcgis.com/usadvanced00/aaaatfmrv9d1divn/iot/analytics/realtime/validate/?f=json&token=fake-token",
         {
           executable: true,
           validation: {
-            messages: []
+            messages: [],
           },
           nodes: [
             {
               validation: {
-                messages: []
-              }
-            }
-          ]
+                messages: [],
+              },
+            },
+          ],
         },
-        { overwriteRoutes: false }
+        { overwriteRoutes: false },
       )
       .post(realtimeUrl, {
-        id
+        id,
       })
       .get(startUrl, {});
 
-    postVelocityData(
-      MOCK_USER_SESSION,
-      template,
-      data,
-      templateDictionary,
-      true
-    ).then(() => {
-      done();
-    }, done.fail);
+    return postVelocityData(MOCK_USER_SESSION, template, data, templateDictionary, true);
   });
 });
 
 describe("_validateOutputs", () => {
-  it("can handle no data outputs or feeds", done => {
+  it("can handle no data outputs or feeds", async () => {
     const expected: any = { asIs: "asIs" };
     const type: string = "Real Time Analytic";
-    _validateOutputs(
-      MOCK_USER_SESSION,
-      {},
-      type,
-      expected,
-      []
-    ).then(actual => {
-      expect(actual).toEqual(expected);
-      done();
-    }, done.fail);
+
+    const actual = await _validateOutputs(MOCK_USER_SESSION, {}, type, expected, []);
+    expect(actual).toEqual(expected);
   });
 });
 
@@ -424,8 +335,8 @@ describe("_updateDataOutput", () => {
       {
         name: "A",
         label: "A",
-        id: "ABC123"
-      }
+        id: "ABC123",
+      },
     ];
     const data: any = {
       outputs: [
@@ -433,9 +344,9 @@ describe("_updateDataOutput", () => {
           name: "A",
           label: "A",
           id: "ABC123",
-          properties: { "A.name": "A" }
-        }
-      ]
+          properties: { "A.name": "A" },
+        },
+      ],
     };
     const names: string[] = ["A"];
     _updateDataOutput(dataOutputs, data, names);
@@ -448,16 +359,16 @@ describe("_updateDataOutput", () => {
       {
         name: "A",
         label: "A",
-        id: "ABC123"
-      }
+        id: "ABC123",
+      },
     ];
     const data: any = {
       output: {
         name: "A",
         label: "A",
         id: "ABC123",
-        properties: { "A.name": "A" }
-      }
+        properties: { "A.name": "A" },
+      },
     };
     const names: string[] = ["A"];
     _updateDataOutput(dataOutputs, data, names);
@@ -470,11 +381,11 @@ describe("_updateDataOutput", () => {
       {
         name: "A",
         label: "A",
-        id: "ABC123"
-      }
+        id: "ABC123",
+      },
     ];
     const data: any = {
-      label: "AB"
+      label: "AB",
     };
     const names: string[] = ["A"];
     _updateDataOutput(dataOutputs, data, names);
@@ -489,8 +400,8 @@ describe("_updateFeed", () => {
       {
         name: "AB",
         label: "AB",
-        id: "ABC123"
-      }
+        id: "ABC123",
+      },
     ];
     const data: any = {
       feeds: [
@@ -498,9 +409,9 @@ describe("_updateFeed", () => {
           name: "AB",
           label: "AB",
           id: "ABC123",
-          properties: { "AB.name": "AB" }
-        }
-      ]
+          properties: { "AB.name": "AB" },
+        },
+      ],
     };
     const names: string[] = ["AB"];
     _updateFeed(feeds, data, names);
@@ -523,9 +434,9 @@ describe("getUniqueTitle", () => {
     const templateDictionary = {
       ABC123: [
         {
-          title: "A"
-        }
-      ]
+          title: "A",
+        },
+      ],
     };
     const path = "ABC123";
     const actual = getUniqueTitle(title, templateDictionary, path);
@@ -557,13 +468,13 @@ describe("cleanDataSourcesAndFeeds", () => {
     const feedId: string = "bbb9398bcf8c4dc5a50cceaa59baf513";
     template.data.feed.id = feedId;
     template.data.feed.properties = {
-      "simulator.url": "http://velocityUrl/someservice"
+      "simulator.url": "http://velocityUrl/someservice",
     };
     delete template.data.feeds;
 
     template.data.output = template.data.outputs[0];
     const outputId: string = "ccc9398bcf8c4dc5a50cceaa59baf513";
-    delete(template.data.output.name);
+    delete template.data.output.name;
     template.data.output.properties["feat-lyr-new.portal.featureServicePortalItemID"] = outputId;
     delete template.data.outputs;
 

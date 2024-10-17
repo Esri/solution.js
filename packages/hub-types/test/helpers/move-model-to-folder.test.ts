@@ -16,7 +16,7 @@
 
 import { moveModelToFolder } from "../../src/helpers/move-model-to-folder";
 import { IModel } from "@esri/hub-common";
-import * as portal from "@esri/arcgis-rest-portal";
+import * as common from "@esri/solution-common";
 
 import * as utils from "../../../common/test/mocks/utils";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
@@ -26,20 +26,17 @@ describe("moveModelToFolder", () => {
     it("moves just the site", () => {
       const m = {
         item: {
-          id: "3ef"
-        }
+          id: "3ef",
+        },
       } as IModel;
 
-      const moveItemSpy = spyOn(portal, "moveItem").and.resolveTo({
-        success: true
-      } as portal.IMoveItemResponse);
+      const moveItemSpy = spyOn(common, "moveItem").and.resolveTo({
+        success: true,
+      } as common.IMoveItemResponse);
 
-      return moveModelToFolder(m, "bc4", MOCK_USER_SESSION).then(result => {
-        expect(result[0].success).toBe(true, "should return true");
-        expect(moveItemSpy.calls.count()).toEqual(
-          1,
-          "should make one move call"
-        );
+      return moveModelToFolder(m, "bc4", MOCK_USER_SESSION).then((result) => {
+        expect(result[0].success).withContext("should return true").toBe(true);
+        expect(moveItemSpy.calls.count()).withContext("should make one move call").toEqual(1);
         expect(moveItemSpy.calls.argsFor(0)[0].itemId).toBe("3ef");
         expect(moveItemSpy.calls.argsFor(0)[0].folderId).toBe("bc4");
       });
@@ -47,20 +44,17 @@ describe("moveModelToFolder", () => {
     it("is failsafed because the move is ", () => {
       const m = {
         item: {
-          id: "3ef"
-        }
+          id: "3ef",
+        },
       } as IModel;
 
-      const moveItemSpy = spyOn(portal, "moveItem").and.rejectWith({
-        success: false
-      } as portal.IMoveItemResponse);
+      const moveItemSpy = spyOn(common, "moveItem").and.rejectWith({
+        success: false,
+      } as common.IMoveItemResponse);
 
-      return moveModelToFolder(m, "bc4", MOCK_USER_SESSION).then(result => {
-        expect(result[0].success).toBe(true, "should return true");
-        expect(moveItemSpy.calls.count()).toEqual(
-          1,
-          "should make one move call"
-        );
+      return moveModelToFolder(m, "bc4", MOCK_USER_SESSION).then((result) => {
+        expect(result[0].success).withContext("should return true").toBe(true);
+        expect(moveItemSpy.calls.count()).withContext("should make one move call").toEqual(1);
         expect(moveItemSpy.calls.argsFor(0)[0].itemId).toBe("3ef");
         expect(moveItemSpy.calls.argsFor(0)[0].folderId).toBe("bc4");
       });
@@ -72,23 +66,20 @@ describe("moveModelToFolder", () => {
         item: {
           id: "3ef",
           properties: {
-            parentInitiativeId: "4ef"
-          }
-        }
+            parentInitiativeId: "4ef",
+          },
+        },
       } as IModel;
 
-      const moveItemSpy = spyOn(portal, "moveItem").and.resolveTo({
-        success: true
-      } as portal.IMoveItemResponse);
+      const moveItemSpy = spyOn(common, "moveItem").and.resolveTo({
+        success: true,
+      } as common.IMoveItemResponse);
 
-      return moveModelToFolder(m, "bc4", MOCK_USER_SESSION).then(result => {
-        expect(result.length).toBe(2, "should fire two promises");
-        expect(result[0].success).toBe(true, "should return true");
-        expect(result[1].success).toBe(true, "should return true");
-        expect(moveItemSpy.calls.count()).toEqual(
-          2,
-          "should make two move calls"
-        );
+      return moveModelToFolder(m, "bc4", MOCK_USER_SESSION).then((result) => {
+        expect(result.length).withContext("should fire two promises").toBe(2);
+        expect(result[0].success).withContext("should return true").toBe(true);
+        expect(result[1].success).withContext("should return true").toBe(true);
+        expect(moveItemSpy.calls.count()).toEqual(2, "should make two move calls");
         expect(moveItemSpy.calls.argsFor(0)[0].itemId).toBe("3ef");
         expect(moveItemSpy.calls.argsFor(0)[0].folderId).toBe("bc4");
         expect(moveItemSpy.calls.argsFor(1)[0].itemId).toBe("4ef");

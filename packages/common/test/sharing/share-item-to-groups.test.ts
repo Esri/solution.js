@@ -15,51 +15,49 @@
  */
 
 import { shareItemToGroups } from "../../src/sharing/index";
-import * as portal from "@esri/arcgis-rest-portal";
 import * as testUtils from "../mocks/utils";
-import { UserSession } from "../../src";
+import * as arcGISRestJS from "../../src/arcgisRestJS";
 
-let MOCK_USER_SESSION: UserSession;
+let MOCK_USER_SESSION: arcGISRestJS.UserSession;
 
 describe("shareItemToGroups", () => {
   beforeEach(() => {
     MOCK_USER_SESSION = testUtils.createRuntimeMockUserSession();
   });
+
   it("it does not share if no groups sent", () => {
-    const shareSpy = spyOn(portal, "shareItemWithGroup").and.resolveTo({
-      itemId: "3ef"
+    const shareSpy = spyOn(arcGISRestJS, "shareItemWithGroup").and.resolveTo({
+      itemId: "3ef",
     });
     return shareItemToGroups([], "3ef", MOCK_USER_SESSION).then(() => {
-      expect(shareSpy.calls.count()).toBe(
-        0,
-        "should not share if no groups passed"
-      );
+      expect(shareSpy.calls.count()).withContext("should not share if no groups passed").toBe(0);
     });
   });
+
   it("it shares a item to a single group", () => {
-    const shareSpy = spyOn(portal, "shareItemWithGroup").and.resolveTo({
-      itemId: "3ef"
+    const shareSpy = spyOn(arcGISRestJS, "shareItemWithGroup").and.resolveTo({
+      itemId: "3ef",
     });
     return shareItemToGroups(["bc1"], "3ef", MOCK_USER_SESSION).then(() => {
-      expect(shareSpy.calls.count()).toBe(1, "call shareItemToGroups once");
+      expect(shareSpy.calls.count()).withContext("call shareItemToGroups once").toBe(1);
     });
   });
+
   it("it shares a item to a single group", () => {
-    const shareSpy = spyOn(portal, "shareItemWithGroup").and.resolveTo({
-      itemId: "3ef"
+    const shareSpy = spyOn(arcGISRestJS, "shareItemWithGroup").and.resolveTo({
+      itemId: "3ef",
     });
-    return shareItemToGroups(["bc1", "bc2"], "3ef", MOCK_USER_SESSION).then(
-      () => {
-        expect(shareSpy.calls.count()).toBe(2, "call shareItemToGroups twice");
-      }
-    );
+    return shareItemToGroups(["bc1", "bc2"], "3ef", MOCK_USER_SESSION).then(() => {
+      expect(shareSpy.calls.count()).withContext("call shareItemToGroups twice").toBe(2);
+    });
   });
+
   it("it sets owner when provided", () => {
-    const shareSpy = spyOn(portal, "shareItemWithGroup").and.resolveTo({
-      itemId: "3ef"
+    const shareSpy = spyOn(arcGISRestJS, "shareItemWithGroup").and.resolveTo({
+      itemId: "3ef",
     });
     return shareItemToGroups(["bc1"], "3ef", MOCK_USER_SESSION, "LocationTrackingServiceOwner").then(() => {
-      expect(shareSpy.calls.count()).toBe(1, "call shareItemToGroups once");
+      expect(shareSpy.calls.count()).withContext("call shareItemToGroups once").toBe(1);
     });
   });
 });

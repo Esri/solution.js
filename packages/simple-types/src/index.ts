@@ -32,5 +32,5 @@ export {
   notebookHelpers,
   simpleTypeHelpers,
   quickcaptureHelpers,
-  quickcaptureProcessor
+  quickcaptureProcessor,
 };

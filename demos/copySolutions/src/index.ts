@@ -20,7 +20,6 @@ import * as demoCommon from "./demoCommon";
 import * as htmlSanitizer from "@esri/arcgis-html-sanitizer";
 import * as htmlUtil from "./htmlUtil";
 import * as main from "./copy-solutions-main";
-import * as portal from "@esri/arcgis-rest-portal";
 
 declare var connectToSourceFcn: any;
 declare var connectToDestinationFcn: any;
@@ -30,7 +29,7 @@ declare var connectToDestinationFcn: any;
 /**
  * Gets templates from an organization and shows them as a checklist in the div "sourceSolutionsDiv".
  */
-function getSourceTemplates () {
+function getSourceTemplates() {
   demoCommon.removeItem("sourceSolutionsListDiv");
   demoCommon.fadeItemOut("copiedSolutionsDiv");
   demoCommon.removeItem("copiedSolutionsListDiv");
@@ -39,41 +38,43 @@ function getSourceTemplates () {
   haveSourceTemplates = false;
   updateCopyBtn();
 
-  const srcPortal = ((document.getElementById("srcPortal") as HTMLInputElement).value || "https://www.arcgis.com") + "/sharing/rest";
+  const srcHtmlValue = htmlUtil.getHTMLValue("srcPortal");
+  const srcPortalStr = srcHtmlValue.endsWith('/') ? srcHtmlValue.slice(0, -1) : srcHtmlValue;
+  const srcPortal = (srcPortalStr || "https://www.arcgis.com") + "/sharing/rest";
   sourceAuthentication = demoCommon.getRequestAuthentication(
     htmlUtil.getHTMLValue("srcUsername"), htmlUtil.getHTMLValue("srcPassword"), srcPortal
   );
 
 
   main.getTemplates(sourceAuthentication, !htmlUtil.getHTMLChecked("srcOnlyMySolns"))
-  .then(
-    searchResponse => {
-      demoCommon.removeItem("sourceSolutionsDiv_busySymbol");
-      var listDiv = demoCommon.addItem ("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
-      listDiv.innerHTML = demoCommon.createChecklist(
-        searchResponse.results,
-        sanitizer.sanitize(htmlUtil.getHTMLValue("srcPortal")) || "https://www.arcgis.com",
-        "sourceSolutionsList",
-        true
-      );
-      var copyBtn = demoCommon.addItem("sourceSolutionsListDiv", "BUTTON", "copyBtn", "copyBtn");
-      copyBtn.innerHTML = "Copy Solution(s)";
-      copyBtn.addEventListener("click", copyTemplates);
-      haveSourceTemplates = true;
-      updateCopyBtn();
-    },
-    error => {
-      demoCommon.removeItem("sourceSolutionsDiv_busySymbol");
-      var listDiv = demoCommon.addItem ("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
-      listDiv.innerHTML = "Unable to get Solution templates: " + error;
-    }
-  );
+    .then(
+      searchResponse => {
+        demoCommon.removeItem("sourceSolutionsDiv_busySymbol");
+        var listDiv = demoCommon.addItem("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
+        listDiv.innerHTML = demoCommon.createChecklist(
+          searchResponse.results,
+          sanitizer.sanitize(htmlUtil.getHTMLValue("srcPortal")) || "https://www.arcgis.com",
+          "sourceSolutionsList",
+          true
+        );
+        var copyBtn = demoCommon.addItem("sourceSolutionsListDiv", "BUTTON", "copyBtn", "copyBtn");
+        copyBtn.innerHTML = "Copy Solution(s)";
+        copyBtn.addEventListener("click", copyTemplates);
+        haveSourceTemplates = true;
+        updateCopyBtn();
+      },
+      error => {
+        demoCommon.removeItem("sourceSolutionsDiv_busySymbol");
+        var listDiv = demoCommon.addItem("sourceSolutionsDiv", "DIV", "sourceSolutionsListDiv");
+        listDiv.innerHTML = "Unable to get Solution templates: " + error;
+      }
+    );
 }
 
 /**
  * Gets templates from an organization and shows them as a list in the div "destinationSolutionsDiv".
  */
-function getDestinationTemplates () {
+function getDestinationTemplates() {
   demoCommon.removeItem("destinationSolutionsListDiv");
   demoCommon.fadeItemOut("copiedSolutionsDiv");
   demoCommon.removeItem("copiedSolutionsListDiv");
@@ -82,39 +83,41 @@ function getDestinationTemplates () {
   haveDestinationAccess = false;
   updateCopyBtn();
 
-  const destPortal = (htmlUtil.getHTMLValue("destPortal") || "https://www.arcgis.com") + "/sharing/rest";
+  const destHtmlValue = htmlUtil.getHTMLValue("destPortal");
+  const destPortalStr = destHtmlValue.endsWith('/') ? destHtmlValue.slice(0, -1) : destHtmlValue;
+  const destPortal = (destPortalStr || "https://www.arcgis.com") + "/sharing/rest";
   destinationAuthentication = demoCommon.getRequestAuthentication(
     htmlUtil.getHTMLValue("destUsername"), htmlUtil.getHTMLValue("destPassword"), destPortal
   );
 
   main.getTemplates(destinationAuthentication, !htmlUtil.getHTMLChecked("destOnlyMySolns"))
-  .then(
-    searchResponse => {
-      demoCommon.removeItem("destinationSolutionsDiv_busySymbol");
-      var listDiv = demoCommon.addItem ("destinationSolutionsDiv", "DIV", "destinationSolutionsListDiv");
-      if (searchResponse.total === 0) {
-        listDiv.innerHTML = "<i>No Solution templates found</i>";
-      } else {
-        listDiv.innerHTML = demoCommon.createSimpleList(
-          searchResponse.results,
-          sanitizer.sanitize(htmlUtil.getHTMLValue("destPortal")) || "https://www.arcgis.com"
-        );
+    .then(
+      searchResponse => {
+        demoCommon.removeItem("destinationSolutionsDiv_busySymbol");
+        var listDiv = demoCommon.addItem("destinationSolutionsDiv", "DIV", "destinationSolutionsListDiv");
+        if (searchResponse.total === 0) {
+          listDiv.innerHTML = "<i>No Solution templates found</i>";
+        } else {
+          listDiv.innerHTML = demoCommon.createSimpleList(
+            searchResponse.results,
+            sanitizer.sanitize(htmlUtil.getHTMLValue("destPortal")) || "https://www.arcgis.com"
+          );
+        }
+        haveDestinationAccess = true;
+        updateCopyBtn();
+      },
+      error => {
+        demoCommon.removeItem("destinationSolutionsDiv_busySymbol");
+        var listDiv = demoCommon.addItem("destinationSolutionsDiv", "DIV", "destinationSolutionsListDiv");
+        listDiv.innerHTML = "Unable to get Solution templates: " + error;
       }
-      haveDestinationAccess = true;
-      updateCopyBtn();
-    },
-    error => {
-      demoCommon.removeItem("destinationSolutionsDiv_busySymbol");
-      var listDiv = demoCommon.addItem ("destinationSolutionsDiv", "DIV", "destinationSolutionsListDiv");
-      listDiv.innerHTML = "Unable to get Solution templates: " + error;
-    }
-  );
+    );
 }
 
 /**
  * Copies checked templates in list in the div "sourceSolutionsList" to the destination organization.
  */
-function copyTemplates () {
+function copyTemplates() {
   demoCommon.removeItem("copiedSolutionsListDiv");
   var sourceSolutionsList = document.getElementById("sourceSolutionsList");
   var numSolutionsToCheck = sourceSolutionsList.children.length;
@@ -123,16 +126,16 @@ function copyTemplates () {
     var inputItem = sourceSolutionsList.children[i].children[0] as HTMLInputElement;
     var inputItemSibling = inputItem.nextElementSibling as HTMLInputElement;
     if (inputItem.checked) {
-       if (inputItem.value !== "custom") {
-         solutionsToCopy.push(inputItem.value);
-       } else if (inputItemSibling?.value
-         && inputItemSibling.value.length === 32) {
-         solutionsToCopy.push(inputItemSibling.value);
-       }
+      if (inputItem.value !== "custom") {
+        solutionsToCopy.push(inputItem.value);
+      } else if (inputItemSibling?.value
+        && inputItemSibling.value.length === 32) {
+        solutionsToCopy.push(inputItemSibling.value);
+      }
     }
   }
 
-  var listDiv = demoCommon.addItem ("copiedSolutionsDiv", "DIV", "copiedSolutionsListDiv");
+  var listDiv = demoCommon.addItem("copiedSolutionsDiv", "DIV", "copiedSolutionsListDiv");
   demoCommon.fadeItemIn("copiedSolutionsDiv");
   if (solutionsToCopy.length > 0) {
     listDiv.innerHTML = "Copying...";
@@ -141,17 +144,17 @@ function copyTemplates () {
       solutionId => main.copyItemInfo(solutionId, sourceAuthentication, destinationAuthentication)
     );
     Promise.all(solutionCopyPromises)
-    .then(
-      responses => {
-        listDiv.innerHTML = responses.join("<br>");
-        if (responses.filter(response => !JSON.parse(response).success).length === 0) {
-          getDestinationTemplates();
+      .then(
+        responses => {
+          listDiv.innerHTML = responses.join("<br>");
+          if (responses.filter(response => !JSON.parse(response).success).length === 0) {
+            getDestinationTemplates();
+          }
+        },
+        error => {
+          listDiv.innerHTML = "Unable to copy Solution templates: " + error;
         }
-      },
-      error => {
-        listDiv.innerHTML = "Unable to copy Solution templates: " + error;
-      }
-    );
+      );
   } else {
     listDiv.innerHTML = "<i>Nothing to copy</i>";
   }
@@ -161,7 +164,7 @@ function copyTemplates () {
  * Updates the visibility of copy button based on presence of templates in source organization and
  * access to destination organization.
  */
-function updateCopyBtn () {
+function updateCopyBtn() {
   var btnItem = document.getElementById("copyBtn");
   if (btnItem) {
     btnItem.style.display = haveSourceTemplates && haveDestinationAccess ? "block" : "none";

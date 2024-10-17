@@ -19,24 +19,15 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as fetchMock from "fetch-mock";
+const fetchMock = require("fetch-mock");
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as oic from "../src/oic";
 import * as templates from "../../common/test/mocks/templates";
 import * as utils from "../../common/test/mocks/utils";
 
-const SERVER_INFO = {
-  currentVersion: 10.1,
-  fullVersion: "10.1",
-  soapUrl: "http://server/arcgis/services",
-  secureSoapUrl: "https://server/arcgis/services",
-  owningSystemUrl: "https://myorg.maps.arcgis.com",
-  authInfo: {}
-};
-
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `webmap`: manages the creation and deployment of OIC (Oriented Imagery Catalog) item types", () => {
+describe("Module `oic`: manages the creation and deployment of OIC (Oriented Imagery Catalog) item types", () => {
   let MOCK_USER_SESSION: common.UserSession;
 
   beforeEach(() => {
@@ -48,10 +39,8 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
   });
 
   describe("convertItemToTemplate", () => {
-    it("handles failure to get layer information", done => {
-      const itemTemplate = templates.getItemTemplate(
-        "Oriented Imagery Catalog"
-      );
+    it("handles failure to get layer information", async () => {
+      const itemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
       itemTemplate.data.properties.ServiceURL =
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1";
       itemTemplate.data.properties.OverviewURL =
@@ -60,109 +49,81 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
       fetchMock
         .post(
           "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         )
-        .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
-          { serviceItemId: "svc1234567890b", id: 2 }
-        );
+        .post("http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2", {
+          serviceItemId: "svc1234567890b",
+          id: 2,
+        });
 
-      oic.convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
-        () => done.fail(),
-        () => done()
+      return oic.convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
+        () => fail(),
+        () => Promise.resolve(),
       );
     });
 
-    it("handles missing data section", done => {
-      const itemTemplate = templates.getItemTemplate(
-        "Oriented Imagery Catalog"
-      );
+    it("handles missing data section", async () => {
+      const itemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
       itemTemplate.data = null;
 
       const expected = templates.getItemTemplate("Oriented Imagery Catalog");
       expected.data = null;
 
-      oic
-        .convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
+      const actual = await oic.convertItemToTemplate(itemTemplate, MOCK_USER_SESSION, MOCK_USER_SESSION);
+      expect(actual).toEqual(expected);
     });
   });
 
   describe("_extractDependencies", () => {
-    it("handles missing data or properties", () => {
+    it("handles missing data or properties", async () => {
       const expectedDependencies = {
         dependencies: [] as string[],
-        urlHash: {} as any
+        urlHash: {} as any,
       };
-      let itemTemplate: common.IItemTemplate;
+      let actual = await oic._extractDependencies(templates.getItemTemplateSkeleton(), null as any);
+      expect(actual).toEqual(expectedDependencies);
 
-      return oic._extractDependencies(templates.getItemTemplateSkeleton(), null)
-      .then(actual => {
-        expect(actual).toEqual(expectedDependencies);
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
+      itemTemplate.data.properties = null;
+      actual = await oic._extractDependencies(itemTemplate, null as any);
+      expect(actual).toEqual(expectedDependencies);
 
-        itemTemplate = templates.getItemTemplate(
-          "Oriented Imagery Catalog"
-        );
-        itemTemplate.data.properties = null;
-        return oic._extractDependencies(itemTemplate, null);
-      })
-      .then(actual => {
-        expect(actual).toEqual(expectedDependencies);
-
-        itemTemplate.data = null;
-        return oic._extractDependencies(itemTemplate, null);
-      })
-      .then(actual => {
-        expect(actual).toEqual(expectedDependencies);
-        return Promise.resolve();
-      })
-      .catch(error => {
-        return Promise.reject(error);
-      });
+      itemTemplate.data = null;
+      actual = await oic._extractDependencies(itemTemplate, null as any);
+      expect(actual).toEqual(expectedDependencies);
     });
 
-    it("handles both of the URL properties", done => {
-      const itemTemplate = templates.getItemTemplate(
-        "Oriented Imagery Catalog"
-      );
+    it("handles both of the URL properties", async () => {
+      const itemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
       itemTemplate.data.properties.ServiceURL =
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1";
       itemTemplate.data.properties.OverviewURL =
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2";
 
       fetchMock
-        .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
-          { serviceItemId: "svc1234567890a", id: 1 }
-        )
-        .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
-          { serviceItemId: "svc1234567890b", id: 2 }
-        );
+        .post("http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1", {
+          serviceItemId: "svc1234567890a",
+          id: 1,
+        })
+        .post("http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2", {
+          serviceItemId: "svc1234567890b",
+          id: 2,
+        });
 
       const expected = {
         dependencies: ["svc1234567890a", "svc1234567890b"],
         urlHash: {
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1":
-            "svc1234567890a",
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2":
-            "svc1234567890b"
-        }
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1": "svc1234567890a",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2": "svc1234567890b",
+        },
       };
 
-      oic._extractDependencies(itemTemplate, MOCK_USER_SESSION).then(actual => {
-        expect(actual).toEqual(expected);
-        done();
-      }, done.fail);
+      const actual = await oic._extractDependencies(itemTemplate, MOCK_USER_SESSION);
+      expect(actual).toEqual(expected);
     });
 
-    it("handles failure to get layer information", done => {
-      const itemTemplate = templates.getItemTemplate(
-        "Oriented Imagery Catalog"
-      );
+    it("handles failure to get layer information", async () => {
+      const itemTemplate = templates.getItemTemplate("Oriented Imagery Catalog");
       itemTemplate.data.properties.ServiceURL =
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1";
       itemTemplate.data.properties.OverviewURL =
@@ -171,158 +132,135 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
       fetchMock
         .post(
           "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
-          mockItems.get400Failure()
+          mockItems.get400Failure(),
         )
-        .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
-          { serviceItemId: "svc1234567890b", id: 2 }
-        );
+        .post("http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2", {
+          serviceItemId: "svc1234567890b",
+          id: 2,
+        });
 
-      oic._extractDependencies(itemTemplate, MOCK_USER_SESSION).then(
-        () => done.fail(),
-        () => done()
+      return oic._extractDependencies(itemTemplate, MOCK_USER_SESSION).then(
+        () => fail(),
+        () => Promise.resolve(),
       );
     });
   });
 
   describe("_getLayerIds", () => {
-    it("handles empty layer URL list", done => {
+    it("handles empty layer URL list", async () => {
       const layerURLs: string[] = [];
       const dependencies: string[] = [];
 
       fetchMock
-        .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
-          { serviceItemId: "svc1234567890a", id: 1 }
-        )
-        .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
-          { serviceItemId: "svc1234567890b", id: 2 }
-        );
+        .post("http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1", {
+          serviceItemId: "svc1234567890a",
+          id: 1,
+        })
+        .post("http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2", {
+          serviceItemId: "svc1234567890b",
+          id: 2,
+        });
 
       const expected = {
         dependencies: [] as string[],
-        urlHash: {} as any
+        urlHash: {} as any,
       };
 
-      oic
-        ._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
+      const actual = await oic._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION);
+      expect(actual).toEqual(expected);
     });
 
-    it("handles single layer URL", done => {
-      const layerURLs: string[] = [
-        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"
-      ];
+    it("handles single layer URL", async () => {
+      const layerURLs: string[] = ["http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"];
       const dependencies: string[] = [];
 
-      fetchMock.post(
-        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
-        { serviceItemId: "svc1234567890a", id: 1 }
-      );
+      fetchMock.post("http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1", {
+        serviceItemId: "svc1234567890a",
+        id: 1,
+      });
 
       const expected = {
         dependencies: ["svc1234567890a"],
         urlHash: {
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1":
-            "svc1234567890a"
-        }
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1": "svc1234567890a",
+        },
       };
 
-      oic
-        ._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
+      const actual = await oic._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION);
+      expect(actual).toEqual(expected);
     });
 
-    it("handles duplicate, empty, MapServer layer URLs", done => {
+    it("handles duplicate, empty, MapServer layer URLs", async () => {
       const layerURLs: string[] = [
         "",
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/MapServer",
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
-        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
       ];
       const dependencies: string[] = [];
 
       fetchMock
-        .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
-          { serviceItemId: "svc1234567890a", id: 1 }
-        )
-        .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
-          { serviceItemId: "svc1234567890b", id: 2 }
-        );
+        .post("http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1", {
+          serviceItemId: "svc1234567890a",
+          id: 1,
+        })
+        .post("http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2", {
+          serviceItemId: "svc1234567890b",
+          id: 2,
+        });
 
       const expected = {
         dependencies: ["svc1234567890b", "svc1234567890a"],
         urlHash: {
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2":
-            "svc1234567890b",
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1":
-            "svc1234567890a"
-        }
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2": "svc1234567890b",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1": "svc1234567890a",
+        },
       };
 
-      oic
-        ._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION)
-        .then(actual => {
-          expect(actual).toEqual(expected);
-          done();
-        }, done.fail);
+      const actual = await oic._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION);
+      expect(actual).toEqual(expected);
     });
 
-    it("handles failure to get layer information", done => {
-      const layerURLs: string[] = [
-        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"
-      ];
+    it("handles failure to get layer information", async () => {
+      const layerURLs: string[] = ["http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"];
       const dependencies: string[] = [];
 
       fetchMock.post(
         "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
-        mockItems.get400Failure()
+        mockItems.get400Failure(),
       );
 
-      oic._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION).then(
-        () => done.fail(),
-        () => done()
+      return oic._getLayerIds(layerURLs, dependencies, MOCK_USER_SESSION).then(
+        () => fail(),
+        () => Promise.resolve(),
       );
     });
   });
 
   describe("_templatizeOicLayerUrl", () => {
     it("handles omitted URL", () => {
-      expect(oic._templatizeOicLayerUrl(null, null)).toBeNull();
+      expect(oic._templatizeOicLayerUrl(null as any, null as any)).toBeNull();
       expect(oic._templatizeOicLayerUrl("", null)).toEqual("");
     });
 
     it("only templatizes URLs in hash", () => {
       const urlHash = {
-        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1":
-          "svc1234567890a",
-        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2":
-          "svc1234567890b"
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1": "svc1234567890a",
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2": "svc1234567890b",
       };
       expect(
         oic._templatizeOicLayerUrl(
           "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService0/FeatureServer/0",
-          urlHash
-        )
-      ).toEqual(
-        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService0/FeatureServer/0"
-      );
+          urlHash,
+        ),
+      ).toEqual("http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService0/FeatureServer/0");
       expect(
         oic._templatizeOicLayerUrl(
           "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
-          urlHash
-        )
+          urlHash,
+        ),
       ).toEqual("{{svc1234567890a.layer1.url}}");
     });
 
@@ -330,11 +268,9 @@ describe("Module `webmap`: manages the creation and deployment of OIC (Oriented 
       expect(
         oic._templatizeOicLayerUrl(
           "https://www.arcgis.com/home/item.html?id=aaa7c44e3f504a20a4c9f37b6c91e213&sublayer=0",
-          {}
-        )
-      ).toEqual(
-        "{{portalBaseUrl}}/home/item.html?id={{aaa7c44e3f504a20a4c9f37b6c91e213.itemId}}&sublayer=0"
-      );
+          {},
+        ),
+      ).toEqual("{{portalBaseUrl}}/home/item.html?id={{aaa7c44e3f504a20a4c9f37b6c91e213.itemId}}&sublayer=0");
     });
   });
 });

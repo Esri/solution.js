@@ -43,7 +43,7 @@ import {
   jsonToFile,
   replaceTemplate,
   sanitizeJSON,
-  UserSession
+  UserSession,
 } from "@esri/solution-common";
 import { getProp } from "@esri/hub-common";
 import { moduleMap, UNSUPPORTED } from "./module-map";
@@ -69,9 +69,9 @@ export function createItemTemplate(
   srcAuthentication: UserSession,
   destAuthentication: UserSession,
   existingTemplates: IItemTemplate[],
-  itemProgressCallback: IItemProgressCallback
+  itemProgressCallback: IItemProgressCallback,
 ): Promise<ISourceFile[]> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     // Check if item and its dependents are already in list or are queued
     if (findTemplateInList(existingTemplates, itemId)) {
       resolve([]);
@@ -87,16 +87,21 @@ export function createItemTemplate(
           // If item query fails, try fetching item as a group
           // Change its placeholder from an empty type to the Group type so that we can later distinguish
           // between items and groups (the base info for a group doesn't include a type property)
-          replaceTemplate(
-            existingTemplates,
-            itemId,
-            createPlaceholderTemplate(itemId, "Group")
-          );
+          replaceTemplate(existingTemplates, itemId, createPlaceholderTemplate(itemId, "Group"));
           return getGroupBase(itemId, srcAuthentication);
         })
         .then(
-          itemInfo => {
+          (itemInfo) => {
             itemInfo = sanitizeJSON(itemInfo);
+
+            // Save a record of items that we've added to the solution
+            templateDictionary[`${itemId}_type`] = {
+              type: itemInfo.type,
+              url: itemInfo.url,
+            };
+            if (!templateDictionary[itemId]) {
+              templateDictionary[itemId] = itemId;
+            }
 
             // Save the URL as a symbol
             if (itemInfo.url) {
@@ -108,16 +113,12 @@ export function createItemTemplate(
             // Remove any source-itemId type keywords
             /* istanbul ignore else */
             if (Array.isArray(itemInfo.typeKeywords)) {
-              itemInfo.typeKeywords = itemInfo.typeKeywords.filter(v =>
-                idTest.test(v) ? false : true
-              );
+              itemInfo.typeKeywords = itemInfo.typeKeywords.filter((v) => (idTest.test(v) ? false : true));
             }
             // Remove any source-itemId tags
             /* istanbul ignore else */
             if (Array.isArray(itemInfo.tags)) {
-              itemInfo.tags = itemInfo.tags.filter(v =>
-                idTest.test(v) ? false : true
-              );
+              itemInfo.tags = itemInfo.tags.filter((v) => (idTest.test(v) ? false : true));
             }
 
             const placeholder = findTemplateInList(existingTemplates, itemId);
@@ -131,7 +132,7 @@ export function createItemTemplate(
               itemInfo.type = itemType; // Groups don't have this property, so we'll patch it in
             }
             placeholder.item = {
-              ...itemInfo
+              ...itemInfo,
             } as IItemGeneralized;
 
             // Interrupt process if progress callback returns `false`
@@ -154,15 +155,7 @@ export function createItemTemplate(
                 itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
                 placeholder.properties["failed"] = true;
                 replaceTemplate(existingTemplates, itemId, placeholder);
-                resolve(
-                  fail(
-                    "The type of AGO item " +
-                      itemId +
-                      " ('" +
-                      itemType +
-                      "') is not supported at this time"
-                  )
-                );
+                resolve(fail("The type of AGO item " + itemId + " ('" + itemType + "') is not supported at this time"));
               }
             } else {
               // Handle original Story Maps with next-gen Story Maps
@@ -174,14 +167,9 @@ export function createItemTemplate(
 
               // Delegate the creation of the item to the handler
               itemHandler
-                .convertItemToTemplate(
-                  itemInfo,
-                  destAuthentication,
-                  srcAuthentication,
-                  templateDictionary
-                )
+                .convertItemToTemplate(itemInfo, destAuthentication, srcAuthentication, templateDictionary)
                 .then(
-                  itemTemplate => {
+                  (itemTemplate) => {
                     let resourcePrepPromise = Promise.resolve([] as ISourceFile[]);
 
                     // If the item type is Quick Capture, then we already have the resource files (except for the
@@ -191,132 +179,105 @@ export function createItemTemplate(
                       // Fetch thumbnail
                       // eslint-disable-next-line @typescript-eslint/no-floating-promises
                       resourcePrepPromise = getItemResourcesFilesFromPaths(
-                        [generateSourceThumbnailPath(srcAuthentication.portal, itemTemplate.itemId, itemTemplate.item.thumbnail)],
-                        srcAuthentication
-                      ).then(
-                        (thumbnailFile: ISourceFile[]) => {
-                          itemTemplate.item.thumbnail = null; // not needed in this property; handled as a resource
+                        [
+                          generateSourceThumbnailPath(
+                            srcAuthentication.portal,
+                            itemTemplate.itemId,
+                            itemTemplate.item.thumbnail,
+                          ),
+                        ],
+                        srcAuthentication,
+                      ).then((thumbnailFile: ISourceFile[]) => {
+                        itemTemplate.item.thumbnail = null; // not needed in this property; handled as a resource
 
-                          const resourceSourceFiles = itemTemplate.resources.map(
-                            (file: File) => {
-                              return {
-                                itemId: itemTemplate.itemId,
-                                file,
-                                folder: itemTemplate.itemId,
-                                filename: file.name
-                              };
-                            }
-                          ).concat(thumbnailFile);
+                        const resourceSourceFiles = itemTemplate.resources
+                          .map((file: File) => {
+                            return {
+                              itemId: itemTemplate.itemId,
+                              file,
+                              folder: itemTemplate.itemId,
+                              filename: file.name,
+                            };
+                          })
+                          .concat(thumbnailFile);
 
-                          // Clear out the files from the itemTemplate.resources
-                          itemTemplate.resources = [];
+                        // Clear out the files from the itemTemplate.resources
+                        itemTemplate.resources = [];
 
-                          return resourceSourceFiles;
-                        }
-                      );
-
+                        return resourceSourceFiles;
+                      });
                     } else {
                       // eslint-disable-next-line @typescript-eslint/no-floating-promises
                       resourcePrepPromise = getItemResourcesPaths(
                         itemTemplate,
                         solutionItemId,
                         srcAuthentication,
-                        SolutionTemplateFormatVersion
-                      ).then(
-                        (resourceItemFilePaths: ISourceFileCopyPath[]) => {
-                          itemTemplate.item.thumbnail = null; // not needed in this property; handled as a resource
+                        SolutionTemplateFormatVersion,
+                      ).then((resourceItemFilePaths: ISourceFileCopyPath[]) => {
+                        itemTemplate.item.thumbnail = null; // not needed in this property; handled as a resource
 
-                          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                          return getItemResourcesFilesFromPaths(
-                            resourceItemFilePaths,
-                            srcAuthentication
-                          );
-                        }
-                      );
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        return getItemResourcesFilesFromPaths(resourceItemFilePaths, srcAuthentication);
+                      });
                     }
 
                     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                    resourcePrepPromise.then(
-                      async (resourceItemFiles: ISourceFile[]) => {
+                    resourcePrepPromise.then(async (resourceItemFiles: ISourceFile[]) => {
+                      // Perform any custom processing needed on resource files
+                      await _templatizeResources(itemTemplate, resourceItemFiles, srcAuthentication);
 
-                        // Perform any custom processing needed on resource files
-                        await _templatizeResources(itemTemplate, resourceItemFiles, srcAuthentication);
+                      resourceItemFiles = postProcessResourceFiles(itemTemplate, resourceItemFiles);
 
-                        // update the template's resources
-                        itemTemplate.resources =  itemTemplate.resources.concat(
-                          resourceItemFiles.map(
-                            (file: ISourceFile) => file.folder + "/" + file.filename
-                          )
-                        );
+                      // update the template's resources
+                      itemTemplate.resources = itemTemplate.resources.concat(
+                        resourceItemFiles.map((file: ISourceFile) => file.folder + "/" + file.filename),
+                      );
 
-                        // Set the value keyed by the id to the created template, replacing the placeholder template
-                        replaceTemplate(
-                          existingTemplates,
-                          itemTemplate.itemId,
-                          itemTemplate
-                        );
+                      // Set the value keyed by the id to the created template, replacing the placeholder template
+                      replaceTemplate(existingTemplates, itemTemplate.itemId, itemTemplate);
 
-                        // Trace item dependencies
-                        if (itemTemplate.dependencies.length === 0) {
-                          itemProgressCallback(
-                            itemId,
-                            EItemProgressStatus.Finished,
-                            1
+                      // Trace item dependencies
+                      if (itemTemplate.dependencies.length === 0) {
+                        itemProgressCallback(itemId, EItemProgressStatus.Finished, 1);
+                        resolve(resourceItemFiles);
+                      } else {
+                        // Get its dependencies, asking each to get its dependents via
+                        // recursive calls to this function
+                        const dependentDfds: Array<Promise<ISourceFile[]>> = [];
+                        itemTemplate.dependencies.forEach((dependentId) => {
+                          if (!findTemplateInList(existingTemplates, dependentId)) {
+                            dependentDfds.push(
+                              createItemTemplate(
+                                solutionItemId,
+                                dependentId,
+                                templateDictionary,
+                                srcAuthentication,
+                                destAuthentication,
+                                existingTemplates,
+                                itemProgressCallback,
+                              ),
+                            );
+                          }
+                        });
+                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                        Promise.all(dependentDfds).then((dependentResourceItemFiles: ISourceFile[][]) => {
+                          // Templatization of item and its dependencies done
+                          itemProgressCallback(itemId, EItemProgressStatus.Finished, 1);
+                          resourceItemFiles = dependentResourceItemFiles.reduce(
+                            (accumulator, currentValue) => accumulator.concat(currentValue),
+                            resourceItemFiles,
                           );
                           resolve(resourceItemFiles);
-                        } else {
-                          // Get its dependencies, asking each to get its dependents via
-                          // recursive calls to this function
-                          const dependentDfds: Array<Promise<
-                            ISourceFile[]
-                          >> = [];
-                          itemTemplate.dependencies.forEach(dependentId => {
-                            if (
-                              !findTemplateInList(
-                                existingTemplates,
-                                dependentId
-                              )
-                            ) {
-                              dependentDfds.push(
-                                createItemTemplate(
-                                  solutionItemId,
-                                  dependentId,
-                                  templateDictionary,
-                                  srcAuthentication,
-                                  destAuthentication,
-                                  existingTemplates,
-                                  itemProgressCallback
-                                )
-                              );
-                            }
-                          });
-                          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                          Promise.all(dependentDfds).then(
-                            (dependentResourceItemFiles: ISourceFile[][]) => {
-                              // Templatization of item and its dependencies done
-                              itemProgressCallback(
-                                itemId,
-                                EItemProgressStatus.Finished,
-                                1
-                              );
-                              resourceItemFiles = dependentResourceItemFiles.reduce(
-                                (accumulator, currentValue) =>
-                                  accumulator.concat(currentValue),
-                                resourceItemFiles
-                              );
-                              resolve(resourceItemFiles);
-                            }
-                          );
-                        };
+                        });
                       }
-                    );
+                    });
                   },
-                  error => {
+                  (error) => {
                     placeholder.properties["error"] = JSON.stringify(error);
                     replaceTemplate(existingTemplates, itemId, placeholder);
                     itemProgressCallback(itemId, EItemProgressStatus.Failed, 1);
                     resolve([]);
-                  }
+                  },
                 );
             }
           },
@@ -329,16 +290,24 @@ export function createItemTemplate(
             // Skip items that we cannot fetch per issue #859
             // Use finished rather than ignored
             // ignored will cause the template to be removed before we can check for hasInvalidDesignations
-            itemProgressCallback(
-              itemId,
-              EItemProgressStatus.Finished,
-              0
-            );
+            itemProgressCallback(itemId, EItemProgressStatus.Finished, 0);
             resolve([]);
-          }
+          },
         );
     }
   });
+}
+
+/**
+ * Remove webtool resource files from Geoprocessing Service
+ * This needs to be done after fetched so we can read from the file before we remove it
+ *
+ * @param template The current template
+ * @param files The list of resource files for the given template
+ * @returns The updated template
+ */
+export function postProcessResourceFiles(template: IItemTemplate, files: ISourceFile[]): ISourceFile[] {
+  return template.type === "Geoprocessing Service" ? files.filter((f) => f.filename.indexOf("webtool") < 0) : files;
 }
 
 /**
@@ -348,46 +317,26 @@ export function createItemTemplate(
  * @param templates List of solution templates
  * @returns A list of templates that have templatized field references
  */
-export function postProcessFieldReferences(
-  templates: IItemTemplate[]
-): IItemTemplate[] {
+export function postProcessFieldReferences(templates: IItemTemplate[]): IItemTemplate[] {
   const datasourceInfos: IDatasourceInfo[] = _getDatasourceInfos(templates);
   const templateTypeHash: any = _getTemplateTypeHash(templates);
 
-  return templates.map(template => {
+  return templates.map((template) => {
     /* istanbul ignore else */
-    if (
-      template.type === "Web Mapping Application" ||
-      template.type === "Dashboard" ||
-      template.type === "Web Map"
-    ) {
-      const webMapFSDependencies: string[] = _getWebMapFSDependencies(
-        template,
-        templateTypeHash
-      );
+    if (template.type === "Web Mapping Application" || template.type === "Dashboard" || template.type === "Web Map") {
+      const webMapFSDependencies: string[] = _getWebMapFSDependencies(template, templateTypeHash);
       const itemHandler: any = moduleMap[template.item.type];
       /* istanbul ignore else */
       if (itemHandler) {
-        const dependencies: string[] = webMapFSDependencies.concat(
-          template.dependencies
-        );
-        let dependentDatasources: IDatasourceInfo[] = datasourceInfos.filter(
-          ds => {
-            if (dependencies.indexOf(ds.itemId) > -1) {
-              return ds;
-            }
+        const dependencies: string[] = webMapFSDependencies.concat(template.dependencies);
+        let dependentDatasources: IDatasourceInfo[] = datasourceInfos.filter((ds) => {
+          if (dependencies.indexOf(ds.itemId) > -1) {
+            return ds;
           }
-        );
-        dependentDatasources = _addMapLayerIds(
-          dependentDatasources,
-          templateTypeHash
-        );
+        });
+        dependentDatasources = _addMapLayerIds(dependentDatasources, templateTypeHash);
         if (dependentDatasources.length > 0) {
-          template = itemHandler.postProcessFieldReferences(
-            template,
-            dependentDatasources,
-            template.item.type
-          );
+          template = itemHandler.postProcessFieldReferences(template, dependentDatasources, template.item.type);
         }
       }
     }
@@ -404,16 +353,14 @@ export function postProcessFieldReferences(
  * @returns A list of IDataSourceInfo objects with key properties
  * @private
  */
-export function _getDatasourceInfos(
-  templates: IItemTemplate[]
-): IDatasourceInfo[] {
+export function _getDatasourceInfos(templates: IItemTemplate[]): IDatasourceInfo[] {
   const datasourceInfos: IDatasourceInfo[] = [];
-  templates.forEach(t => {
+  templates.forEach((t) => {
     if (t.type === "Feature Service") {
       const layers: any[] = getProp(t, "properties.layers") || [];
       const tables: any[] = getProp(t, "properties.tables") || [];
       const layersAndTables: any[] = layers.concat(tables);
-      layersAndTables.forEach(obj => {
+      layersAndTables.forEach((obj) => {
         /* istanbul ignore else */
         if (!hasDatasource(datasourceInfos, t.itemId, obj.id)) {
           datasourceInfos.push({
@@ -424,7 +371,7 @@ export function _getDatasourceInfos(
             url: getProp(t, "item.url"),
             ids: [],
             relationships: obj.relationships || [],
-            adminLayerInfo: obj.adminLayerInfo || {}
+            adminLayerInfo: obj.adminLayerInfo || {},
           });
         }
       });
@@ -443,10 +390,10 @@ export function _getDatasourceInfos(
  */
 export function _getTemplateTypeHash(templates: IItemTemplate[]): any {
   const templateTypeHash: any = {};
-  templates.forEach(template => {
+  templates.forEach((template) => {
     templateTypeHash[template.itemId] = {
       type: template.type,
-      dependencies: template.dependencies
+      dependencies: template.dependencies,
     };
     if (template.type === "Web Map") {
       _updateWebMapHashInfo(template, templateTypeHash[template.itemId]);
@@ -464,14 +411,13 @@ export function _getTemplateTypeHash(templates: IItemTemplate[]): any {
  * @private
  */
 export function _updateWebMapHashInfo(template: IItemTemplate, hashItem: any) {
-  const operationalLayers: any[] =
-    getProp(template, "data.operationalLayers") || [];
+  const operationalLayers: any[] = getProp(template, "data.operationalLayers") || [];
 
   const tables: any[] = getProp(template, "data.tables") || [];
   const layersAndTables: any[] = operationalLayers.concat(tables);
   if (layersAndTables && layersAndTables.length > 0) {
     hashItem.layersAndTables = [];
-    layersAndTables.forEach(layer => {
+    layersAndTables.forEach((layer) => {
       const obj: any = {};
       let itemId: any;
       /* istanbul ignore else */
@@ -482,7 +428,7 @@ export function _updateWebMapHashInfo(template: IItemTemplate, hashItem: any) {
       if (itemId) {
         obj[cleanLayerBasedItemId(itemId)] = {
           id: layer.id,
-          url: layer.url
+          url: layer.url,
         };
         hashItem.layersAndTables.push(obj);
       }
@@ -498,13 +444,8 @@ export function _updateWebMapHashInfo(template: IItemTemplate, hashItem: any) {
  * @returns string Amended datasource URL
  * @private
  */
-export function _addLayerIdToDatasourceUrl(
-  datasourceUrl?: string,
-  layerId?: any
-): string {
-  return datasourceUrl && !isNaN(layerId)
-    ? datasourceUrl.replace(/[.]/, ".layer" + layerId + ".")
-    : "";
+export function _addLayerIdToDatasourceUrl(datasourceUrl?: string, layerId?: any): string {
+  return datasourceUrl && !isNaN(layerId) ? datasourceUrl.replace(/[.]/, ".layer" + layerId + ".") : "";
 }
 
 /**
@@ -516,26 +457,19 @@ export function _addLayerIdToDatasourceUrl(
  * @returns The updated datasource infos
  * @private
  */
-export function _addMapLayerIds(
-  datasourceInfos: IDatasourceInfo[],
-  templateTypeHash: any
-): IDatasourceInfo[] {
-  const webMapIds: any[] = Object.keys(templateTypeHash).filter(k => {
+export function _addMapLayerIds(datasourceInfos: IDatasourceInfo[], templateTypeHash: any): IDatasourceInfo[] {
+  const webMapIds: any[] = Object.keys(templateTypeHash).filter((k) => {
     if (templateTypeHash[k].type === "Web Map") {
       return templateTypeHash[k];
     }
   });
 
-  return datasourceInfos.map(ds => {
-    webMapIds.forEach(webMapId => {
+  return datasourceInfos.map((ds) => {
+    webMapIds.forEach((webMapId) => {
       templateTypeHash[webMapId].layersAndTables.forEach((opLayer: any) => {
         const opLayerInfo: any = opLayer[ds.itemId];
         const url: string = _addLayerIdToDatasourceUrl(ds.url, ds.layerId);
-        if (
-          opLayerInfo &&
-          url === opLayerInfo.url &&
-          ds.ids.indexOf(opLayerInfo.id) < 0
-        ) {
+        if (opLayerInfo && url === opLayerInfo.url && ds.ids.indexOf(opLayerInfo.id) < 0) {
           ds.ids.push(opLayerInfo.id);
         }
       });
@@ -553,12 +487,9 @@ export function _addMapLayerIds(
  * @returns A list of feature service item IDs
  * @private
  */
-export function _getWebMapFSDependencies(
-  template: IItemTemplate,
-  templateTypeHash: any
-): string[] {
+export function _getWebMapFSDependencies(template: IItemTemplate, templateTypeHash: any): string[] {
   const webMapFSDependencies: string[] = [];
-  template.dependencies.forEach(dep => {
+  template.dependencies.forEach((dep) => {
     const depObj: any = templateTypeHash[dep];
     if (depObj.type === "Web Map") {
       depObj.dependencies.forEach((depObjDependency: string) => {
@@ -585,86 +516,63 @@ export function _getWebMapFSDependencies(
 export function _templatizeResources(
   itemTemplate: IItemTemplate,
   resourceItemFiles: ISourceFile[],
-  srcAuthentication: UserSession
+  srcAuthentication: UserSession,
 ): Promise<void[]> {
   const synchronizePromises: Array<Promise<void>> = [];
 
   if (itemTemplate.type === "Vector Tile Service") {
     // Get the root.json files
-    const rootJsonResources = resourceItemFiles.filter(file => file.filename === "root.json");
+    const rootJsonResources = resourceItemFiles.filter((file) => file.filename === "root.json");
 
     const resourcePath = srcAuthentication.portal + "/content/items/" + itemTemplate.itemId;
     const templatizedResourcePath = "{{" + itemTemplate.itemId + ".url}}";
     const replacer = new RegExp(resourcePath, "g");
 
     // Templatize the paths in the files that reference the source item id
-    rootJsonResources.forEach(
-      rootFileResource => {
-        synchronizePromises.push(new Promise(resolve => {
+    rootJsonResources.forEach((rootFileResource) => {
+      synchronizePromises.push(
+        new Promise((resolve) => {
           // Read the file
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          blobToJson(rootFileResource.file)
-          .then(fileJson => {
-
+          blobToJson(rootFileResource.file).then((fileJson) => {
             // Templatize by turning JSON into string, replacing paths with template, and re-JSONing
-            const updatedFileJson =
-              JSON.parse(
-                JSON.stringify(fileJson)
-                  .replace(replacer, templatizedResourcePath)
-              );
+            const updatedFileJson = JSON.parse(JSON.stringify(fileJson).replace(replacer, templatizedResourcePath));
 
             // Write the changes back into the file
             rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
 
             resolve(null);
           });
-        }));
-      }
-    );
+        }),
+      );
+    });
   } else if (itemTemplate.type === "Geoprocessing Service") {
-    const rootJsonResources = resourceItemFiles.filter(file => file.filename.indexOf(".json") > -1);
-    rootJsonResources.forEach(
-      rootFileResource => {
-        synchronizePromises.push(new Promise(resolve => {
+    const rootJsonResources = resourceItemFiles.filter((file) => file.filename.indexOf(".json") > -1);
+    rootJsonResources.forEach((rootFileResource) => {
+      synchronizePromises.push(
+        new Promise((resolve) => {
           // Read the file
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          blobToJson(rootFileResource.file)
-            .then(fileJson => {
-              if (rootFileResource.filename.indexOf("webtoolDefinition") > -1) {
-                itemTemplate.data = {
-                  name: fileJson.jsonProperties.tasks[0].name,
-                  notebookId: fileJson.jsonProperties.notebookId
-                };
+          if (rootFileResource.filename.indexOf("webtoolDefinition") > -1) {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            blobToJson(rootFileResource.file).then((fileJson) => {
+              const notebookId = fileJson.jsonProperties.notebookId;
+              if (itemTemplate.dependencies.indexOf(notebookId) < 0) {
+                itemTemplate.dependencies.push(notebookId);
               }
 
-              const idTest: RegExp = /[0-9A-F]{32}/gim;
-              let dataString = JSON.stringify(fileJson);
-              if (fileJson && idTest.test(dataString)) {
-                const ids: string[] = dataString.match(idTest) as string[];
-                const verifiedIds: string[] = [];
-                ids.forEach(id => {
-                  if (verifiedIds.indexOf(id) === -1) {
-                    verifiedIds.push(id);
-                    // templatize the itemId--but only once per unique id
-                    const regEx = new RegExp(id, "gm");
-                    dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
-
-                    // update the dependencies
-                    if (itemTemplate.dependencies.indexOf(id) === -1) {
-                      itemTemplate.dependencies.push(id);
-                    }
-                  }
-                });
-              }
-
-              const updatedFileJson = JSON.parse(dataString);
-              rootFileResource.file = jsonToFile(updatedFileJson, rootFileResource.filename);
+              itemTemplate.data = {
+                name: fileJson.jsonProperties.tasks[0].name,
+                notebookId,
+                timeoutInMinutes: fileJson.jsonProperties.timeoutInMinutes,
+              };
               resolve(null);
             });
-        }));
-      }
-    );
-
+          } else {
+            resolve(null);
+          }
+        }),
+      );
+    });
   }
 
   return Promise.all(synchronizePromises);

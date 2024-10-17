@@ -12,7 +12,6 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      "node_modules/regenerator-runtime/runtime.js",
       "packages/*/{src,test}/**/*.ts"
     ],
 
@@ -64,6 +63,13 @@ module.exports = function(config) {
       }
     },
 
+    client: {
+      jasmine: {
+        random: false,
+        stopOnFailure: true
+      }
+    },
+
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
@@ -74,8 +80,8 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    // reporters: ["spec", "karma-typescript", "coverage"],
-    reporters: ["dots", "karma-typescript", "coverage"],
+    //reporters: ["spec", "karma-typescript", "coverage"],
+     reporters: ["dots", "karma-typescript", "coverage"],
     coverageReporter: {
       // specify a common output directory
       dir: 'coverage',

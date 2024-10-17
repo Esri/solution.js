@@ -18,45 +18,37 @@
  * Provides tests for zip file helper functions.
  */
 
+import { UserSession } from "../src/arcgisRestJS";
 import * as formHelpers from "../src/formHelpers";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "./mocks/agolItems";
 import * as restHelpers from "../src/restHelpers";
 import * as utils from "./mocks/utils";
+import * as zipHelpers from "../test/mocks/zipHelpers";
 import * as zipUtils from "../src/zip-utils";
-import * as zipUtilsTest from "../test/zip-utils.test";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_SESSION: UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
-describe("Module `zip-utils`", () => {
-
+describe("Module `formHelpers`", () => {
   describe("updateItemWithZipObject", () => {
     it("catches the inability to convert a blob into a the zip", async () => {
       const blob = new Blob([""], { type: "application/zip" });
-      zipUtils.blobToZipObject(blob)
-        .then(() => {
-          return Promise.reject("Should not have converted empty blob into a zip file");
-        })
-        .catch(() => {
-          return Promise.resolve();
-        });
+      await expectAsync(zipUtils.blobToZipObject(blob)).toBeRejected();
     });
 
     it("updates the item with a zip file", async () => {
       const itemId = "2f56b3b59cdc4ac8b8f5de0399887e1e";
-      const zip = zipUtilsTest.generateFormZipObject(itemId);
+      const zip = zipHelpers.generateFormZipObject(itemId);
 
-      spyOn(restHelpers, "updateItem").and.callFake(async (
-        update: interfaces.IItemUpdate
-      ) => {
+      spyOn(restHelpers, "updateItem").and.callFake(async (update: interfaces.IItemUpdate) => {
         expect(update.id).toEqual(itemId);
         const file = update.data;
         expect(file.name).toEqual(`${itemId}.zip`);
@@ -68,5 +60,4 @@ describe("Module `zip-utils`", () => {
       expect(response).toEqual(mockItems.get200Success(itemId));
     });
   });
-
 });

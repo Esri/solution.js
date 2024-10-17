@@ -29,20 +29,14 @@ import {
   generateEmptyCreationResponse,
   createInitializedItemTemplate,
   fail,
+  moveItem,
   removeItem,
   updateVelocityReferences,
-  updateItem
+  updateItem,
 } from "@esri/solution-common";
 import { templatizeVelocity } from "./helpers/velocity-templatize";
 import { getVelocityDependencies } from "./helpers/get-velocity-dependencies";
-import {
-  cleanDataSourcesAndFeeds,
-  getVelocityUrl,
-  postVelocityData
-} from "./helpers/velocity-helpers";
-import {
-  moveItem
-} from "@esri/arcgis-rest-portal";
+import { cleanDataSourcesAndFeeds, getVelocityUrl, postVelocityData } from "./helpers/velocity-helpers";
 
 /**
  * Convert a Velocity item into a Template
@@ -59,38 +53,31 @@ export function convertItemToTemplate(
   itemInfo: any,
   destAuthentication: UserSession,
   srcAuthentication: UserSession,
-  templateDictionary: any
+  templateDictionary: any,
 ): Promise<IItemTemplate> {
   const template = createInitializedItemTemplate(itemInfo);
-  return getVelocityUrl(
-    srcAuthentication,
-    templateDictionary,
-    itemInfo.type,
-    itemInfo.id
-  ).then(
+  return getVelocityUrl(srcAuthentication, templateDictionary, itemInfo.type, itemInfo.id).then(
     (url: string) => {
       if (url) {
         return fetch(url)
-          .then(data => data.json())
-          .then(data_json => {
+          .then((data) => data.json())
+          .then((data_json) => {
             template.item.title = data_json.label;
             template.data = data_json;
-            return getVelocityDependencies(template, srcAuthentication).then(
-              deps => {
-                template.dependencies = deps;
-                cleanDataSourcesAndFeeds(template, templateDictionary.velocityUrl);
-                templatizeVelocity(template);
-                template.item = updateVelocityReferences(template.item, template.type, templateDictionary);
-                return Promise.resolve(template);
-              }
-            );
+            return getVelocityDependencies(template, srcAuthentication).then((deps) => {
+              template.dependencies = deps;
+              cleanDataSourcesAndFeeds(template, templateDictionary.velocityUrl);
+              templatizeVelocity(template);
+              template.item = updateVelocityReferences(template.item, template.type, templateDictionary);
+              return Promise.resolve(template);
+            });
           });
       } else {
         // In case the org used to have velocity and they still have items
         return Promise.reject("Velocity NOT Supported by Organization");
       }
     },
-    e => Promise.reject(fail(e))
+    (e) => Promise.reject(fail(e)),
   );
 }
 
@@ -109,14 +96,10 @@ export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: UserSession,
-  itemProgressCallback: IItemProgressCallback
+  itemProgressCallback: IItemProgressCallback,
 ): Promise<ICreateItemFromTemplateResponse> {
   // let the progress system know we've started...
-  const startStatus = itemProgressCallback(
-    template.itemId,
-    EItemProgressStatus.Started,
-    0
-  );
+  const startStatus = itemProgressCallback(template.itemId, EItemProgressStatus.Started, 0);
 
   // and if it returned false, just resolve out
   /* istanbul ignore else */
@@ -126,40 +109,34 @@ export function createItemFromTemplate(
 
   const orgId = template.itemId;
 
-  return postVelocityData(
-    destinationAuthentication,
-    template,
-    template.data,
-    templateDictionary
-  ).then(result => {
+  return postVelocityData(destinationAuthentication, template, template.data, templateDictionary).then((result) => {
     const finalStatus = itemProgressCallback(
       orgId,
       EItemProgressStatus.Finished,
       template.estimatedDeploymentCostFactor || 2,
-      result.id
+      result.id,
     );
 
     if (!finalStatus) {
       return removeItem(result.id, destinationAuthentication).then(
         () => Promise.resolve(generateEmptyCreationResponse(template.type)),
-        () => Promise.resolve(generateEmptyCreationResponse(template.type))
+        () => Promise.resolve(generateEmptyCreationResponse(template.type)),
       );
     } else {
       const response: ICreateItemFromTemplateResponse = {
         item: {
           ...template,
-          ...result
+          ...result,
         },
         id: result.item.id,
         type: template.type,
-        postProcess: true
+        postProcess: true,
       };
       response.item.itemId = result.item.id;
       return response;
     }
   });
 }
-
 
 /**
  * Velocity post-processing actions
@@ -175,25 +152,25 @@ export function createItemFromTemplate(
  * @param {UserSession} authentication The destination session info
  * @returns Promise resolving to successfulness of update
  */
- export function postProcess(
+export function postProcess(
   itemId: string,
   type: string,
   itemInfos: any[],
   template: IItemTemplate,
   templates: IItemTemplate[],
   templateDictionary: any,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<any> {
-  const itemUpdate = itemInfos.filter(ii => ii.id === itemId);
+  const itemUpdate = itemInfos.filter((ii) => ii.id === itemId);
   const item: any = itemUpdate[0].item.item;
   delete item.url;
   delete item.origUrl;
-   return updateItem(item, authentication).then(() => {
-     return moveItem({
-       owner: authentication.username,
-       itemId,
-       folderId: templateDictionary.folderId,
-       authentication
-     });
-   });
+  return updateItem(item, authentication).then(() => {
+    return moveItem({
+      owner: authentication.username,
+      itemId,
+      folderId: templateDictionary.folderId,
+      authentication,
+    });
+  });
 }

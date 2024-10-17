@@ -15,7 +15,20 @@
  */
 
 import * as mockItems from "../test/mocks/agolItems";
-import { updateVelocityReferences } from "../src/velocityHelpers";
+import { getVelocityInfo, updateVelocityReferences } from "../src/velocityHelpers";
+import * as utils from "./mocks/utils";
+import { UserSession } from "../src/arcgisRestJS";
+const fetchMock = require("fetch-mock");
+
+let MOCK_USER_SESSION: UserSession;
+
+beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+});
+
+afterEach(() => {
+  fetchMock.restore();
+});
 
 describe("Module `velocityHelpers`: common functions", () => {
   describe("updateVelocityReferences", () => {
@@ -24,10 +37,9 @@ describe("Module `velocityHelpers`: common functions", () => {
       const data: any = mockItems.getAGOLItemData(type);
 
       const subscriptionInfo: any = mockItems.getAGOLSubscriptionInfo(true);
-      const velocityUrl: string =
-        subscriptionInfo.orgCapabilities[0].velocityUrl;
+      const velocityUrl: string = subscriptionInfo.orgCapabilities[0].velocityUrl;
       const templateDictionary = {
-        velocityUrl
+        velocityUrl,
       };
 
       data.operationalLayers.push({
@@ -37,19 +49,29 @@ describe("Module `velocityHelpers`: common functions", () => {
         title: "ROW Permits",
         itemId: "svc1234567890",
         popupInfo: {},
-        capabilities: "Query"
+        capabilities: "Query",
       });
 
-      const actual: any = updateVelocityReferences(
-        data,
-        type,
-        templateDictionary
-      );
+      const actual: any = updateVelocityReferences(data, type, templateDictionary);
       const opLayer: any = actual.operationalLayers[1];
       const expected: string =
         "{{velocityUrl}}/maps/arcgis/rest/services/RouteStatus_{{solutionItemId}}/FeatureServer/0";
       expect(opLayer.url).toEqual(expected);
       expect(opLayer.itemId).toBeUndefined();
+    });
+  });
+
+  describe("getVelocityInfo", () => {
+    it("handles missing velocity id", async () => {
+      const subscriptionInfo: any = mockItems.getAGOLSubscriptionInfo(false);
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/portals/self/subscriptioninfo?f=json&token=fake-token",
+        subscriptionInfo,
+      );
+
+      const actual = await getVelocityInfo(MOCK_USER_SESSION);
+      expect(actual.velocityUrl).toEqual("");
+      expect(actual.hasVelocity).toEqual(false);
     });
   });
 });

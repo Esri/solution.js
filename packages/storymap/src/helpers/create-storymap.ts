@@ -15,24 +15,17 @@
  */
 
 // TODO ENSURE THIS CREATES IN THE TARGET FOLDER
-import {
-  IModel,
-  failSafe,
-  serializeModel,
-  interpolateItemId,
-  stringToBlob
-} from "@esri/hub-common";
-
-import { UserSession } from "@esri/solution-common";
+import { IModel, failSafe, serializeModel, interpolateItemId, stringToBlob } from "@esri/hub-common";
 
 import {
+  ICreateItemOptions,
+  ICreateItemResponse,
+  addItemResource,
   createItem,
   moveItem,
-  addItemResource,
-  updateItem,
-  ICreateItemOptions,
-  ICreateItemResponse
-} from "@esri/arcgis-rest-portal";
+  restUpdateItem,
+  UserSession,
+} from "@esri/solution-common";
 
 /**
  * Create a StoryMap from an interpolated template
@@ -45,7 +38,7 @@ export function createStoryMap(
   model: IModel,
   folderId: string,
   options: any,
-  authentication: UserSession
+  authentication: UserSession,
 ): Promise<IModel> {
   // create an array to hold well-known resources
   // that we have to generate from the passed in model
@@ -59,14 +52,14 @@ export function createStoryMap(
   const createOptions: ICreateItemOptions = {
     // need to serialize
     item: serializeModel(model),
-    authentication
+    authentication,
   };
 
   /* istanbul ignore else */
   if (model.item.thumbnail) {
     createOptions.params = {
       // Pass thumbnail file in via params because item property is serialized, which discards a blob
-      thumbnail: model.item.thumbnail
+      thumbnail: model.item.thumbnail,
     };
     delete createOptions.item.thumbnail;
   }
@@ -85,44 +78,44 @@ export function createStoryMap(
       const dataBlob = stringToBlob(JSON.stringify(model.data));
       resources.push({
         name: model.properties.draftFileName,
-        file: dataBlob
+        file: dataBlob,
       });
       resources.push({
         name: "oembed.json",
-        file: stringToBlob(JSON.stringify(model.properties.oembed))
+        file: stringToBlob(JSON.stringify(model.properties.oembed)),
       });
       resources.push({
         name: "oembed.xml",
-        file: stringToBlob(model.properties.oembedXML)
+        file: stringToBlob(model.properties.oembedXML),
       });
       resources.push({
         name: "published_data.json",
-        file: dataBlob
+        file: dataBlob,
       });
       // remove the properties hash now that we've gotten what we need
       delete model.properties;
       // update the item with the newly re-interpolated model
       return Promise.all([
-        updateItem({
+        restUpdateItem({
           item: serializeModel(model),
-          authentication
+          authentication,
         }),
-        authentication.getUsername()
+        authentication.getUsername(),
       ]);
     })
     .then((responses: any[]) => {
       const username = responses[1];
       // add the resources
       const failSafeAddItemResource = failSafe(addItemResource, {
-        success: true
+        success: true,
       });
-      const resourcePromises = resources.map(resource => {
+      const resourcePromises = resources.map((resource) => {
         return failSafeAddItemResource({
           id: model.item.id,
           owner: username,
           resource: resource.file,
           name: resource.name,
-          authentication
+          authentication,
         });
       });
       // Fire and forget as these are not critical-path
@@ -133,7 +126,7 @@ export function createStoryMap(
       return moveItem({
         itemId: model.item.id,
         folderId,
-        authentication
+        authentication,
       });
     })
     .then(() => {
