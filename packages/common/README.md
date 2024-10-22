@@ -15,56 +15,6 @@
 
 > Common helpers for [`@esri/solution-*`](https://github.com/Esri/solution.js) packages.
 
-### Example
-
-```js
-var fetch = require("node-fetch");
-var FormData = require("isomorphic-form-data");
-var Promise = require("promise");
-
-require("@esri/arcgis-rest-portal");
-require("@esri/arcgis-rest-request");
-require("@esri/arcgis-rest-service-admin");
-
-var solutionCommon = require("@esri/solution-common");
-
-var originalExtent = {
-  xmin: -9821384,
-  ymin: 5117339,
-  xmax: -9797228,
-  ymax: 5137789,
-  spatialReference: { wkid: 102100 }
-};
-var desiredSpatialRef = { wkid: 4326 };
-
-solutionCommon.convertExtent(
-  originalExtent,
-  desiredSpatialRef,
-  "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer",
-  {
-    fetch: fetch
-  }
-).then(
-  response => {
-    console.log("spatialReference: " + response.spatialReference.wkid);
-    console.log("xmax: " + response.xmax);
-    console.log("xmin: " + response.xmin);
-    console.log("ymax: " + response.ymax);
-    console.log("ymin: " + response.ymin);
-  },
-  response => console.error(response)
-);
-```
-Example is hosted in [RunKit](https://runkit.com/miketschudi/esri-solution-common/1.0.0); expected output:
-```
-Promise (resolved) undefined
-"spatialReference: 4326"
-"xmax: -88.0099965440373"
-"xmin: -88.22699358406922"
-"ymax: 41.84499732645768"
-"ymin: 41.70799917451703"
-```
-
 ### [API Reference](https://esri.github.io/solution.js/modules/common_src.html)
 
 ### Issues
