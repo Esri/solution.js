@@ -48,33 +48,9 @@ pushd demos\reuseDeployedItems
 call npm install
 popd
 
-rem clear out older builds
-rmdir/s/q packages\common\dist 2>nul
-rmdir/s/q packages\creator\dist 2>nul
-rmdir/s/q packages\deployer\dist 2>nul
-rmdir/s/q packages\feature-layer\dist 2>nul
-rmdir/s/q packages\file\dist 2>nul
-rmdir/s/q packages\form\dist 2>nul
-rmdir/s/q packages\group\dist 2>nul
-rmdir/s/q packages\hub-types\dist 2>nul
-rmdir/s/q packages\simple-types\dist 2>nul
-rmdir/s/q packages\storymap\dist 2>nul
-rmdir/s/q packages\velocity\dist 2>nul
-rmdir/s/q packages\viewer\dist 2>nul
-rmdir/s/q packages\web-experience\dist 2>nul
-rmdir/s/q packages\web-tool\dist 2>nul
-rmdir/s/q demos\copyItemInfo\dist 2>nul
-rmdir/s/q demos\copySolutions\dist 2>nul
-rmdir/s/q demos\createSolution\dist 2>nul
-rmdir/s/q demos\deleteSolution\dist 2>nul
-rmdir/s/q demos\deploySolution\dist 2>nul
-rmdir/s/q demos\getItemInfo\dist 2>nul
-rmdir/s/q demos\implementedTypes\dist 2>nul
-rmdir/s/q demos\verifySolution\dist 2>nul
-rmdir/s/q demos\reuseDeployedItems\dist 2>nul
-
 rem install and build the packages
 call npm install
+call install_hub4.bat
 call npm run prettify
 call npm run lint:fix
 call npm run build

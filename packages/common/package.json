@@ -18,7 +18,6 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-types": "^3.7.0",
     "@types/adlib": "^3.0.4",
     "@types/jasmine": "^5.1.4",
     "fetch-mock": "^10.1.1",

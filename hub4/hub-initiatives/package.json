@@ -1,0 +1,57 @@
+{
+  "name": "@esri/hub-initiatives",
+  "version": "14.0.0",
+  "description": "Module to interact with ArcGIS Hub Initiatives in Node.js and modern browsers.",
+  "main": "dist/node/index.js",
+  "module": "dist/esm/index.js",
+  "sideEffects": false,
+  "types": "dist/types/index.d.ts",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "tslib": "^1.13.0"
+  },
+  "peerDependencies": {
+    "@esri/hub-common": "^14.177.1"
+  },
+  "devDependencies": {
+    "@esri/hub-common": "^14.177.1",
+    "blob": "0.0.4",
+    "typescript": "^3.8.1"
+  },
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "npm run build:node && npm run build:esm",
+    "build:esm": "tsc --outDir ./dist/esm  --declaration --declarationDir ./dist/types",
+    "build:node": "tsc --module commonjs --outDir ./dist/node",
+    "dev:esm": "npm run build:esm -- -w",
+    "dev:node": "npm run build:node -- -w",
+    "format": "prettier --write ./{src,test}/**/*.ts",
+    "format:check": "prettier --check ./{src,test}/**/*.ts",
+    "y:publish": "yalc publish",
+    "y:push": "yalc push"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Esri/hub.js.git"
+  },
+  "contributors": [
+    {
+      "name": "Dave Bouwman",
+      "email": "dbouwman@esri.com",
+      "url": "http://blog.davebouwman.com/"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/Esri/hub.js/issues"
+  },
+  "homepage": "https://github.com/Esri/hub.js#readme",
+  "gitHead": "5c3d6a4ddc88ce418b25bd1c8759ecc7aa561fd5",
+  "volta": {
+    "extends": "../../package.json"
+  }
+}

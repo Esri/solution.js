@@ -1,0 +1,70 @@
+{
+  "name": "@esri/hub-common",
+  "version": "14.181.0",
+  "description": "Common TypeScript types and utility functions for @esri/hub.js.",
+  "main": "dist/node/index.js",
+  "module": "dist/esm/index.js",
+  "sideEffects": false,
+  "types": "dist/types/index.d.ts",
+  "author": "",
+  "license": "Apache-2.0",
+  "files": [
+    "dist/**"
+  ],
+  "dependencies": {
+    "@terraformer/arcgis": "^2.1.2",
+    "@types/arcgis-js-api": "~4.28.0",
+    "abab": "^2.0.5",
+    "adlib": "^3.0.8",
+    "ajv": "^6.12.6",
+    "fast-xml-parser": "^3.21.0",
+    "json-schema-typed": "^7.0.3",
+    "jsonapi-typescript": "^0.1.3",
+    "tslib": "^1.13.0"
+  },
+  "peerDependencies": {
+  },
+  "devDependencies": {
+    "@types/adlib": "^3.0.1",
+    "@types/geojson": "^7946.0.13",
+    "@types/terraformer__arcgis": "^2.0.5",
+    "typescript": "^3.8.1"
+  },
+  "scripts": {
+    "build": "npm run build:node && npm run build:esm",
+    "build:esm": "tsc --outDir ./dist/esm  --declaration --declarationDir ./dist/types",
+    "build:node": "tsc --module commonjs --outDir ./dist/node",
+    "dev:esm": "npm run build:esm -- -w",
+    "dev:node": "npm run build:node -- -w",
+    "format": "prettier --write ./{src,test}/**/*.ts",
+    "format:check": "prettier --check ./{src,test}/**/*.ts",
+    "y:publish": "yalc publish",
+    "y:push": "yalc push"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": "github:/Esri/hub.js",
+  "contributors": [
+    {
+      "name": "Dave Bouwman",
+      "email": "dbouwman@esri.com"
+    },
+    {
+      "name": "John Gravois",
+      "email": "john@esri.com"
+    },
+    {
+      "name": "Tom Wayson",
+      "email": "twayson@esri.com"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/Esri/hub.js/issues"
+  },
+  "homepage": "https://github.com/Esri/hub.js#readme",
+  "gitHead": "5c3d6a4ddc88ce418b25bd1c8759ecc7aa561fd5",
+  "volta": {
+    "extends": "../../package.json"
+  }
+}
