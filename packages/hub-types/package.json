@@ -22,11 +22,9 @@
     "npm-check-updates": "^17.1.0"
   },
   "dependencies": {
-    "@esri/arcgis-rest-auth": "^3.7.0",
-    "@esri/arcgis-rest-feature-layer": "^3.7.0",
-    "@esri/arcgis-rest-portal": "^3.7.0",
-    "@esri/arcgis-rest-request": "^3.7.0",
-    "@esri/arcgis-rest-service-admin": "^3.7.0",
+    "@esri/arcgis-rest-feature-service": "^4.0.6",
+    "@esri/arcgis-rest-portal": "^4.4.1",
+    "@esri/arcgis-rest-request": "^4.2.3",
     "@esri/hub-common": "^14.177.1",
     "@esri/hub-initiatives": "^14.0.0",
     "@esri/hub-sites": "^15.0.1",
