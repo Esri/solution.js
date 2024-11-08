@@ -50,7 +50,7 @@ describe("Module `formHelpers`", () => {
 
       spyOn(restHelpers, "updateItem").and.callFake(async (update: interfaces.IItemUpdate) => {
         expect(update.id).toEqual(itemId);
-        const file = update.data;
+        const file = update.data ? update.data : update.file;
         expect(file.name).toEqual(`${itemId}.zip`);
         expect(file.type).toEqual("application/zip");
         return Promise.resolve(mockItems.get200Success(itemId));

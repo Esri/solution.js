@@ -1742,6 +1742,13 @@ export function updateItem(
         ...(additionalParams ?? {}),
       },
     };
+    if (itemInfo?.data instanceof File) {
+      updateOptions.file = itemInfo.data;
+      updateOptions.params.file = itemInfo.data;
+    } else {
+      updateOptions.text = itemInfo.data;
+      updateOptions.params.text = itemInfo.data;
+    }
     portalUpdateItem(updateOptions).then(
       (response) => (response.success ? resolve(response) : reject(response)),
       (err) => reject(err),
@@ -1802,7 +1809,9 @@ export function updateItemExtended(
       item: itemInfo,
       params: {
         text: data || {}, // AGO ignores update if `data` is empty
+        file: data,
       },
+      file: data,
       authentication: authentication,
     };
     if (thumbnail) {
