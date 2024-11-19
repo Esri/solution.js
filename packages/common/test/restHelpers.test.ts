@@ -3156,9 +3156,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         authentication: MOCK_USER_SESSION,
         params: {
           data: "fred",
-          text: undefined
+          text: undefined,
         },
-        text: undefined
+        text: undefined,
       });
     });
   });

@@ -694,6 +694,16 @@ export function createItemWithData(
       delete createOptions.item.thumbnail;
     }
 
+    if (createOptions.params && createOptions.params.data) {
+      createOptions.params[createOptions.params.data instanceof File ? "file" : "text"] = createOptions.params.data;
+    } else {
+      if (dataInfo instanceof File) {
+        createOptions.params["file"] = dataInfo;
+      } else {
+        createOptions.params["text"] = dataInfo;
+      }
+    }
+
     createItemInFolder(createOptions).then(
       (createResponse) => {
         if (createResponse.success) {
@@ -1743,12 +1753,13 @@ export function updateItem(
       },
     };
     if (itemInfo?.data instanceof File) {
-      updateOptions.file = itemInfo.data;
+      //updateOptions.file = itemInfo.data;
       updateOptions.params.file = itemInfo.data;
     } else {
-      updateOptions.text = itemInfo.data;
+      //updateOptions.text = itemInfo.data;
       updateOptions.params.text = itemInfo.data;
     }
+
     portalUpdateItem(updateOptions).then(
       (response) => (response.success ? resolve(response) : reject(response)),
       (err) => reject(err),
@@ -1809,9 +1820,7 @@ export function updateItemExtended(
       item: itemInfo,
       params: {
         text: data || {}, // AGO ignores update if `data` is empty
-        file: data,
       },
-      file: data,
       authentication: authentication,
     };
     if (thumbnail) {
@@ -1820,6 +1829,7 @@ export function updateItemExtended(
     if (isTrackingViewTemplate(undefined, itemInfo) && templateDictionary) {
       updateOptions.owner = templateDictionary.locationTracking.owner;
     }
+
     portalUpdateItem(updateOptions).then(
       (result) => {
         if (access && access !== "private") {
