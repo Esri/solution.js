@@ -716,9 +716,6 @@ export function createItemWithData(
       }
     }
 
-    console.log("***** createItemWithData *******");
-    console.log(createOptions);
-
     createItemInFolder(createOptions).then(
       (createResponse) => {
         if (createResponse.success) {
