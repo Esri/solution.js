@@ -207,7 +207,7 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
       const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
       expect(callBody).toEqual(
         "f=json&text=%7B%22value%22%3A%22Luke%20Skywalker%22%7D&" +
-          "file=%7B%22value%22%3A%22Luke%20Skywalker%22%7D&id=3ef&name=Name%20of%20an%20AGOL%20item&" +
+          "id=3ef&name=Name%20of%20an%20AGOL%20item&" +
           "title=An%20AGOL%20item&type=Notebook&typeKeywords=JavaScript&description=Description%20of%20an%20AGOL" +
           "%20item&tags=test&snippet=Snippet%20of%20an%20AGOL%20item&thumbnail=https%3A%2F%2F" +
           "myorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2Fitems%2Fnbk1234567890%2Finfo%2Fthumbnail" +

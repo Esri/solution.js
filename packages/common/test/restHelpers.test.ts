@@ -3158,7 +3158,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           data: "fred",
           text: undefined,
         },
-        text: undefined,
       });
     });
   });
@@ -3344,7 +3343,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
       expect(callBody).toEqual(
-        "f=json&text=%7B%22map%22%3A%22itm2%22%7D&file=%7B%22map%22%3A%22itm2%22%7D&created=0&id=itm1234567890&modified=0&numViews=0&owner=&size=0&tags=&title=&type=Web%20Map&key1=itm1&key2=fld0&token=fake-token",
+        "f=json&text=%7B%22map%22%3A%22itm2%22%7D&created=0&id=itm1234567890&modified=0&numViews=0&owner=&size=0&tags=&title=&type=Web%20Map&key1=itm1&key2=fld0&token=fake-token",
       );
     });
 
@@ -3385,7 +3384,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
           const callBody = fetchMock.calls(updateUrl)[0][1].body as string;
           expect(callBody).toEqual(
-            "f=json&text=%7B%22map%22%3A%22itm2%22%7D&file=%7B%22map%22%3A%22itm2%22%7D&created=0&id=itm1234567890&modified=0&numViews=0&owner=&size=0&tags=&title=&type=Web%20Map&key1=itm1&key2=fld0&token=fake-token",
+            "f=json&text=%7B%22map%22%3A%22itm2%22%7D&created=0&id=itm1234567890&modified=0&numViews=0&owner=&size=0&tags=&title=&type=Web%20Map&key1=itm1&key2=fld0&token=fake-token",
           );
         },
       );

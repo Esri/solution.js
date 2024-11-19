@@ -697,12 +697,27 @@ export function createItemWithData(
     if (createOptions.params && createOptions.params.data) {
       createOptions.params[createOptions.params.data instanceof File ? "file" : "text"] = createOptions.params.data;
     } else {
-      if (dataInfo instanceof File) {
-        createOptions.params["file"] = dataInfo;
+      if (createOptions.params) {
+        if (dataInfo instanceof File) {
+          createOptions.params["file"] = dataInfo;
+        } else {
+          createOptions.params["text"] = dataInfo;
+        }
       } else {
-        createOptions.params["text"] = dataInfo;
+        if (dataInfo instanceof File) {
+          createOptions.params = {
+            file: dataInfo,
+          };
+        } else {
+          createOptions.params = {
+            text: dataInfo ? dataInfo : {},
+          };
+        }
       }
     }
+
+    console.log("***** createItemWithData *******");
+    console.log(createOptions);
 
     createItemInFolder(createOptions).then(
       (createResponse) => {
