@@ -65,6 +65,7 @@ export function convertItemToTemplate(
       case "Insights Model":
       case "Oriented Imagery Catalog":
       case "Project Package":
+      case "Style":
       case "Workforce Project":
       case "Web Map":
       case "Web Mapping Application":
