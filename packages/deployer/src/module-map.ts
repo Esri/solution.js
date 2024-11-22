@@ -180,7 +180,7 @@ export const moduleMap: IItemTypeModuleMap = {
   "Service Definition": fileProcessor,
   "Shapefile": fileProcessor,
   "Statistical Data Collection": fileProcessor,
-  "Style": fileProcessor,
+  "Style": simpleTypes,
   "Survey123 Add In": fileProcessor,
   "Symbol Set": fileProcessor,
   "Task File": fileProcessor,
