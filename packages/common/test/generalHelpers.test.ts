@@ -1014,6 +1014,47 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("generateGUID", () => {
+    it("generates a GUID of the right length", () => {
+      const guid = generalHelpers.generateGUID();
+      expect(guid).not.toBeNull();
+      expect(guid.length).toEqual(32);
+    });
+
+    it("generates a valid GUID using crypto", () => {
+      const guid = generalHelpers.generateGUID();
+
+      // "xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx", where y = 8, 9, a, or b
+      for (let i = 0; i < guid.length; i++) {
+        const c = guid.charAt(i);
+        if (i === 12) {
+          expect(c).toEqual("4");  // version 4
+        } else if (i === 16) {
+          expect(c.match(/[89ab]/)).not.toBeNull();  // 2-bit variant
+        } else {
+          expect(c.match(/[0-9a-f]/)).not.toBeNull();
+        }
+      };
+    });
+
+    it("generates a valid GUID using random numbers", () => {
+      spyOn(crypto, "randomUUID").and.throwError("Not implemented");
+      const guid = generalHelpers.generateGUID();
+
+      // "xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx", where y = 8, 9, a, or b
+      for (let i = 0; i < guid.length; i++) {
+        const c = guid.charAt(i);
+        if (i === 12) {
+          expect(c).toEqual("4");  // version 4
+        } else if (i === 16) {
+          expect(c.match(/[89ab]/)).not.toBeNull();  // 2-bit variant
+        } else {
+          expect(c.match(/[0-9a-f]/)).not.toBeNull();
+        }
+      };
+    });
+  });
+
   describe("getAgoIdRegEx", () => {
     it("matches an id 1", () => {
       const id = "bad3483e025c47338d43df308c117308";
