@@ -47,6 +47,7 @@ export async function deploySolution(
     return Promise.reject(common.fail("The Solution Template id is missing"));
   }
   let deployOptions: common.IDeploySolutionOptions = options || {};
+
   /* istanbul ignore else */
   if (deployOptions.progressCallback) {
     deployOptions.progressCallback(1, deployOptions.jobId); // let the caller know that we've started

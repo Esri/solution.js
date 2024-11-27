@@ -647,6 +647,11 @@ export interface IDeploySolutionOptions {
    * Version of storage read from Solution item. DO NOT USE--it is overwritten by function deploySolutionFromTemplate
    */
   storageVersion?: number;
+
+  /**
+   * Determines if the solution item should be created during deployment; default: false
+   */
+  dontCreateSolutionItem?: boolean;
 }
 
 /**

@@ -64,6 +64,7 @@ function deploySolution(
   srcCreds: common.UserSession,
   destCreds: common.UserSession,
   useExisting: boolean,
+  dontCreateSolutionItem: boolean,
   customParams: any
 ): void {
   const startTime = Date.now();
@@ -87,6 +88,7 @@ function deploySolution(
       destCreds,
       progressFcn,
       useExisting,
+      dontCreateSolutionItem,
       customParams
     );
   } else if (folderId.length > 0) {
@@ -96,6 +98,7 @@ function deploySolution(
       destCreds,
       progressFcn,
       useExisting,
+      dontCreateSolutionItem,
       customParams
     );
   }
@@ -129,6 +132,9 @@ function go(
   // Use Existing
   const useExisting = htmlUtil.getHTMLChecked("useExistingChk");
 
+  // Create Solution item in destination organization
+  const dontCreateSolutionItem = htmlUtil.getHTMLChecked("dontCreateSolutionItem");
+
   // Custom Params
   const customParams = htmlUtil.getHTMLValue("customParams");
 
@@ -154,7 +160,7 @@ function go(
       portal: destPortal,
       clientId: htmlUtil.getHTMLValue("clientId")
     });
-    deploySolution(solutionId, folderId, srcCreds, destCreds, useExisting, customParams);
+    deploySolution(solutionId, folderId, srcCreds, destCreds, useExisting, dontCreateSolutionItem, customParams);
   } else {
     let redirect_uri = window.location.origin + window.location.pathname;
     const iLastSlash = redirect_uri.lastIndexOf("/");
@@ -169,7 +175,7 @@ function go(
       // Upon a successful login, update the session with the new session.
       session = newSession;
       updateSessionInfo(session);
-      deploySolution(solutionId, folderId, srcCreds, session, useExisting, customParams);
+      deploySolution(solutionId, folderId, srcCreds, session, useExisting, dontCreateSolutionItem, customParams);
     }).catch(function (error) {
       console.log(error);
     });

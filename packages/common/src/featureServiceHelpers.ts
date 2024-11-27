@@ -40,6 +40,7 @@ import {
   deleteProp,
   deleteProps,
   fail,
+  generateGUID,
   getProp,
   setCreateProp,
   setProp,
@@ -449,13 +450,13 @@ export function getLayerSettings(layerInfos: any, url: string, itemId: string, e
  * Set the names and titles for all feature services.
  *
  * This function will ensure that we have unique feature service names.
- * The feature service name will have the solution item id appended.
+ * The feature service name will have a generated GUID appended.
  *
  * @param templates A collection of AGO item templates.
- * @param solutionItemId The item id for the deployed solution item.
  * @returns An updated collection of AGO templates with unique feature service names.
  */
-export function setNamesAndTitles(templates: IItemTemplate[], solutionItemId: string): IItemTemplate[] {
+export function setNamesAndTitles(templates: IItemTemplate[]): IItemTemplate[] {
+  const guid: string = generateGUID();
   const names: string[] = [];
   return templates.map((t) => {
     /* istanbul ignore else */
@@ -473,7 +474,7 @@ export function setNamesAndTitles(templates: IItemTemplate[], solutionItemId: st
 
         // The name length limit is 98
         // Limit the baseName to 50 characters before the _<guid>
-        const name: string = baseName.substring(0, 50) + "_" + solutionItemId;
+        const name: string = baseName.substring(0, 50) + "_" + guid;
 
         // If the name + GUID already exists then append "_occurrenceCount"
         t.item.name = names.indexOf(name) === -1 ? name : `${name}_${names.filter((n) => n === name).length}`;

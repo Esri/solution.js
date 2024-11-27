@@ -83,6 +83,7 @@ import {
   IPopupInfos,
 } from "../src/featureServiceHelpers";
 
+import * as generalHelpers from "../../common/src/generalHelpers";
 import * as restHelpers from "../../common/src/restHelpers";
 
 import * as arcGISRestJS from "../src/arcgisRestJS";
@@ -1683,13 +1684,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       t.item.title = "TheName";
       const _templates: IItemTemplate[] = [t];
 
+      spyOn(generalHelpers, "generateGUID").and.returnValue("212dbc19b03943008fdfaf8d6adca00e");
+
       const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
-      expectedTemplate.item.name = `TheName_${itemId}`;
+      expectedTemplate.item.name = `TheName_212dbc19b03943008fdfaf8d6adca00e`;
       expectedTemplate.item.title = "TheName";
       const expected: IItemTemplate[] = [expectedTemplate];
 
-      const actual: IItemTemplate[] = setNamesAndTitles(_templates, itemId);
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates);
       expect(actual).toEqual(expected);
     });
 
@@ -1704,17 +1707,19 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       t2.item.title = undefined;
       const _templates: IItemTemplate[] = [t, t2];
 
+      spyOn(generalHelpers, "generateGUID").and.returnValue("212dbc19b03943008fdfaf8d6adca00e");
+
       const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
-      expectedTemplate.item.name = `TheName_${itemId}`;
+      expectedTemplate.item.name = `TheName_212dbc19b03943008fdfaf8d6adca00e`;
       expectedTemplate.item.title = "TheName_99ac87b220fd45038fc92ba10843886d";
       const expectedTemplate2: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate2.item.type = "Feature Service";
-      expectedTemplate2.item.name = `TheName_${itemId}_1`;
+      expectedTemplate2.item.name = `TheName_212dbc19b03943008fdfaf8d6adca00e_1`;
       expectedTemplate2.item.title = "TheName_88ac87b220fd45038fc92ba10843886d";
       const expected: IItemTemplate[] = [expectedTemplate, expectedTemplate2];
 
-      const actual: IItemTemplate[] = setNamesAndTitles(_templates, itemId);
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates);
       expect(actual).toEqual(expected);
     });
 
@@ -1725,13 +1730,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       t.item.title = "TheName";
       const _templates: IItemTemplate[] = [t];
 
+      spyOn(generalHelpers, "generateGUID").and.returnValue("212dbc19b03943008fdfaf8d6adca00e");
+
       const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
-      expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_${itemId}`;
+      expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_212dbc19b03943008fdfaf8d6adca00e`;
       expectedTemplate.item.title = "TheName";
       const expected: IItemTemplate[] = [expectedTemplate];
 
-      const actual: IItemTemplate[] = setNamesAndTitles(_templates, itemId);
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates);
       expect(actual).toEqual(expected);
     });
 
@@ -1742,13 +1749,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       t.item.title = "TheName";
       const _templates: IItemTemplate[] = [t];
 
+      spyOn(generalHelpers, "generateGUID").and.returnValue("212dbc19b03943008fdfaf8d6adca00e");
+
       const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
-      expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_${itemId}`;
+      expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_212dbc19b03943008fdfaf8d6adca00e`;
       expectedTemplate.item.title = "TheName";
       const expected: IItemTemplate[] = [expectedTemplate];
 
-      const actual: IItemTemplate[] = setNamesAndTitles(_templates, itemId);
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates);
       expect(actual).toEqual(expected);
     });
   });

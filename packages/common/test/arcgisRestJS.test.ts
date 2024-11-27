@@ -87,4 +87,14 @@ describe("Module arcgisRestJS", () => {
     await arcgisRestJS.unprotectGroup(requestOptions);
     expect(unprotectGroupSpy.called);
   });
+
+  it("tests binding function unprotectItem", async () => {
+    const requestOptions: arcgisRestJS.IUserItemOptions = {
+      id: "0",
+      authentication: MOCK_USER_SESSION,
+    };
+    const unprotectItemSpy = sinon.stub(arcgisRestPortal, "unprotectItem").resolves();
+    await arcgisRestJS.unprotectItem(requestOptions);
+    expect(unprotectItemSpy.called);
+  });
 });
