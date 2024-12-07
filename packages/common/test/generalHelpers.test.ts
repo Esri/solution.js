@@ -1028,13 +1028,13 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       for (let i = 0; i < guid.length; i++) {
         const c = guid.charAt(i);
         if (i === 12) {
-          expect(c).toEqual("4");  // version 4
+          expect(c).toEqual("4"); // version 4
         } else if (i === 16) {
-          expect(c.match(/[89ab]/)).not.toBeNull();  // 2-bit variant
+          expect(c.match(/[89ab]/)).not.toBeNull(); // 2-bit variant
         } else {
           expect(c.match(/[0-9a-f]/)).not.toBeNull();
         }
-      };
+      }
     });
 
     it("generates a valid GUID using random numbers", () => {
@@ -1045,13 +1045,13 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       for (let i = 0; i < guid.length; i++) {
         const c = guid.charAt(i);
         if (i === 12) {
-          expect(c).toEqual("4");  // version 4
+          expect(c).toEqual("4"); // version 4
         } else if (i === 16) {
-          expect(c.match(/[89ab]/)).not.toBeNull();  // 2-bit variant
+          expect(c.match(/[89ab]/)).not.toBeNull(); // 2-bit variant
         } else {
           expect(c.match(/[0-9a-f]/)).not.toBeNull();
         }
-      };
+      }
     });
   });
 

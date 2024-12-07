@@ -7,7 +7,7 @@
 * \[ \] Merge in--but don't commit--the current `release/X.X.X` branch
 * \[ \] Run `npm run clean` in a bash shell
 * \[ \] Run `build.bat`
-* \[ \] Run `npm run release:prepare` and pick new version number
+* \[ \] Run `npm run release:prepare` and pick new version number (works best in Windows shell)
 * \[ \] Run `npm run release:review`
 * \[ \] Run `npm run release:publish-git` in a bash shell
 * \[ \] Run `npm run release:publish-npm` in a Windows shell and enter the npm 2-factor code when requested
