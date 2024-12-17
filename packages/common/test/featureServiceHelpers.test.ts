@@ -556,7 +556,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail with undefined", () => {
       let fieldInfos: any = {};
       const layer: any = undefined;
-      fieldInfos = cacheFieldInfos(layer, fieldInfos);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos, true);
       expect(layer).toBeUndefined();
       expect(fieldInfos).toEqual({});
     });
@@ -564,7 +564,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail without key properties on the layer", () => {
       let fieldInfos: any = {};
       const layer: any = {};
-      fieldInfos = cacheFieldInfos(layer, fieldInfos);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos, false);
       expect(layer).toEqual({});
       expect(fieldInfos).toEqual({});
     });
@@ -572,6 +572,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should cache the key properties for fieldInfos", () => {
       let fieldInfos: any = {};
       const layer: any = {
+        defaultSubtypeCode: "0",
         id: "23",
         fields: [
           {
@@ -585,6 +586,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         ],
         displayField: "DisplayField",
         editFieldsInfo: ["CreateDate"],
+        subtypeField: "SubtypeField",
+        subtypes: [{a:"A"}],
         templates: [
           {
             A: null,
@@ -637,6 +640,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const expectedFieldInfos: any = {
         "23": {
+          defaultSubtypeCode: "0",
           id: "23",
           sourceFields: [
             {
@@ -649,6 +653,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             },
           ],
           editFieldsInfo: ["CreateDate"],
+          subtypeField: "SubtypeField",
+          subtypes: [{a:"A"}],
           templates: [
             {
               A: null,
@@ -670,7 +676,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
       };
 
-      fieldInfos = cacheFieldInfos(layer, fieldInfos);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos, false);
       expect(layer).toEqual(expectedLayer);
       expect(fieldInfos).toEqual(expectedFieldInfos);
     });
@@ -3584,7 +3590,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const layer1 = mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table", [
         mockItems.createAGOLRelationship(0, 1, "esriRelRoleDestination"),
       ]);
-      const fieldInfos = cacheFieldInfos(layer1, cacheFieldInfos(layer0, {}));
+      const fieldInfos = cacheFieldInfos(layer1, cacheFieldInfos(layer0, {}, false), false);
 
       Object.keys(fieldInfos).forEach((k) => {
         fieldInfos[k].sourceFields[1].visible = false;
