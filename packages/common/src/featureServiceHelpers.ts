@@ -216,9 +216,10 @@ export function deleteViewProps(layer: any) {
  *
  * @param layer The data layer instance with field name references within
  * @param fieldInfos the object that stores the cached field infos
+ * @param isView When true the current layer is a view and does not need to cache subtype details
  * @returns An updated instance of the fieldInfos
  */
-export function cacheFieldInfos(layer: any, fieldInfos: any): any {
+export function cacheFieldInfos(layer: any, fieldInfos: any, isView: boolean): any {
   // cache the source fields as they are in the original source
   if (layer && layer.fields) {
     fieldInfos[layer.id] = {
@@ -226,11 +227,20 @@ export function cacheFieldInfos(layer: any, fieldInfos: any): any {
       type: layer.type,
       id: layer.id,
     };
+    /* istanbul ignore else */
+    if (!isView) {
+      fieldInfos[layer.id].subtypes = layer.subtypes;
+      fieldInfos[layer.id].subtypeField = layer.subtypeField;
+      fieldInfos[layer.id].defaultSubtypeCode = layer.defaultSubtypeCode;
+    }
   }
 
   // cache each of these properties as they each can contain field references
   // and will have associated updateDefinition calls when deploying to portal
   // as well as online for relationships...as relationships added with addToDef will cause failure
+  // https://devtopia.esri.com/WebGIS/solutions-development-support/issues/299
+  // subtypes, subtypeField, and defaultSubtypeCode should not exist in initial addToDef call and
+  // should be added with subsequent add and update calls in a specific order
   const props = {
     editFieldsInfo: false,
     types: false,
@@ -240,6 +250,13 @@ export function cacheFieldInfos(layer: any, fieldInfos: any): any {
     timeInfo: false,
     viewDefinitionQuery: false,
   };
+
+  /* istanbul ignore else */
+  if (!isView) {
+    props["subtypes"] = true;
+    props["subtypeField"] = true;
+    props["defaultSubtypeCode"] = true;
+  }
 
   Object.keys(props).forEach((k) => {
     _cacheFieldInfo(layer, k, fieldInfos, props[k]);
@@ -271,6 +288,7 @@ export function cacheContingentValues(id: string, fieldInfos: any, itemTemplate:
  * @param layer the data layer being cloned
  * @param prop the property name used to cache
  * @param fieldInfos the object that will store the cached property
+ * @param removeProp when true relationships prop will be set to null and subtype props will be deleted
  * @private
  */
 export function _cacheFieldInfo(layer: any, prop: string, fieldInfos: any, removeProp: boolean): void {
@@ -280,8 +298,10 @@ export function _cacheFieldInfo(layer: any, prop: string, fieldInfos: any, remov
     // editFieldsInfo does not come through unless its with the layer
     // when it's being added
     /* istanbul ignore else */
-    if (removeProp) {
+    if (removeProp && prop === "relationships") {
       layer[prop] = null;
+    } else if (removeProp) {
+      delete layer[prop];
     }
   }
 }
@@ -846,7 +866,8 @@ export function addFeatureServiceDefinition(
       listToAdd.forEach((toAdd, i) => {
         let item = toAdd.item;
         const originalId = item.id;
-        fieldInfos = cacheFieldInfos(item, fieldInfos);
+        const isView = itemTemplate.properties.service.isView;
+        fieldInfos = cacheFieldInfos(item, fieldInfos, isView);
 
         // cache the values to be added in seperate addToDef calls
         fieldInfos = cacheContingentValues(item.id, fieldInfos, itemTemplate);
@@ -857,7 +878,7 @@ export function addFeatureServiceDefinition(
         }
         // when the item is a view we need to grab the supporting fieldInfos
         /* istanbul ignore else */
-        if (itemTemplate.properties.service.isView) {
+        if (isView) {
           _updateGeomFieldName(item.adminLayerInfo, templateDictionary);
 
           adminLayerInfos[originalId] = item.adminLayerInfo;
