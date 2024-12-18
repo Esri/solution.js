@@ -587,7 +587,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         displayField: "DisplayField",
         editFieldsInfo: ["CreateDate"],
         subtypeField: "SubtypeField",
-        subtypes: [{a:"A"}],
+        subtypes: [{ a: "A" }],
         templates: [
           {
             A: null,
@@ -654,7 +654,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           ],
           editFieldsInfo: ["CreateDate"],
           subtypeField: "SubtypeField",
-          subtypes: [{a:"A"}],
+          subtypes: [{ a: "A" }],
           templates: [
             {
               A: null,
@@ -3517,25 +3517,42 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       ).toBeRejected();
     });
 
-    it("should skip tracking view", async () => {
+    it("should skip tracking view and collect replacement details", async () => {
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const itemId = "aaaaf0ffbdf042adb4ad24124b378d20";
+      const sourceItemId = "bbbaf0ffbdf042adb4ad24124b378d20";
 
       itemTemplate = templates.getItemTemplate("Feature Service", [], expectedUrl);
       itemTemplate.item.typeKeywords = ["Location Tracking View"];
       itemTemplate.item.properties = {
         trackViewGroup: "grp123",
       };
+      itemTemplate.itemId = itemId;
+
+      const templateDictionary = {};
+      templateDictionary[sourceItemId] = {
+        itemId,
+      };
 
       await addFeatureServiceLayersAndTables(
         itemTemplate,
-        {},
+        templateDictionary,
         {
           layers: [],
           tables: [],
         },
         MOCK_USER_SESSION,
       );
+
+      const expectedTemplateDictionary = {
+        itemId,
+        layer0: {
+          url: `${expectedUrl}/0`,
+        },
+      };
+
+      expect(expectedTemplateDictionary).toEqual(templateDictionary[sourceItemId] as any);
     });
   });
 
