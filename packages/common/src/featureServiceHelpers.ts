@@ -449,7 +449,7 @@ export function _setTrackingViewLayerSettings(itemTemplate: IItemTemplate, templ
   const newId = itemTemplate.itemId;
   let k;
   Object.keys(templateDictionary).some((_k) => {
-    if (newId === templateDictionary[_k]?.itemId) {
+    if (newId === templateDictionary[_k].itemId) {
       k = _k;
       return true;
     }
