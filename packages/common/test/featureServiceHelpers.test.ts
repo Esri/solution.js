@@ -587,7 +587,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         displayField: "DisplayField",
         editFieldsInfo: ["CreateDate"],
         subtypeField: "SubtypeField",
-        subtypes: [{a:"A"}],
+        subtypes: [{ a: "A" }],
         templates: [
           {
             A: null,
@@ -654,7 +654,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           ],
           editFieldsInfo: ["CreateDate"],
           subtypeField: "SubtypeField",
-          subtypes: [{a:"A"}],
+          subtypes: [{ a: "A" }],
           templates: [
             {
               A: null,

@@ -437,6 +437,33 @@ export function _updateTypeKeywords(itemTemplate: IItemTemplate, createResponse:
 }
 
 /**
+ * Add layer urls from tracking views to the templateDictionary to be used for adlib replacements
+ *
+ * @param itemTemplate Item to be created; n.b.: this item is modified
+ * @param templateDictionary Hash mapping property names to replacement values
+ * @returns void
+ * @private
+ */
+export function _setTrackingViewLayerSettings(itemTemplate: IItemTemplate, templateDictionary: any): void {
+  const url = itemTemplate.item.url;
+  const newId = itemTemplate.itemId;
+  let k;
+  Object.keys(templateDictionary).some((_k) => {
+    if (newId === templateDictionary[_k]?.itemId) {
+      k = _k;
+      return true;
+    }
+  });
+
+  itemTemplate.properties.layers.forEach((l) => {
+    const id = l.id.toString();
+    templateDictionary[k][`layer${id}`] = {
+      url: checkUrlPathTermination(url) + id,
+    };
+  });
+}
+
+/**
  * Create the name mapping object that will allow for all templatized field
  * references to be de-templatized.
  * This also removes the stored sourceFields and newFields arrays from fieldInfos.
@@ -759,6 +786,7 @@ export function addFeatureServiceLayersAndTables(
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     if (isTrackingViewTemplate(itemTemplate)) {
+      _setTrackingViewLayerSettings(itemTemplate, templateDictionary);
       resolve(null);
     } else {
       // Create a hash of various properties that contain field references
