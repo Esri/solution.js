@@ -1927,6 +1927,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           relationships,
           deleteFields: ["A", "B"],
           contingentValues,
+          subtypeField: "SubtypeField",
+          defaultSubtypeCode: "0",
+          subtypes: [{a: "A"}]
         },
       };
 
@@ -1966,6 +1969,33 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           url: adminUrl + "refresh",
           params: {
             f: "json",
+          },
+          args,
+        },
+        {
+          url: adminUrl + "0/updateDefinition",
+          params: {
+            updateDefinition: {
+              subtypeField: "SubtypeField"
+            },
+          },
+          args,
+        },
+        {
+          url: adminUrl + "0/updateDefinition",
+          params: {
+            updateDefinition: {
+              defaultSubtypeCode: "0"
+            },
+          },
+          args,
+        },
+        {
+          url: adminUrl + "0/addToDefinition",
+          params: {
+            addToDefinition: {
+              subtypes: [{a: "A"}]
+            },
           },
           args,
         },

@@ -947,6 +947,33 @@ export function getLayerUpdates(args: IPostProcessArgs, isPortal: boolean): IUpd
       updates.push(_getUpdate(adminUrl, null, null, args, "refresh"));
     }
   });
+
+  const subtypeUpdates = _getSubtypeUpdates({
+    message: "add subtype updates",
+    objects: args.objects,
+    itemTemplate: args.itemTemplate,
+    authentication: args.authentication,
+  });
+
+  /* istanbul ignore else */
+  if (subtypeUpdates.length > 0) {
+    subtypeUpdates.forEach((subtypeUpdate) => {
+      updates.push(
+        _getUpdate(adminUrl + subtypeUpdate.id, null, { subtypeField: subtypeUpdate.subtypeField }, args, "update"),
+      );
+      updates.push(
+        _getUpdate(
+          adminUrl + subtypeUpdate.id,
+          null,
+          { defaultSubtypeCode: subtypeUpdate.defaultSubtypeCode },
+          args,
+          "update",
+        ),
+      );
+      updates.push(_getUpdate(adminUrl + subtypeUpdate.id, null, { subtypes: subtypeUpdate.subtypes }, args, "add"));
+    });
+  }
+
   // issue: #706
   // Add source service relationships
   // views will now always add all layers in a single call and will inherit the relationships from the source service
@@ -2103,6 +2130,33 @@ export function _getContingentValuesUpdates(args: IPostProcessArgs): any {
     deleteProp(obj, "contingentValues");
   });
   return contingentValues;
+}
+
+/**
+ * Get the stored subtype values and structure them to be added to the services layers.
+ *
+ * @param args The IPostProcessArgs for the request(s)
+ * @returns Any subtype values that should be added to the service.
+ * @private
+ */
+export function _getSubtypeUpdates(args: IPostProcessArgs): any {
+  const subtypeUpdates: any[] = [];
+  Object.keys(args.objects).forEach((k: any) => {
+    const obj: any = args.objects[k];
+    /* istanbul ignore else */
+    if (obj.subtypeField) {
+      subtypeUpdates.push({
+        id: obj.id,
+        subtypeField: obj.subtypeField,
+        subtypes: obj.subtypes,
+        defaultSubtypeCode: obj.defaultSubtypeCode,
+      });
+    }
+    deleteProp(obj, "subtypeField");
+    deleteProp(obj, "subtypes");
+    deleteProp(obj, "defaultSubtypeCode");
+  });
+  return subtypeUpdates;
 }
 
 /**
