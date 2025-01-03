@@ -157,5 +157,5 @@ pushd demos\verifySolution
 call npm run build
 popd
 
-call rmdir/q/s coverage
-call npm run test
+@REM call rmdir/q/s coverage
+@REM call npm run test

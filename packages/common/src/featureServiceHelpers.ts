@@ -282,6 +282,33 @@ export function cacheContingentValues(id: string, fieldInfos: any, itemTemplate:
 }
 
 /**
+ * Cache the stored contingent values so we can add them in subsequent addToDef calls
+ *
+ * @param layer The current layer to check indexes on
+ * @param fieldInfos The object that stores the cached field infos
+ * @returns An updated instance of the fieldInfos
+ */
+export function cacheIndexes(layer: any, fieldInfos: any): any {
+  console.log("cacheIndexes");
+  if (Array.isArray(layer.indexes)) {
+    const oidField = layer.objectIdField;
+    const guidField = layer.globalIdField;
+    fieldInfos[layer.id].indexes = layer.indexes.filter((i) => {
+      if ((i.isUnique && i.fields !== oidField && i.fields !== guidField) || i.indexType === "FullText") {
+        if (i.name) {
+          console.log(`BEFORE: ${i.name}`);
+          i.name = i.name.replaceAll(" ", "");
+          console.log(`AFTER: ${i.name}`);
+        }
+        return i;
+      }
+    });
+    delete layer.indexes;
+  }
+  return fieldInfos;
+}
+
+/**
  * Helper function to cache a single property into the fieldInfos object
  * This property will be removed from the layer instance.
  *
@@ -825,7 +852,10 @@ export function addFeatureServiceLayersAndTables(
                 updates
                   .reduce((prev, update) => {
                     return prev.then(() => {
-                      return getRequest(update);
+                      //const isAsync = update
+                      console.log("update");
+                      console.log(update);
+                      return getRequest(update, false, true, templateDictionary.isPortal);
                     });
                   }, Promise.resolve(null))
                   .then(
@@ -899,6 +929,11 @@ export function addFeatureServiceDefinition(
 
         // cache the values to be added in seperate addToDef calls
         fieldInfos = cacheContingentValues(item.id, fieldInfos, itemTemplate);
+
+        // cache specific field indexes when deploying to ArcGIS Enterprise portal
+        if (templateDictionary.isPortal) {
+          fieldInfos = cacheIndexes(item, fieldInfos);
+        }
 
         /* istanbul ignore else */
         if (item.isView) {

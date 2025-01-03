@@ -933,6 +933,8 @@ export function getLayerUpdates(args: IPostProcessArgs, isPortal: boolean): IUpd
   const updates: IUpdate[] = [];
   const refresh: any = _getUpdate(adminUrl, null, null, args, "refresh");
   updates.push(refresh);
+  const status: any = _getUpdate(adminUrl, null, null, args, "status");
+  updates.push(status);
   Object.keys(args.objects).forEach((id) => {
     const obj: any = Object.assign({}, args.objects[id]);
     // These properties cannot be set in the update definition when working with portal
@@ -1012,6 +1014,84 @@ export function getLayerUpdates(args: IPostProcessArgs, isPortal: boolean): IUpd
         updates.push(_getUpdate(adminUrl + conUpdate.id, null, conUpdate.contingentValues, args, "add"));
       });
     }
+  }
+
+  // issue: https://devtopia.esri.com/WebGIS/solution-deployment-apps/issues/273
+  // For portal only...add specific indexes with existing supplementary addToDefinition call if it exists
+  // or with a new addToDefinition call if one doesn't already exist
+  if (isPortal) {
+    console.log("add to def for portal");
+    Object.keys(args.objects).forEach((id) => {
+      const obj: any = Object.assign({}, args.objects[id]);
+      let update;
+      if (Array.isArray(obj.indexes) && obj.indexes.length > 0) {
+        const layerHasExistingAdd = updates.some((u) => {
+          if (u.url.indexOf(`${id}/addToDefinition`) > -1) {
+            update = u;
+            return true;
+          }
+        });
+        if (layerHasExistingAdd) {
+          // append to existing addToDef
+          update.params.addToDefinition = {
+            ...update.params.addToDefinition,
+            indexes: obj.indexes,
+          };
+        } else {
+          // create new addToDef
+          updates.push(_getUpdate(checkUrlPathTermination(adminUrl) + id, null, { indexes: obj.indexes }, args, "add"));
+        }
+      }
+    });
+
+    ////////////////////////////////////////////////////////////////////////
+    // Failing with object reference not set to an instance of an object
+    ////////////////////////////////////////////////////////////////////////
+    // let indexUpdates = {};
+    // const objKeys = Object.keys(args.objects).filter((k) => {
+    //   const indexes = args.objects[k].indexes;
+    //   if (Array.isArray(indexes) && indexes.length > 0) {
+    //     indexUpdates = { ...indexUpdates, indexes };
+    //     return true;
+    //   }
+    // });
+
+    // console.log("indexUpdates");
+    // console.log(indexUpdates);
+
+    // if (objKeys.length > 0) {
+    //   console.log("objKeys");
+    //   console.log(objKeys);
+    //   let update;
+    //   if (
+    //     updates.some((u) => {
+    //       console.log("checkUrlPathTermination(adminUrl) + addToDefinition");
+    //       console.log(checkUrlPathTermination(adminUrl) + "addToDefinition");
+
+    //       console.log("url");
+    //       console.log(u.url);
+    //       if (u.url === checkUrlPathTermination(adminUrl) + "addToDefinition") {
+    //         update = u;
+    //         return true;
+    //       }
+    //     })
+    //   ) {
+    //     console.log("IN IF");
+    //     // append to existing addToDef
+    //     console.log("update.params.addToDefinition");
+    //     console.log(update.params.addToDefinition);
+    //     // update.params.addToDefinition = {
+    //     //   ...update.params.addToDefinition,
+    //     //   indexes: obj.indexes,
+    //     // };
+    //   } else {
+    //     console.log("IN ELSE");
+
+    //     // create new addToDef
+    //     updates.push(_getUpdate(adminUrl, null, { layers: [indexUpdates] }, args, "add"));
+    //   }
+    // }
+    ////////////////////////////////////////////////////////////////////////
   }
   return updates.length === 1 ? [] : updates;
 }
@@ -1101,38 +1181,49 @@ export function _sortRelationships(layers: any[], tables: any[], relUpdates: any
  * @private
  */
 /* istanbul ignore else */
-export function getRequest(update: IUpdate, skipRetry: boolean = false, useAsync: boolean = false): Promise<void> {
+export function getRequest(
+  update: IUpdate,
+  skipRetry: boolean = false,
+  useAsync: boolean = false,
+  isPortal: boolean = false,
+): Promise<void> {
+  const delayVal = isPortal ? 10000 : 0;
   return new Promise((resolve, reject) => {
-    const options: IRequestOptions = {
-      params: update.params,
-      authentication: update.args.authentication,
-    };
-    /* istanbul ignore else */
-    if (
-      (useAsync && update.url.indexOf("addToDefinition") > -1) ||
-      update.url.indexOf("updateDefinition") > -1 ||
-      update.url.indexOf("deleteFromDefinition") > -1
-    ) {
-      options.params = { ...options.params, async: true };
-    }
-    request(update.url, options).then(
-      (result) => {
-        checkRequestStatus(result, options.authentication).then(
-          () => resolve(null),
-          (e) => reject(fail(e)),
-        );
-      },
-      (e: any) => {
-        if (!skipRetry) {
-          getRequest(update, true, true).then(
-            () => resolve(),
-            (e) => reject(e),
+    console.log(`before timeout`);
+    setTimeout(() => {
+      console.log("in timeout");
+
+      const options: IRequestOptions = {
+        params: update.params,
+        authentication: update.args.authentication,
+      };
+      /* istanbul ignore else */
+      if (
+        (useAsync && update.url.indexOf("addToDefinition") > -1) ||
+        update.url.indexOf("updateDefinition") > -1 ||
+        update.url.indexOf("deleteFromDefinition") > -1
+      ) {
+        options.params = { ...options.params, async: true };
+      }
+      request(update.url, options).then(
+        (result) => {
+          checkRequestStatus(result, options.authentication).then(
+            () => resolve(null),
+            (e) => reject(fail(e)),
           );
-        } else {
-          reject(e);
-        }
-      },
-    );
+        },
+        (e: any) => {
+          if (!skipRetry) {
+            getRequest(update, true, true, isPortal).then(
+              () => resolve(),
+              (e) => reject(e),
+            );
+          } else {
+            reject(e);
+          }
+        },
+      );
+    }, delayVal);
   });
 }
 
@@ -2175,7 +2266,7 @@ export function _getUpdate(
   id: any,
   obj: any,
   args: any,
-  type: "delete" | "update" | "add" | "refresh",
+  type: "delete" | "update" | "add" | "refresh" | "status",
 ): IUpdate {
   const ops: any = {
     delete: {
@@ -2200,6 +2291,12 @@ export function _getUpdate(
     },
     refresh: {
       url: checkUrlPathTermination(url) + "refresh",
+      params: {
+        f: "json",
+      },
+    },
+    status: {
+      url: checkUrlPathTermination(url) + "status",
       params: {
         f: "json",
       },
