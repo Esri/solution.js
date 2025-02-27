@@ -101,64 +101,78 @@ export function createItemFromTemplate(
             newItemTemplate.data = {};
             delete newItemTemplate.item.thumbnail;
 
-            // get the GPServer url from the webtoolService.json resource
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            common.getItemResourcesFiles(createResponse.itemId, destinationAuthentication).then((resourcesResponse) => {
-              let webtoolServicePromise = Promise.resolve();
-              resourcesResponse.some((v) => {
-                if (v.name === "webtoolService.json") {
-                  webtoolServicePromise = common.blobToJson(v);
-                  return true;
-                }
-              });
-
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              webtoolServicePromise.then((webtoolServiceResponse: any) => {
-                templateDictionary[template.itemId].url = webtoolServiceResponse?.serviceUrl;
-
-                // Update the template again now that we have the new item id
-                newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
-
-                // Update the item with snippet, description, popupInfo, etc.
+            moveToFolder(newItemTemplate.itemId, templateDictionary, destinationAuthentication).then(
+              () => {
+                // get the GPServer url from the webtoolService.json resource
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 common
-                  .updateItemExtended(
-                    {
-                      ...newItemTemplate.item,
-                    },
-                    newItemTemplate.data,
-                    destinationAuthentication,
-                    template.item.thumbnail,
-                    undefined,
-                    templateDictionary,
-                  )
-                  .then(
-                    () => {
-                      // Interrupt process if progress callback returns `false`
-                      if (
-                        !itemProgressCallback(
-                          template.itemId,
-                          common.EItemProgressStatus.Finished,
-                          template.estimatedDeploymentCostFactor / 2,
-                          createResponse.itemId,
-                        )
-                      ) {
-                        itemProgressCallback(template.itemId, common.EItemProgressStatus.Cancelled, 0);
-                        common.removeItem(createResponse.itemId, destinationAuthentication).then(
-                          () => resolve(common.generateEmptyCreationResponse(template.type)),
-                          () => resolve(common.generateEmptyCreationResponse(template.type)),
-                        );
-                      } else {
-                        // Update the template to match what we've stored in AGO
-                        common.getItemBase(newItemTemplate.itemId, destinationAuthentication).then(
-                          (updatedItem) => {
-                            newItemTemplate.item = updatedItem;
+                  .getItemResourcesFiles(createResponse.itemId, destinationAuthentication)
+                  .then((resourcesResponse) => {
+                    let webtoolServicePromise = Promise.resolve();
+                    resourcesResponse.some((v) => {
+                      if (v.name === "webtoolService.json") {
+                        webtoolServicePromise = common.blobToJson(v);
+                        return true;
+                      }
+                    });
 
-                            resolve({
-                              item: newItemTemplate,
-                              id: createResponse.itemId,
-                              type: newItemTemplate.type,
-                              postProcess: false,
-                            });
+                    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                    webtoolServicePromise.then((webtoolServiceResponse: any) => {
+                      templateDictionary[template.itemId].url = webtoolServiceResponse?.serviceUrl;
+
+                      // Update the template again now that we have the new item id
+                      newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
+
+                      // Update the item with snippet, description, popupInfo, etc.
+                      common
+                        .updateItemExtended(
+                          {
+                            ...newItemTemplate.item,
+                          },
+                          newItemTemplate.data,
+                          destinationAuthentication,
+                          template.item.thumbnail,
+                          undefined,
+                          templateDictionary,
+                        )
+                        .then(
+                          () => {
+                            // Interrupt process if progress callback returns `false`
+                            if (
+                              !itemProgressCallback(
+                                template.itemId,
+                                common.EItemProgressStatus.Finished,
+                                template.estimatedDeploymentCostFactor / 2,
+                                createResponse.itemId,
+                              )
+                            ) {
+                              itemProgressCallback(template.itemId, common.EItemProgressStatus.Cancelled, 0);
+                              common.removeItem(createResponse.itemId, destinationAuthentication).then(
+                                () => resolve(common.generateEmptyCreationResponse(template.type)),
+                                () => resolve(common.generateEmptyCreationResponse(template.type)),
+                              );
+                            } else {
+                              // Update the template to match what we've stored in AGO
+                              common.getItemBase(newItemTemplate.itemId, destinationAuthentication).then(
+                                (updatedItem) => {
+                                  newItemTemplate.item = updatedItem;
+
+                                  resolve({
+                                    item: newItemTemplate,
+                                    id: createResponse.itemId,
+                                    type: newItemTemplate.type,
+                                    postProcess: false,
+                                  });
+                                },
+                                () => {
+                                  itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
+                                  common.removeItem(createResponse.itemId, destinationAuthentication).then(
+                                    () => resolve(common.generateEmptyCreationResponse(template.type)),
+                                    () => resolve(common.generateEmptyCreationResponse(template.type)),
+                                  );
+                                }, // fails to update item
+                              );
+                            }
                           },
                           () => {
                             itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
@@ -166,20 +180,19 @@ export function createItemFromTemplate(
                               () => resolve(common.generateEmptyCreationResponse(template.type)),
                               () => resolve(common.generateEmptyCreationResponse(template.type)),
                             );
-                          }, // fails to update item
+                          }, // fails to move item
                         );
-                      }
-                    },
-                    () => {
-                      itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
-                      common.removeItem(createResponse.itemId, destinationAuthentication).then(
-                        () => resolve(common.generateEmptyCreationResponse(template.type)),
-                        () => resolve(common.generateEmptyCreationResponse(template.type)),
-                      );
-                    }, // fails to update item
-                  );
-              });
-            });
+                    });
+                  });
+              },
+              () => {
+                itemProgressCallback(template.itemId, common.EItemProgressStatus.Failed, 0);
+                common.removeItem(createResponse.itemId, destinationAuthentication).then(
+                  () => resolve(common.generateEmptyCreationResponse(template.type)),
+                  () => resolve(common.generateEmptyCreationResponse(template.type)),
+                );
+              },
+            );
           }
         },
         () => {
@@ -309,4 +322,28 @@ export async function getNotebookEnterpriseServerRootURL(
     return "";
   }
   return notebookServer.url as string;
+}
+
+/**
+ * Move the web tool to the solution folder on enterprise.
+ * This will happen automatically for Online.
+ *
+ * @param {string} itemId The webtools item id
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} destinationAuthentication The destination user session info
+ * @returns a promise that will resolve when the move is complete
+ */
+export async function moveToFolder(
+  itemId: string,
+  templateDictionary: any,
+  destinationAuthentication: common.UserSession,
+): Promise<void> {
+  if (templateDictionary.isPortal) {
+    const moveResult = await common.moveItemToFolder(itemId, templateDictionary.folderId, destinationAuthentication);
+    const hasFailure = !moveResult.success;
+    if (hasFailure) {
+      return Promise.reject("Failed to move webTool item");
+    }
+  }
+  return Promise.resolve();
 }

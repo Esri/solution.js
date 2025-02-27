@@ -100,7 +100,7 @@ describe("Module `web-tool-processor`: ", () => {
       expect(result.postProcess).withContext("should return postProcess false").toBe(false);
     });
 
-    it("can create Web Tool Geoprocessing Service", async () => {
+    it("can create Web Tool Geoprocessing Service in Enterprise", async () => {
       const requestSpy = spyOn(common, "request").and.resolveTo({
         itemId: "newgs0123456789",
       });
@@ -121,6 +121,32 @@ describe("Module `web-tool-processor`: ", () => {
         serviceUrl,
       });
 
+      const notebookBaseUrl = "https://RQALnxBI01NB.esri.com/gis";
+      const getEnterpriseServersSpy = spyOn(common, "getEnterpriseServers").and.resolveTo([
+        {
+          id: "e0d0rP32Fai4ToC3",
+          name: "RQALnxBI01Sv.esri.com:6443",
+          adminUrl: "https://RQALnxBI01Sv.esri.com:6443/arcgis",
+          url: "https://RQALnxBI01Sv.esri.com/gis",
+          isHosted: true,
+          serverType: "ArcGIS",
+          serverRole: "HOSTING_SERVER",
+          serverFunction: "KnowledgeServer,WorkflowManager",
+        },
+        {
+          id: "U5yshUHhJkWINozX",
+          name: "RQALnxBI01NB.esri.com:11443",
+          adminUrl: "https://RQALnxBI01NB.esri.com:11443/arcgis",
+          url: notebookBaseUrl,
+          isHosted: false,
+          serverType: "ARCGIS_NOTEBOOK_SERVER",
+          serverRole: "FEDERATED_SERVER",
+          serverFunction: "NotebookServer",
+        },
+      ]);
+
+      const moveItemToFolderSpy = spyOn(common, "moveItemToFolder").and.resolveTo(mockAGO.get200Success());
+
       const result = await WebToolProcessor.createItemFromTemplate(
         {
           id: "bc3",
@@ -135,6 +161,7 @@ describe("Module `web-tool-processor`: ", () => {
           },
         } as any,
         {
+          isPortal: true,
           portalUrls: {
             notebooks: {
               https: ["notebookservice"],
@@ -151,6 +178,193 @@ describe("Module `web-tool-processor`: ", () => {
       expect(result.item?.data).toEqual({});
       expect(getItemResourcesFilesSpy.calls.count()).toBe(1);
       expect(blobToJsonSpy.calls.count()).toBe(1);
+      expect(getEnterpriseServersSpy.calls.count()).toBe(1);
+      expect(moveItemToFolderSpy.calls.count()).toBe(1);
+    });
+
+    it("can create Web Tool Geoprocessing Service in AGO", async () => {
+      const requestSpy = spyOn(common, "request").and.resolveTo({
+        itemId: "newgs0123456789",
+      });
+      const updateItemExtendedSpy = spyOn(common, "updateItemExtended").and.resolveTo(
+        mockAGO.get200Success("newgs0123456789"),
+      );
+      const getItemBaseSpy = spyOn(common, "getItemBase").and.resolveTo(mockAGO.getAGOLItem("Geoprocessing Service"));
+
+      const getItemResourcesFilesSpy = spyOn(common, "getItemResourcesFiles").and.resolveTo([
+        {
+          name: "webtoolService.json",
+        } as any,
+      ]);
+
+      const serviceUrl = "http://localname/GPServer";
+
+      const blobToJsonSpy = spyOn(common, "blobToJson").and.resolveTo({
+        serviceUrl,
+      });
+
+      const moveItemToFolderSpy = spyOn(common, "moveItemToFolder").and.resolveTo(mockAGO.get200Success());
+
+      const result = await WebToolProcessor.createItemFromTemplate(
+        {
+          id: "bc3",
+          type: "Geoprocessing Service",
+          item: {
+            typeKeywords: ["Web Tool"],
+            thumbnail: "thumb",
+          },
+          data: {
+            notebookId: "123",
+            name: "NotebookName",
+          },
+        } as any,
+        {
+          isPortal: false,
+          portalUrls: {
+            notebooks: {
+              https: ["notebookservice"],
+            },
+          },
+        },
+        MOCK_USER_SESSION,
+        cb,
+      );
+
+      expect(requestSpy.calls.count()).toBe(1);
+      expect(updateItemExtendedSpy.calls.count()).toBe(1);
+      expect(getItemBaseSpy.calls.count()).toBe(1);
+      expect(result.item?.data).toEqual({});
+      expect(getItemResourcesFilesSpy.calls.count()).toBe(1);
+      expect(blobToJsonSpy.calls.count()).toBe(1);
+      expect(moveItemToFolderSpy.calls.count()).toBe(0);
+    });
+
+    it("can handle error in move item to folder", async () => {
+      const requestSpy = spyOn(common, "request").and.resolveTo({
+        itemId: "newgs0123456789",
+      });
+
+      const notebookBaseUrl = "https://RQALnxBI01NB.esri.com/gis";
+      const getEnterpriseServersSpy = spyOn(common, "getEnterpriseServers").and.resolveTo([
+        {
+          id: "e0d0rP32Fai4ToC3",
+          name: "RQALnxBI01Sv.esri.com:6443",
+          adminUrl: "https://RQALnxBI01Sv.esri.com:6443/arcgis",
+          url: "https://RQALnxBI01Sv.esri.com/gis",
+          isHosted: true,
+          serverType: "ArcGIS",
+          serverRole: "HOSTING_SERVER",
+          serverFunction: "KnowledgeServer,WorkflowManager",
+        },
+        {
+          id: "U5yshUHhJkWINozX",
+          name: "RQALnxBI01NB.esri.com:11443",
+          adminUrl: "https://RQALnxBI01NB.esri.com:11443/arcgis",
+          url: notebookBaseUrl,
+          isHosted: false,
+          serverType: "ARCGIS_NOTEBOOK_SERVER",
+          serverRole: "FEDERATED_SERVER",
+          serverFunction: "NotebookServer",
+        },
+      ]);
+
+      const moveItemToFolderSpy = spyOn(common, "moveItemToFolder").and.resolveTo(mockAGO.get400Failure());
+
+      const removeItemSpy = spyOn(common, "removeItem").and.resolveTo(mockAGO.get200Success("newgs0123456789"));
+
+      await WebToolProcessor.createItemFromTemplate(
+        {
+          id: "bc3",
+          type: "Geoprocessing Service",
+          item: {
+            typeKeywords: ["Web Tool"],
+            thumbnail: "thumb",
+          },
+          data: {
+            notebookId: "123",
+            name: "NotebookName",
+          },
+        } as any,
+        {
+          isPortal: true,
+          portalUrls: {
+            notebooks: {
+              https: ["notebookservice"],
+            },
+          },
+        },
+        MOCK_USER_SESSION,
+        cb,
+      );
+
+      expect(requestSpy.calls.count()).toBe(1);
+      expect(getEnterpriseServersSpy.calls.count()).toBe(1);
+      expect(moveItemToFolderSpy.calls.count()).toBe(1);
+      expect(removeItemSpy.calls.count()).toBe(1);
+    });
+
+    it("can handle error in move item to folder and error on remove item", async () => {
+      const requestSpy = spyOn(common, "request").and.resolveTo({
+        itemId: "newgs0123456789",
+      });
+
+      const notebookBaseUrl = "https://RQALnxBI01NB.esri.com/gis";
+      const getEnterpriseServersSpy = spyOn(common, "getEnterpriseServers").and.resolveTo([
+        {
+          id: "e0d0rP32Fai4ToC3",
+          name: "RQALnxBI01Sv.esri.com:6443",
+          adminUrl: "https://RQALnxBI01Sv.esri.com:6443/arcgis",
+          url: "https://RQALnxBI01Sv.esri.com/gis",
+          isHosted: true,
+          serverType: "ArcGIS",
+          serverRole: "HOSTING_SERVER",
+          serverFunction: "KnowledgeServer,WorkflowManager",
+        },
+        {
+          id: "U5yshUHhJkWINozX",
+          name: "RQALnxBI01NB.esri.com:11443",
+          adminUrl: "https://RQALnxBI01NB.esri.com:11443/arcgis",
+          url: notebookBaseUrl,
+          isHosted: false,
+          serverType: "ARCGIS_NOTEBOOK_SERVER",
+          serverRole: "FEDERATED_SERVER",
+          serverFunction: "NotebookServer",
+        },
+      ]);
+
+      const moveItemToFolderSpy = spyOn(common, "moveItemToFolder").and.resolveTo(mockAGO.get400Failure());
+
+      const removeItemSpy = spyOn(common, "removeItem").and.rejectWith(mockAGO.get400Failure());
+
+      await WebToolProcessor.createItemFromTemplate(
+        {
+          id: "bc3",
+          type: "Geoprocessing Service",
+          item: {
+            typeKeywords: ["Web Tool"],
+            thumbnail: "thumb",
+          },
+          data: {
+            notebookId: "123",
+            name: "NotebookName",
+          },
+        } as any,
+        {
+          isPortal: true,
+          portalUrls: {
+            notebooks: {
+              https: ["notebookservice"],
+            },
+          },
+        },
+        MOCK_USER_SESSION,
+        cb,
+      );
+
+      expect(requestSpy.calls.count()).toBe(1);
+      expect(getEnterpriseServersSpy.calls.count()).toBe(1);
+      expect(moveItemToFolderSpy.calls.count()).toBe(1);
+      expect(removeItemSpy.calls.count()).toBe(1);
     });
 
     it("can handle error on getEnterpriseServers", async () => {
