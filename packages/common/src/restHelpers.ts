@@ -1018,7 +1018,6 @@ export function getLayerUpdates(args: IPostProcessArgs, isPortal: boolean): IUpd
   // For portal only...add specific indexes with existing supplementary addToDefinition call if it exists
   // or with a new addToDefinition call if one doesn't already exist
   if (isPortal) {
-    console.log("add to def for portal");
     Object.keys(args.objects).forEach((id) => {
       const obj: any = Object.assign({}, args.objects[id]);
       let update;
