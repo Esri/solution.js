@@ -296,7 +296,7 @@ export function cacheIndexes(layer: any, fieldInfos: any): any {
     fieldInfos[layer.id].indexes = layer.indexes.filter((i) => {
       if ((i.isUnique && i.fields !== oidField && i.fields !== guidField) || i.indexType === "FullText") {
         if (i.name) {
-          i.name = i.name.replaceAll(" ", "");
+          delete i.name;
         }
         return i;
       }

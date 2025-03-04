@@ -723,7 +723,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       expect(layer).toEqual(expectedLayer);
       expect(fieldInfos["0"].indexes.length).toEqual(2);
-      expect(fieldInfos["0"].indexes[1].name).toEqual("A_FullText");
+      expect(fieldInfos["0"].indexes[1].name).toBe(undefined);
     });
   });
 
