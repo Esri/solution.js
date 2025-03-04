@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-common",
-  "version": "5.8.1",
+  "version": "5.8.4",
   "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -35,10 +35,10 @@
     "@esri/arcgis-rest-portal": "^3.7.0",
     "@esri/arcgis-rest-request": "^3.7.0",
     "@esri/arcgis-rest-service-admin": "^3.7.0",
-    "@esri/hub-common": "^14.177.1",
-    "@esri/hub-initiatives": "^14.0.0",
-    "@esri/hub-sites": "^15.0.1",
-    "@esri/hub-teams": "^14.1.1",
+    "@esri/hub-common": "^15.23.2",
+    "@esri/hub-initiatives": "^15.0.0",
+    "@esri/hub-sites": "^16.0.0",
+    "@esri/hub-teams": "^15.0.0",
     "adlib": "3.0.8",
     "jszip": "3.10.1",
     "tslib": "1.14.1"
@@ -94,5 +94,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "2e502182d7608b7c8b51888ed4e2594e75a1a296"
+  "gitHead": "7dc4cc852051eb17e3b4b5c5534360b4043b0845"
 }
