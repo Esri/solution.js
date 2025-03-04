@@ -714,7 +714,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const id = "0";
       let fieldInfos: any = {};
       fieldInfos[id] = {};
-      fieldInfos = cacheIndexes(layer, fieldInfos);
+      fieldInfos = cacheIndexes(layer, fieldInfos, false, false);
 
       const expectedLayer = {
         id: "0",
@@ -724,6 +724,128 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(layer).toEqual(expectedLayer);
       expect(fieldInfos["0"].indexes.length).toEqual(2);
       expect(fieldInfos["0"].indexes[1].name).toBe(undefined);
+    });
+
+    it("should not cache specific indexes for views", () => {
+      const layer = {
+        id: "0",
+        objectIdField: "objectid",
+        globalIdField: "globalid",
+        indexes: [
+          {
+            isUnique: true,
+            fields: "B",
+            indexType: "",
+            name: "B_Unique",
+          },
+          {
+            isUnique: true,
+            fields: "objectid",
+            indexType: "",
+            name: "C_objectid",
+          },
+          {
+            isUnique: false,
+            fields: "A",
+            indexType: "FullText",
+            name: "A _ FullText",
+          },
+        ],
+      } as any;
+
+      const id = "0";
+      let fieldInfos: any = {};
+      fieldInfos[id] = {};
+      fieldInfos = cacheIndexes(layer, fieldInfos, true, false);
+
+      const expectedLayer = {
+        id: "0",
+        objectIdField: "objectid",
+        globalIdField: "globalid",
+        indexes: [
+          {
+            isUnique: true,
+            fields: "B",
+            indexType: "",
+            name: "B_Unique",
+          },
+          {
+            isUnique: true,
+            fields: "objectid",
+            indexType: "",
+            name: "C_objectid",
+          },
+          {
+            isUnique: false,
+            fields: "A",
+            indexType: "FullText",
+            name: "A _ FullText",
+          },
+        ],
+      };
+      expect(layer).toEqual(expectedLayer);
+      expect(fieldInfos["0"].indexes).not.toBeDefined();
+    });
+
+    it("should not cache specific indexes for multi source views", () => {
+      const layer = {
+        id: "0",
+        objectIdField: "objectid",
+        globalIdField: "globalid",
+        indexes: [
+          {
+            isUnique: true,
+            fields: "B",
+            indexType: "",
+            name: "B_Unique",
+          },
+          {
+            isUnique: true,
+            fields: "objectid",
+            indexType: "",
+            name: "C_objectid",
+          },
+          {
+            isUnique: false,
+            fields: "A",
+            indexType: "FullText",
+            name: "A _ FullText",
+          },
+        ],
+      } as any;
+
+      const id = "0";
+      let fieldInfos: any = {};
+      fieldInfos[id] = {};
+      fieldInfos = cacheIndexes(layer, fieldInfos, false, true);
+
+      const expectedLayer = {
+        id: "0",
+        objectIdField: "objectid",
+        globalIdField: "globalid",
+        indexes: [
+          {
+            isUnique: true,
+            fields: "B",
+            indexType: "",
+            name: "B_Unique",
+          },
+          {
+            isUnique: true,
+            fields: "objectid",
+            indexType: "",
+            name: "C_objectid",
+          },
+          {
+            isUnique: false,
+            fields: "A",
+            indexType: "FullText",
+            name: "A _ FullText",
+          },
+        ],
+      };
+      expect(layer).toEqual(expectedLayer);
+      expect(fieldInfos["0"].indexes).not.toBeDefined();
     });
   });
 
@@ -7253,7 +7375,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expected: any = {
         someProp: "A",
       };
-      deleteViewProps(layer);
+      deleteViewProps(layer, false);
 
       expect(layer).toEqual(expected);
     });
@@ -7265,7 +7387,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expected: any = {
         someProp: "A",
       };
-      deleteViewProps(layer);
+      deleteViewProps(layer, false);
 
       expect(layer).toEqual(expected);
     });

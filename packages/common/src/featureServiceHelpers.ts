@@ -198,13 +198,19 @@ export function templatize(
  * Delete key properties that are system managed
  *
  * @param layer The data layer instance with field name references within
+ * @param isPortal When true we are deploying to portal
  */
-export function deleteViewProps(layer: any) {
+export function deleteViewProps(layer: any, isPortal: boolean) {
   const props: string[] = ["definitionQuery"];
+  const portalOnlyProps: string[] = ["indexes"];
 
-  props.forEach((prop) => {
-    deleteProp(layer, prop);
-  });
+  props.forEach((prop) => deleteProp(layer, prop));
+
+  if (isPortal) {
+    portalOnlyProps.forEach((prop) => {
+      deleteProp(layer, prop);
+    });
+  }
 }
 
 /**
@@ -217,6 +223,7 @@ export function deleteViewProps(layer: any) {
  * @param layer The data layer instance with field name references within
  * @param fieldInfos the object that stores the cached field infos
  * @param isView When true the current layer is a view and does not need to cache subtype details
+ * @param isPortal When true we are deploying to portal
  * @returns An updated instance of the fieldInfos
  */
 export function cacheFieldInfos(layer: any, fieldInfos: any, isView: boolean, isPortal: boolean): any {
@@ -288,9 +295,9 @@ export function cacheContingentValues(id: string, fieldInfos: any, itemTemplate:
  * @param fieldInfos The object that stores the cached field infos
  * @returns An updated instance of the fieldInfos
  */
-export function cacheIndexes(layer: any, fieldInfos: any): any {
+export function cacheIndexes(layer: any, fieldInfos: any, isView: boolean, isMsView: boolean): any {
   /* istanbul ignore else */
-  if (Array.isArray(layer.indexes)) {
+  if (!isView && !isMsView && Array.isArray(layer.indexes)) {
     const oidField = layer.objectIdField;
     const guidField = layer.globalIdField;
     fieldInfos[layer.id].indexes = layer.indexes.filter((i) => {
@@ -920,6 +927,7 @@ export function addFeatureServiceDefinition(
         let item = toAdd.item;
         const originalId = item.id;
         const isView = itemTemplate.properties.service.isView;
+        const isMsView = itemTemplate.properties.service.isMultiServicesView;
         const isPortal = templateDictionary.isPortal;
         fieldInfos = cacheFieldInfos(item, fieldInfos, isView, isPortal);
 
@@ -928,12 +936,12 @@ export function addFeatureServiceDefinition(
 
         // cache specific field indexes when deploying to ArcGIS Enterprise portal
         if (isPortal) {
-          fieldInfos = cacheIndexes(item, fieldInfos);
+          fieldInfos = cacheIndexes(item, fieldInfos, isView, isMsView);
         }
 
         /* istanbul ignore else */
         if (item.isView) {
-          deleteViewProps(item);
+          deleteViewProps(item, isPortal);
         }
         // when the item is a view we need to grab the supporting fieldInfos
         /* istanbul ignore else */
