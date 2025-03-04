@@ -2208,7 +2208,7 @@ export function _getUpdate(
   id: any,
   obj: any,
   args: any,
-  type: "delete" | "update" | "add" | "refresh" | "status",
+  type: "delete" | "update" | "add" | "refresh",
 ): IUpdate {
   const ops: any = {
     delete: {
@@ -2233,12 +2233,6 @@ export function _getUpdate(
     },
     refresh: {
       url: checkUrlPathTermination(url) + "refresh",
-      params: {
-        f: "json",
-      },
-    },
-    status: {
-      url: checkUrlPathTermination(url) + "status",
       params: {
         f: "json",
       },
