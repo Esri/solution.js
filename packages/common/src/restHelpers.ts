@@ -446,7 +446,10 @@ export function convertExtent(
   geometryServiceUrl: string,
   authentication: UserSession,
 ): Promise<any> {
-  const _requestOptions: any = { authentication };
+  const _requestOptions: any = {
+    authentication,
+    httpMethod: "GET",
+  };
   return new Promise<any>((resolve, reject) => {
     if (extent.spatialReference.wkid === outSR?.wkid || !outSR) {
       resolve(extent);
