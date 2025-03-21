@@ -1331,6 +1331,7 @@ describe("Module `creator`", () => {
       };
 
       spyOn(common, "getItemDataAsJson").and.callFake(() => Promise.resolve(null));
+      const consoleSpy = spyOn(console, "error").and.callFake(() => {});
 
       const chk = await creator._updateCreateOptionForReDeployedTemplate(
         sourceItem.id,
@@ -1339,6 +1340,8 @@ describe("Module `creator`", () => {
         sourceItem,
       );
       expect(chk).toEqual(createOptions);
+      expect(consoleSpy.calls.count()).withContext("should call console.log once").toBe(1);
+      expect(consoleSpy.calls.argsFor(0)[0]).toBe("Item data does not exists, returning create options");
     });
     it("canot get Item Data", async () => {
       const sourceItem = {
