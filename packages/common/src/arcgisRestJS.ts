@@ -82,10 +82,9 @@ export {
   IQueryRelatedResponse,
   IRelatedRecordGroup,
   createFeatureService as svcAdminCreateFeatureService,
-  queryFeatures as rest_queryFeatures,
-  addFeatures as rest_addFeatures,
-  applyEdits,
   queryFeatures,
+  addFeatures,
+  applyEdits,
 } from "@esri/arcgis-rest-feature-service";
 export {
   IAddFolderResponse,
