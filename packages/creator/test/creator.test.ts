@@ -965,11 +965,12 @@ describe("Module `creator`", () => {
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expectedSolutionId = "sln1234567890";
       const expectedFetchBody =
-        "f=json&title=xfakeidx&type=Solution&accessInformation=&snippet=&description=&properties=" +
+        "f=json&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D" +
+        "&title=xfakeidx&type=Solution&accessInformation=&snippet=&description=&properties=" +
         encodeURIComponent(JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })) +
         "&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
         "&categories=&licenseInfo=" +
-        "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token";
+        "&data=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token";
 
       fetchMock.post(url, utils.getSuccessResponse({ id: expectedSolutionId, folder: null }));
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
@@ -1015,7 +1016,7 @@ describe("Module `creator`", () => {
       const fetchOptions: any = fetchMock.lastOptions(url);
       const fetchBody = fetchOptions.body;
       expect(fetchBody).toEqual(
-        "f=json&title=" +
+        "f=json&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&title=" +
           encodeURIComponent(options.title as any) +
           "&type=Solution" +
           "&accessInformation=" +
@@ -1037,7 +1038,7 @@ describe("Module `creator`", () => {
             .map(encodeURIComponent)
             .join("%2C") +
           "&categories=&licenseInfo=" +
-          "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token",
+          "&data=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token",
       );
     });
 
@@ -1045,11 +1046,12 @@ describe("Module `creator`", () => {
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expectedFetchBody =
-        "f=json&title=xfakeidx&type=Solution&accessInformation=&snippet=&description=&properties=" +
+        "f=json&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D" +
+        "&title=xfakeidx&type=Solution&accessInformation=&snippet=&description=&properties=" +
         encodeURIComponent(JSON.stringify({ schemaVersion: common.CURRENT_SCHEMA_VERSION })) +
         "&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
         "&categories=&licenseInfo=" +
-        "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token";
+        "&data=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token";
 
       fetchMock.post(url, utils.getFailureResponse());
       spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
