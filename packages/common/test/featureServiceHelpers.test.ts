@@ -3851,6 +3851,26 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
+  describe("_validateViewDomainFields", () => {
+    it("will not alter isViewOverride if its already defined", () => {
+      const item = {
+        fields: [
+          {
+            domain: {},
+          },
+          {
+            domain: {},
+            isViewOverride: true,
+          },
+        ],
+      };
+      _validateViewDomainFields(item, true, false);
+      expect(item.fields[0].isViewOverride).toBeDefined();
+      expect(item.fields[0].isViewOverride).toBe(false);
+      expect(item.fields[1].isViewOverride).toBe(true);
+    });
+  });
+
   describe("processContingentValues", () => {
     it("restructure and store fetched contingent values", async () => {
       const contingentValues = {
