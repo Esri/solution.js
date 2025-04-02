@@ -965,6 +965,7 @@ export function addFeatureServiceDefinition(
                 return false;
               }
             });
+            _validateViewDomainFields(item, isPortal, isMsView);
           }
         }
         /* istanbul ignore else */
@@ -1584,6 +1585,34 @@ export function postProcessFields(
       resolveFn(deTemplatizeFieldInfos(layerInfos, popupInfos, adminLayerInfos, templateDictionary));
     }
   });
+}
+
+/**
+ * Set isViewOverride to false for single source view fields in portal when the field has
+ * a domain and isViewOverride is not currently defined
+ *
+ * https://devtopia.esri.com/WebGIS/solution-deployment-apps/issues/414
+ *
+ * @param item that stores the view fields
+ * @param isPortal When true we are deploying to portal
+ * @param isMsView When true the view is a multi-source view
+ *
+ * This function will update the item that is provided
+ * @private
+ */
+export function _validateViewDomainFields(item: any, isPortal: boolean, isMsView: boolean): void {
+  /* istanbul ignore else */
+  if (isPortal && !isMsView) {
+    const k = "domain";
+    const k2 = "isViewOverride";
+    item.fields.map((field: any) => {
+      /* istanbul ignore else */
+      if (field.hasOwnProperty(k) && getProp(field, k) && !field.hasOwnProperty(k2)) {
+        field.isViewOverride = false;
+      }
+      return field;
+    });
+  }
 }
 
 /**
