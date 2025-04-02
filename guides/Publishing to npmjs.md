@@ -1,5 +1,9 @@
 ## Publishing solution.js to npmjs & GitHub
 
+#### Prerequisites
+* Make sure you have an NPM account and log into your account in Bash and Shell (See step 4 in the details section)
+* Make sure your Bash has access to zip (See step 5 in the details section)
+
 #### Checklist
 
 * \[ \] Stop automatic recompilation software
