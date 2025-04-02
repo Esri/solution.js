@@ -756,8 +756,8 @@ describe("Module `deployer`", () => {
         )
         .post(imageUrl, expectedImage)
         .post(imageUrl2, expectedImage)
-        .get(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
-        .get(
+        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
+        .post(
           "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project",
           testUtils.getProjectResponse(),
         )
@@ -1316,8 +1316,8 @@ describe("Module `deployer`", () => {
           testUtils.getCreateFolderResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
-        .get(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
-        .get(geometryServer + "/project", testUtils.getProjectResponse())
+        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
+        .post(geometryServer + "/project", testUtils.getProjectResponse())
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           testUtils.getSuccessResponse({
