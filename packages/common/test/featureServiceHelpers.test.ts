@@ -38,6 +38,7 @@ import {
   addFeatureServiceLayersAndTables,
   updateLayerFieldReferences,
   postProcessFields,
+  _validateViewDomainFields,
   processContingentValues,
   removeLayerOptimization,
   updatePopupInfo,
