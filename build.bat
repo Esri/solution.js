@@ -49,7 +49,7 @@ call npm install
 popd
 
 rem install and build the packages
-call npm install
+call npm install --legacy-peer-deps
 call npm run prettify
 call npm run lint:fix
 call npm run build
