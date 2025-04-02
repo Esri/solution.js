@@ -2,20 +2,14 @@
 
 #### Checklist
 
-* \[ \] Stop automatic recompilation software
-* \[ \] Switch to `master` branch
-* \[ \] Merge in--but don't commit--the current `release/X.X.X` branch
 * \[ \] Run `npm run clean` in a bash shell
 * \[ \] Run `build.bat`
 * \[ \] Run `npm run release:prepare` and pick new version number (works best in Windows shell)
-* \[ \] Run `npm run release:review`
 * \[ \] Run `npm run release:publish-git` in a bash shell
 * \[ \] Run `npm run release:publish-npm` in a Windows shell and enter the npm 2-factor code when requested
 * \[ \] Check that publishing worked using `check_npm_package_versions.html` in a browser
 * \[ \] Run `build.bat` to update the package-lock.json files with the latest version.
-* \[ \] Commit package.json files (publishing updates the `gitHead` property in the files) and the package-lock.json files. 
-* \[ \] Push `master` branch to GitHub
-* \[ \] Merge `master` into the `develop` branch and push the latter to GitHub
+* \[ \] Commit package.json files (publishing updates the `gitHead` property in the files) and the package-lock.json files and push to GitHub
 * \[ \] Create a release from the build's tag in GitHub
 * \[ \] Update documentation via `npm run docs:build`
 * \[ \] Deploy documentation via `npm run docs:deploy`
