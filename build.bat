@@ -50,7 +50,6 @@ popd
 
 rem install and build the packages
 call npm install
-call install_hub4.bat
 call npm run prettify
 call npm run lint:fix
 call npm run build

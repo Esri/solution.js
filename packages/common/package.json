@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-common",
-  "version": "5.6.8",
+  "version": "5.8.7",
   "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -18,6 +18,7 @@
     "dist/**"
   ],
   "devDependencies": {
+    "@esri/arcgis-rest-types": "^3.7.0",
     "@types/adlib": "^3.0.4",
     "@types/jasmine": "^5.1.4",
     "fetch-mock": "^10.1.1",
@@ -30,15 +31,15 @@
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "4.0.3",
     "@esri/arcgis-rest-demographics": "^4.0.3",
-    "@esri/arcgis-rest-feature-service": "^4.0.6",
+    "@esri/arcgis-rest-feature-service": "~4.0.5",
     "@esri/arcgis-rest-geocoding": "^4.0.3",
-    "@esri/arcgis-rest-portal": "^4.4.1",
-    "@esri/arcgis-rest-request": "^4.2.3",
+    "@esri/arcgis-rest-portal": "^4.0.0",
+    "@esri/arcgis-rest-request": "^4.0.0",
     "@esri/arcgis-rest-routing": "^4.0.3",
-    "@esri/hub-common": "^14.177.1",
-    "@esri/hub-initiatives": "^14.0.0",
-    "@esri/hub-sites": "^15.0.1",
-    "@esri/hub-teams": "^14.1.1",
+    "@esri/hub-common": "https://hub-library-preview.s3.amazonaws.com/@esri/hub-common/PR-1850/1ae6dc48edf27d0358104c6eb4886d05a35c77e6.tgz",
+    "@esri/hub-initiatives": "https://hub-library-preview.s3.amazonaws.com/@esri/hub-initiatives/PR-1850/1ae6dc48edf27d0358104c6eb4886d05a35c77e6.tgz",
+    "@esri/hub-sites": "https://hub-library-preview.s3.amazonaws.com/@esri/hub-sites/PR-1850/1ae6dc48edf27d0358104c6eb4886d05a35c77e6.tgz",
+    "@esri/hub-teams": "https://hub-library-preview.s3.amazonaws.com/@esri/hub-teams/PR-1850/1ae6dc48edf27d0358104c6eb4886d05a35c77e6.tgz",
     "adlib": "3.0.8",
     "jszip": "3.10.1",
     "tslib": "1.14.1"
