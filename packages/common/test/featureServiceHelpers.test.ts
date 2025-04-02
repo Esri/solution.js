@@ -19,6 +19,7 @@
  */
 
 import {
+  cacheIndexes,
   getFeatureServiceRelatedRecords,
   templatize,
   deleteViewProps,
@@ -83,6 +84,7 @@ import {
   IPopupInfos,
 } from "../src/featureServiceHelpers";
 
+import * as generalHelpers from "../../common/src/generalHelpers";
 import * as restHelpers from "../../common/src/restHelpers";
 
 import * as arcGISRestJS from "../src/arcgisRestJS";
@@ -555,7 +557,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail with undefined", () => {
       let fieldInfos: any = {};
       const layer: any = undefined;
-      fieldInfos = cacheFieldInfos(layer, fieldInfos);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos, true, false);
       expect(layer).toBeUndefined();
       expect(fieldInfos).toEqual({});
     });
@@ -563,7 +565,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail without key properties on the layer", () => {
       let fieldInfos: any = {};
       const layer: any = {};
-      fieldInfos = cacheFieldInfos(layer, fieldInfos);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos, false, false);
       expect(layer).toEqual({});
       expect(fieldInfos).toEqual({});
     });
@@ -571,6 +573,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should cache the key properties for fieldInfos", () => {
       let fieldInfos: any = {};
       const layer: any = {
+        defaultSubtypeCode: "0",
         id: "23",
         fields: [
           {
@@ -584,6 +587,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         ],
         displayField: "DisplayField",
         editFieldsInfo: ["CreateDate"],
+        subtypeField: "SubtypeField",
+        subtypes: [{ a: "A" }],
         templates: [
           {
             A: null,
@@ -636,6 +641,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const expectedFieldInfos: any = {
         "23": {
+          defaultSubtypeCode: "0",
           id: "23",
           sourceFields: [
             {
@@ -648,6 +654,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             },
           ],
           editFieldsInfo: ["CreateDate"],
+          subtypeField: "SubtypeField",
+          subtypes: [{ a: "A" }],
           templates: [
             {
               A: null,
@@ -669,9 +677,175 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
       };
 
-      fieldInfos = cacheFieldInfos(layer, fieldInfos);
+      fieldInfos = cacheFieldInfos(layer, fieldInfos, false, true);
       expect(layer).toEqual(expectedLayer);
       expect(fieldInfos).toEqual(expectedFieldInfos);
+    });
+  });
+
+  describe("cacheIndexes", () => {
+    it("should cache specific indexes and remove them from the layer", () => {
+      const layer = {
+        id: "0",
+        objectIdField: "objectid",
+        globalIdField: "globalid",
+        indexes: [
+          {
+            isUnique: true,
+            fields: "B",
+            indexType: "",
+            name: "B_Unique",
+          },
+          {
+            isUnique: true,
+            fields: "objectid",
+            indexType: "",
+            name: "C_objectid",
+          },
+          {
+            isUnique: false,
+            fields: "A",
+            indexType: "FullText",
+            name: "A _ FullText",
+          },
+        ],
+      } as any;
+
+      const id = "0";
+      let fieldInfos: any = {};
+      fieldInfos[id] = {};
+      fieldInfos = cacheIndexes(layer, fieldInfos, false, false);
+
+      const expectedLayer = {
+        id: "0",
+        objectIdField: "objectid",
+        globalIdField: "globalid",
+      };
+      expect(layer).toEqual(expectedLayer);
+      expect(fieldInfos["0"].indexes.length).toEqual(2);
+      expect(fieldInfos["0"].indexes[1].name).toBe(undefined);
+    });
+
+    it("should not cache specific indexes for views", () => {
+      const layer = {
+        id: "0",
+        objectIdField: "objectid",
+        globalIdField: "globalid",
+        indexes: [
+          {
+            isUnique: true,
+            fields: "B",
+            indexType: "",
+            name: "B_Unique",
+          },
+          {
+            isUnique: true,
+            fields: "objectid",
+            indexType: "",
+            name: "C_objectid",
+          },
+          {
+            isUnique: false,
+            fields: "A",
+            indexType: "FullText",
+            name: "A _ FullText",
+          },
+        ],
+      } as any;
+
+      const id = "0";
+      let fieldInfos: any = {};
+      fieldInfos[id] = {};
+      fieldInfos = cacheIndexes(layer, fieldInfos, true, false);
+
+      const expectedLayer = {
+        id: "0",
+        objectIdField: "objectid",
+        globalIdField: "globalid",
+        indexes: [
+          {
+            isUnique: true,
+            fields: "B",
+            indexType: "",
+            name: "B_Unique",
+          },
+          {
+            isUnique: true,
+            fields: "objectid",
+            indexType: "",
+            name: "C_objectid",
+          },
+          {
+            isUnique: false,
+            fields: "A",
+            indexType: "FullText",
+            name: "A _ FullText",
+          },
+        ],
+      };
+      expect(layer).toEqual(expectedLayer);
+      expect(fieldInfos["0"].indexes).not.toBeDefined();
+    });
+
+    it("should not cache specific indexes for multi source views", () => {
+      const layer = {
+        id: "0",
+        objectIdField: "objectid",
+        globalIdField: "globalid",
+        indexes: [
+          {
+            isUnique: true,
+            fields: "B",
+            indexType: "",
+            name: "B_Unique",
+          },
+          {
+            isUnique: true,
+            fields: "objectid",
+            indexType: "",
+            name: "C_objectid",
+          },
+          {
+            isUnique: false,
+            fields: "A",
+            indexType: "FullText",
+            name: "A _ FullText",
+          },
+        ],
+      } as any;
+
+      const id = "0";
+      let fieldInfos: any = {};
+      fieldInfos[id] = {};
+      fieldInfos = cacheIndexes(layer, fieldInfos, false, true);
+
+      const expectedLayer = {
+        id: "0",
+        objectIdField: "objectid",
+        globalIdField: "globalid",
+        indexes: [
+          {
+            isUnique: true,
+            fields: "B",
+            indexType: "",
+            name: "B_Unique",
+          },
+          {
+            isUnique: true,
+            fields: "objectid",
+            indexType: "",
+            name: "C_objectid",
+          },
+          {
+            isUnique: false,
+            fields: "A",
+            indexType: "FullText",
+            name: "A _ FullText",
+          },
+        ],
+      };
+      expect(layer).toEqual(expectedLayer);
+      expect(fieldInfos["0"].indexes).not.toBeDefined();
     });
   });
 
@@ -1683,13 +1857,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       t.item.title = "TheName";
       const _templates: IItemTemplate[] = [t];
 
+      spyOn(generalHelpers, "generateGUID").and.returnValue("212dbc19b03943008fdfaf8d6adca00e");
+
       const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
-      expectedTemplate.item.name = `TheName_${itemId}`;
+      expectedTemplate.item.name = `TheName_212dbc19b03943008fdfaf8d6adca00e`;
       expectedTemplate.item.title = "TheName";
       const expected: IItemTemplate[] = [expectedTemplate];
 
-      const actual: IItemTemplate[] = setNamesAndTitles(_templates, itemId);
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates);
       expect(actual).toEqual(expected);
     });
 
@@ -1704,17 +1880,19 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       t2.item.title = undefined;
       const _templates: IItemTemplate[] = [t, t2];
 
+      spyOn(generalHelpers, "generateGUID").and.returnValue("212dbc19b03943008fdfaf8d6adca00e");
+
       const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
-      expectedTemplate.item.name = `TheName_${itemId}`;
+      expectedTemplate.item.name = `TheName_212dbc19b03943008fdfaf8d6adca00e`;
       expectedTemplate.item.title = "TheName_99ac87b220fd45038fc92ba10843886d";
       const expectedTemplate2: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate2.item.type = "Feature Service";
-      expectedTemplate2.item.name = `TheName_${itemId}_1`;
+      expectedTemplate2.item.name = `TheName_212dbc19b03943008fdfaf8d6adca00e_1`;
       expectedTemplate2.item.title = "TheName_88ac87b220fd45038fc92ba10843886d";
       const expected: IItemTemplate[] = [expectedTemplate, expectedTemplate2];
 
-      const actual: IItemTemplate[] = setNamesAndTitles(_templates, itemId);
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates);
       expect(actual).toEqual(expected);
     });
 
@@ -1725,13 +1903,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       t.item.title = "TheName";
       const _templates: IItemTemplate[] = [t];
 
+      spyOn(generalHelpers, "generateGUID").and.returnValue("212dbc19b03943008fdfaf8d6adca00e");
+
       const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
-      expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_${itemId}`;
+      expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_212dbc19b03943008fdfaf8d6adca00e`;
       expectedTemplate.item.title = "TheName";
       const expected: IItemTemplate[] = [expectedTemplate];
 
-      const actual: IItemTemplate[] = setNamesAndTitles(_templates, itemId);
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates);
       expect(actual).toEqual(expected);
     });
 
@@ -1742,13 +1922,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       t.item.title = "TheName";
       const _templates: IItemTemplate[] = [t];
 
+      spyOn(generalHelpers, "generateGUID").and.returnValue("212dbc19b03943008fdfaf8d6adca00e");
+
       const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
-      expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_${itemId}`;
+      expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_212dbc19b03943008fdfaf8d6adca00e`;
       expectedTemplate.item.title = "TheName";
       const expected: IItemTemplate[] = [expectedTemplate];
 
-      const actual: IItemTemplate[] = setNamesAndTitles(_templates, itemId);
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates);
       expect(actual).toEqual(expected);
     });
   });
@@ -3502,25 +3684,42 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       ).toBeRejected();
     });
 
-    it("should skip tracking view", async () => {
+    it("should skip tracking view and collect replacement details", async () => {
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const itemId = "aaaaf0ffbdf042adb4ad24124b378d20";
+      const sourceItemId = "bbbaf0ffbdf042adb4ad24124b378d20";
 
       itemTemplate = templates.getItemTemplate("Feature Service", [], expectedUrl);
       itemTemplate.item.typeKeywords = ["Location Tracking View"];
       itemTemplate.item.properties = {
         trackViewGroup: "grp123",
       };
+      itemTemplate.itemId = itemId;
+
+      const templateDictionary = {};
+      templateDictionary[sourceItemId] = {
+        itemId,
+      };
 
       await addFeatureServiceLayersAndTables(
         itemTemplate,
-        {},
+        templateDictionary,
         {
           layers: [],
           tables: [],
         },
         MOCK_USER_SESSION,
       );
+
+      const expectedTemplateDictionary = {
+        itemId,
+        layer0: {
+          url: `${expectedUrl}/0`,
+        },
+      };
+
+      expect(expectedTemplateDictionary).toEqual(templateDictionary[sourceItemId] as any);
     });
   });
 
@@ -3575,7 +3774,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const layer1 = mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table", [
         mockItems.createAGOLRelationship(0, 1, "esriRelRoleDestination"),
       ]);
-      const fieldInfos = cacheFieldInfos(layer1, cacheFieldInfos(layer0, {}));
+      const fieldInfos = cacheFieldInfos(layer1, cacheFieldInfos(layer0, {}, false, false), false, false);
 
       Object.keys(fieldInfos).forEach((k) => {
         fieldInfos[k].sourceFields[1].visible = false;
@@ -7176,7 +7375,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expected: any = {
         someProp: "A",
       };
-      deleteViewProps(layer);
+      deleteViewProps(layer, false);
 
       expect(layer).toEqual(expected);
     });
@@ -7188,7 +7387,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expected: any = {
         someProp: "A",
       };
-      deleteViewProps(layer);
+      deleteViewProps(layer, false);
 
       expect(layer).toEqual(expected);
     });

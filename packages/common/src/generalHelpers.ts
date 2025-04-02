@@ -183,6 +183,37 @@ export function generateEmptyCreationResponse(itemType: string, id = ""): ICreat
 }
 
 /**
+ * Generates a version 4 2-bit variant GUID.
+ *
+ * @returns A GUID
+ * @see {@link https://en.wikipedia.org/wiki/Universally_unique_identifier}, section "Version 4 (random)"
+ */
+export function generateGUID(): string {
+  /** @license
+   * Copyright 2013 Steve Fenton
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+   * with the License. You may obtain a copy of the License at
+   *    http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed
+   * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License
+   * for the specific language governing permissions and limitations under the License.
+   */
+  try {
+    return crypto.randomUUID().replace(/-/g, "");
+  } catch {
+    return "xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+      // eslint-disable-next-line no-bitwise
+      const r = (Math.random() * 16) | 0;
+      // eslint-disable-next-line no-bitwise
+      const v = c === "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
+}
+
+/**
  * Returns a regular expression matching a global search for a 32-character AGO-style id.
  *
  * @returns Regular expression

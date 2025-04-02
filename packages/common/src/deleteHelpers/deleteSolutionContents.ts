@@ -79,7 +79,9 @@ export function deleteSolutionContents(
     if (solutionSummary.items.length > 0) {
       // Save a copy of the Solution item ids for the deleteSolutionFolder call because removeItems
       // destroys the solutionSummary.items list
-      solutionIds = solutionSummary.items.map((item) => item.id).concat([solutionItemId]);
+      if (solutionItemId) {
+        solutionIds = solutionSummary.items.map((item) => item.id).concat([solutionItemId]);
+      }
 
       const hubSiteItemIds: string[] = solutionSummary.items
         .filter((item: any) => item.type === "Hub Site Application")
@@ -113,12 +115,16 @@ export function deleteSolutionContents(
         });
       })
       .then(() => {
-        // If there were no failed deletes, it's OK to delete Solution item
-        if (solutionFailureSummary.items.length === 0) {
-          return deleteSolutionItem.deleteSolutionItem(solutionItemId, authentication);
+        if (solutionItemId) {
+          // If there were no failed deletes, it's OK to delete Solution item
+          if (solutionFailureSummary.items.length === 0) {
+            return deleteSolutionItem.deleteSolutionItem(solutionItemId, authentication);
+          } else {
+            // Not all items were deleted, so don't delete solution
+            return Promise.resolve({ success: false, itemId: solutionItemId });
+          }
         } else {
-          // Not all items were deleted, so don't delete solution
-          return Promise.resolve({ success: false, itemId: solutionItemId });
+          return Promise.resolve({ success: true, itemId: "" });
         }
       })
       .then((solutionItemDeleteStatus: IStatusResponse) => {

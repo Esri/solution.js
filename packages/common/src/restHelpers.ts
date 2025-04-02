@@ -446,7 +446,10 @@ export function convertExtent(
   geometryServiceUrl: string,
   authentication: UserSession,
 ): Promise<any> {
-  const _requestOptions: any = { authentication };
+  const _requestOptions: any = {
+    authentication,
+    httpMethod: "GET",
+  };
   return new Promise<any>((resolve, reject) => {
     if (extent.spatialReference.wkid === outSR?.wkid || !outSR) {
       resolve(extent);
@@ -969,6 +972,33 @@ export function getLayerUpdates(args: IPostProcessArgs, isPortal: boolean): IUpd
       updates.push(_getUpdate(adminUrl, null, null, args, "refresh"));
     }
   });
+
+  const subtypeUpdates = _getSubtypeUpdates({
+    message: "add subtype updates",
+    objects: args.objects,
+    itemTemplate: args.itemTemplate,
+    authentication: args.authentication,
+  });
+
+  /* istanbul ignore else */
+  if (subtypeUpdates.length > 0 && isPortal) {
+    subtypeUpdates.forEach((subtypeUpdate) => {
+      updates.push(
+        _getUpdate(adminUrl + subtypeUpdate.id, null, { subtypeField: subtypeUpdate.subtypeField }, args, "update"),
+      );
+      updates.push(
+        _getUpdate(
+          adminUrl + subtypeUpdate.id,
+          null,
+          { defaultSubtypeCode: subtypeUpdate.defaultSubtypeCode },
+          args,
+          "update",
+        ),
+      );
+      updates.push(_getUpdate(adminUrl + subtypeUpdate.id, null, { subtypes: subtypeUpdate.subtypes }, args, "add"));
+    });
+  }
+
   // issue: #706
   // Add source service relationships
   // views will now always add all layers in a single call and will inherit the relationships from the source service
@@ -1007,6 +1037,34 @@ export function getLayerUpdates(args: IPostProcessArgs, isPortal: boolean): IUpd
         updates.push(_getUpdate(adminUrl + conUpdate.id, null, conUpdate.contingentValues, args, "add"));
       });
     }
+  }
+
+  // issue: https://devtopia.esri.com/WebGIS/solution-deployment-apps/issues/273
+  // For portal only...add specific indexes with existing supplementary addToDefinition call if it exists
+  // or with a new addToDefinition call if one doesn't already exist
+  if (isPortal) {
+    Object.keys(args.objects).forEach((id) => {
+      const obj: any = Object.assign({}, args.objects[id]);
+      let update;
+      if (Array.isArray(obj.indexes) && obj.indexes.length > 0) {
+        const layerHasExistingAdd = updates.some((u) => {
+          if (u.url.indexOf(`${id}/addToDefinition`) > -1) {
+            update = u;
+            return true;
+          }
+        });
+        if (layerHasExistingAdd) {
+          // append to existing addToDef
+          update.params.addToDefinition = {
+            ...update.params.addToDefinition,
+            indexes: obj.indexes,
+          };
+        } else {
+          // create new addToDef
+          updates.push(_getUpdate(checkUrlPathTermination(adminUrl) + id, null, { indexes: obj.indexes }, args, "add"));
+        }
+      }
+    });
   }
   return updates.length === 1 ? [] : updates;
 }
@@ -1096,7 +1154,12 @@ export function _sortRelationships(layers: any[], tables: any[], relUpdates: any
  * @private
  */
 /* istanbul ignore else */
-export function getRequest(update: IUpdate, skipRetry: boolean = false, useAsync: boolean = false): Promise<void> {
+export function getRequest(
+  update: IUpdate,
+  skipRetry: boolean = false,
+  useAsync: boolean = false,
+  isPortal: boolean = false,
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const options: IRequestOptions = {
       params: update.params,
@@ -1119,7 +1182,7 @@ export function getRequest(update: IUpdate, skipRetry: boolean = false, useAsync
       },
       (e: any) => {
         if (!skipRetry) {
-          getRequest(update, true, true).then(
+          getRequest(update, true, true, isPortal).then(
             () => resolve(),
             (e) => reject(e),
           );
@@ -2134,6 +2197,33 @@ export function _getContingentValuesUpdates(args: IPostProcessArgs): any {
     deleteProp(obj, "contingentValues");
   });
   return contingentValues;
+}
+
+/**
+ * Get the stored subtype values and structure them to be added to the services layers.
+ *
+ * @param args The IPostProcessArgs for the request(s)
+ * @returns Any subtype values that should be added to the service.
+ * @private
+ */
+export function _getSubtypeUpdates(args: IPostProcessArgs): any {
+  const subtypeUpdates: any[] = [];
+  Object.keys(args.objects).forEach((k: any) => {
+    const obj: any = args.objects[k];
+    /* istanbul ignore else */
+    if (obj.subtypeField) {
+      subtypeUpdates.push({
+        id: obj.id,
+        subtypeField: obj.subtypeField,
+        subtypes: obj.subtypes,
+        defaultSubtypeCode: obj.defaultSubtypeCode,
+      });
+    }
+    deleteProp(obj, "subtypeField");
+    deleteProp(obj, "subtypes");
+    deleteProp(obj, "defaultSubtypeCode");
+  });
+  return subtypeUpdates;
 }
 
 /**

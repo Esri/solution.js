@@ -73,10 +73,10 @@ function go () {
       document.getElementById("output").innerHTML = "Creating..." + percentDone.toFixed().toString() + "%";
     },
     subgroupIds
-  ).then(function (html){
-      reportElapsedTime(startTime);
-      document.getElementById("output").innerHTML = html;
-    },
+  ).then(function(html) {
+    reportElapsedTime(startTime);
+    document.getElementById("output").innerHTML = html;
+  },
     error => {
       var message = error?.error || JSON.stringify(error) || "Unspecified error";
       if (error.itemIds) {

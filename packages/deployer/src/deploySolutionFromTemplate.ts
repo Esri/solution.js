@@ -145,47 +145,50 @@ export async function deploySolutionFromTemplate(
     common.setCreateProp(templateDictionary, "locationTracking.userIsOwner", trackingOwnerResponse);
   }
 
-  // Create a deployed Solution item
-  solutionTemplateBase.categories = []; // we don't want to carry over categories from the template
-  const createSolutionItemBase = {
-    ...common.sanitizeJSON(solutionTemplateBase),
-    type: "Solution",
-    typeKeywords: ["Solution"],
-  };
+  let deployedSolutionId;
+  if (!options.dontCreateSolutionItem) {
+    // Create a deployed Solution item
+    solutionTemplateBase.categories = []; // we don't want to carry over categories from the template
+    const createSolutionItemBase = {
+      ...common.sanitizeJSON(solutionTemplateBase),
+      type: "Solution",
+      typeKeywords: ["Solution"],
+    };
 
-  if (options.additionalTypeKeywords) {
-    createSolutionItemBase.typeKeywords = ["Solution"].concat(options.additionalTypeKeywords);
+    if (options.additionalTypeKeywords) {
+      createSolutionItemBase.typeKeywords = ["Solution"].concat(options.additionalTypeKeywords);
+    }
+
+    // Create deployed solution item
+    createSolutionItemBase.thumbnail = options.thumbnail;
+    const createSolutionResponse = await common.createItemWithData(
+      createSolutionItemBase,
+      {},
+      authentication,
+      deployedFolderId,
+    );
+
+    deployedSolutionId = createSolutionResponse.id;
+
+    // Protect the solution item
+    const protectOptions: common.IUserItemOptions = {
+      id: deployedSolutionId,
+      authentication,
+    };
+    await common.protectItem(protectOptions);
+
+    // TODO: Attach the whole solution model so we can
+    // have stuff like `{{solution.item.title}}
+    templateDictionary.solutionItemId = deployedSolutionId;
+    solutionTemplateBase.id = deployedSolutionId;
+
+    solutionTemplateBase.tryitUrl = _checkedReplaceAll(
+      solutionTemplateBase.tryitUrl,
+      templateSolutionId,
+      deployedSolutionId,
+    );
+    solutionTemplateBase.url = _checkedReplaceAll(solutionTemplateBase.url, templateSolutionId, deployedSolutionId);
   }
-
-  // Create deployed solution item
-  createSolutionItemBase.thumbnail = options.thumbnail;
-  const createSolutionResponse = await common.createItemWithData(
-    createSolutionItemBase,
-    {},
-    authentication,
-    deployedFolderId,
-  );
-
-  const deployedSolutionId = createSolutionResponse.id;
-
-  // Protect the solution item
-  const protectOptions: common.IUserItemOptions = {
-    id: deployedSolutionId,
-    authentication,
-  };
-  await common.protectItem(protectOptions);
-
-  // TODO: Attach the whole solution model so we can
-  // have stuff like `{{solution.item.title}}
-  templateDictionary.solutionItemId = deployedSolutionId;
-  solutionTemplateBase.id = deployedSolutionId;
-
-  solutionTemplateBase.tryitUrl = _checkedReplaceAll(
-    solutionTemplateBase.tryitUrl,
-    templateSolutionId,
-    deployedSolutionId,
-  );
-  solutionTemplateBase.url = _checkedReplaceAll(solutionTemplateBase.url, templateSolutionId, deployedSolutionId);
 
   // Handle the contained item templates
   const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = await deployItems.deploySolutionItems(
@@ -225,35 +228,40 @@ export async function deploySolutionFromTemplate(
     templateDictionary,
   );
 
-  // Update solution item using internal representation & and the updated data JSON
-  solutionTemplateBase.typeKeywords = [].concat(solutionTemplateBase.typeKeywords, ["Deployed"]);
-  const iTemplateKeyword = solutionTemplateBase.typeKeywords.indexOf("Template");
-  /* istanbul ignore else */
-  if (iTemplateKeyword >= 0) {
-    solutionTemplateBase.typeKeywords.splice(iTemplateKeyword, 1);
+  if (!options.dontCreateSolutionItem) {
+    // Update solution item using internal representation & and the updated data JSON
+    solutionTemplateBase.typeKeywords = [].concat(solutionTemplateBase.typeKeywords, ["Deployed"]);
+    const iTemplateKeyword = solutionTemplateBase.typeKeywords.indexOf("Template");
+    /* istanbul ignore else */
+    if (iTemplateKeyword >= 0) {
+      solutionTemplateBase.typeKeywords.splice(iTemplateKeyword, 1);
+    }
+
+    solutionTemplateData.templates = solutionTemplateData.templates.map((itemTemplate: common.IItemTemplate) =>
+      _purgeTemplateProperties(itemTemplate),
+    );
+
+    _handleWorkflowManagedTemplates(preProcessResponse, solutionTemplateData);
+
+    solutionTemplateData.templates = _updateGroupReferences(solutionTemplateData.templates, templateDictionary);
+
+    solutionTemplateData.templates = common.updateWorkflowTemplateIds(
+      solutionTemplateData.templates,
+      templateDictionary,
+    );
+
+    // Update solution items data using template dictionary, and then update the
+    // itemId & dependencies in each item template
+    solutionTemplateBase.data = common.replaceInTemplate(solutionTemplateData, templateDictionary);
+
+    // Write any user defined params to the solution
+    /* istanbul ignore else */
+    if (templateDictionary.params) {
+      solutionTemplateBase.data.params = templateDictionary.params;
+    }
+
+    await common.updateItem(solutionTemplateBase, authentication, deployedFolderId);
   }
-
-  solutionTemplateData.templates = solutionTemplateData.templates.map((itemTemplate: common.IItemTemplate) =>
-    _purgeTemplateProperties(itemTemplate),
-  );
-
-  _handleWorkflowManagedTemplates(preProcessResponse, solutionTemplateData);
-
-  solutionTemplateData.templates = _updateGroupReferences(solutionTemplateData.templates, templateDictionary);
-
-  solutionTemplateData.templates = common.updateWorkflowTemplateIds(solutionTemplateData.templates, templateDictionary);
-
-  // Update solution items data using template dictionary, and then update the
-  // itemId & dependencies in each item template
-  solutionTemplateBase.data = common.replaceInTemplate(solutionTemplateData, templateDictionary);
-
-  // Write any user defined params to the solution
-  /* istanbul ignore else */
-  if (templateDictionary.params) {
-    solutionTemplateBase.data.params = templateDictionary.params;
-  }
-
-  await common.updateItem(solutionTemplateBase, authentication, deployedFolderId);
 
   return solutionTemplateBase.id;
 }

@@ -139,7 +139,7 @@ export function deploySolutionItems(
         );
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         useExistingItemsDef.then(() => {
-          templates = common.setNamesAndTitles(templates, templateDictionary.solutionItemId);
+          templates = common.setNamesAndTitles(templates);
 
           buildOrder.forEach((id: string) => {
             // Get the item's template out of the list of templates

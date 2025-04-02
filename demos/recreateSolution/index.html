@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8" />
+  <title>recreate Solution example</title>
+  <!--
+   | Copyright 2023 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <style>
+    .indent {
+      margin-left: 20px;
+    }
+
+    #subgroupIdsDiv {
+      display: none;
+    }
+  </style>
+  <script>
+    var goFcn;
+  </script>
+</head>
+
+<body>
+  <h3>Recreate a Solution</h3>
+  <p>Create a solution item from a previously deployed solution.</p>
+
+  <div id="container" style="display:none">
+    <div id="input">
+      <label for="itemOrGroupId">Enter Item ID from a deployed solution:</label>
+      <input class="form-control" type="text" id="itemOrGroupId">
+
+      <br /><br />
+
+      <div>
+        <label for="includeSubgroups">Embed groups in solution?&nbsp;</label>
+        <input type="checkbox" id="includeSubgroups" onchange="changeSubgroupIdsVisibility(this)">
+
+        <div id="subgroupIdsDiv" class="indent">
+          <label for="subgroupIds">IDs of embedded groups separated by commas:</label>
+          <input type="text" id="subgroupIds" style="width:485px">
+        </div>
+      </div>
+
+      <br /><br />
+
+      <div class="section-title">Credentials for organization</div>
+
+      <div class="labeledItem">
+        <label for="srcUsername">Username:&nbsp;</label>
+        <input type="text" id="srcUsername" placeholder="anonymous">
+      </div>
+      <div class="labeledItem">
+        <label for="srcPassword">Password:&nbsp;</label>
+        <input type="password" id="srcPassword">
+      </div>
+      <div class="labeledItem">
+        <label for="srcPortal">Portal:&nbsp;</label>
+        <input type="text" id="srcPortal" style="width:256px" placeholder="https://www.arcgis.com">
+      </div>
+      <br /><br />
+      <button class="btn btn-default" onclick="goFcn()">Create Solution</button>
+    </div>
+
+    <br />
+  </div>
+  <div id="output" style="display:none">Creating...</div>
+
+  <script>
+
+    function changeSubgroupIdsVisibility (
+      changeEvent
+    ) {
+      document.getElementById("subgroupIdsDiv").style.display =
+        changeEvent.checked ? "block" : "none";
+    }
+
+  </script>
+</body>
+
+</html>

@@ -105,6 +105,7 @@ export {
   IManageItemRelationshipOptions,
   IMoveItemOptions,
   IMoveItemResponse,
+  IPagedResponse,
   IPagingParams,
   IPortal,
   IRemoveItemResourceOptions,

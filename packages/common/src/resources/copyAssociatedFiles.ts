@@ -46,35 +46,41 @@ import JSZip from "jszip";
  * @param files List of item files' URLs and folder/filenames for storing the files
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destinationAuthentication Credentials for the request to the storage
- * @param filesPerZip Number of files to include per zip file; AGO limits zips to 50 files
+ * @param maxFilesPerZip Number of files to include per zip file; AGO limits zips to 50 files
  * @returns A promise which resolves to a list of the result of the copies
  */
 export function copyFilesAsResources(
   files: ISourceFile[],
   destinationItemId: string,
   destinationAuthentication: UserSession,
-  filesPerZip = 40,
+  maxFilesPerZip = 40,
 ): Promise<IAssociatedFileCopyResults[]> {
   return new Promise<IAssociatedFileCopyResults[]>((resolve) => {
-    let awaitAllItems: IAssociatedFileCopyResults[] = [];
+    const awaitAllItems: IAssociatedFileCopyResults[] = [];
 
     const zipInfos: IZipInfo[] = [];
     if (files.length > 0) {
       // Bundle the resources into chunked zip updates because AGO tends to have problems with
       // many updates in a row to the same item: it claims success despite randomly failing.
-      // Note that AGO imposes a limit of 50 files per zip, so we break the list of resource
-      // file info into chunks below this threshold and start a zip for each
+      // Note that AGO imposes a limit of 50 files per zip and a maximum upload file size under
+      // 50MB, so we break the list of resource file info into chunks below this threshold and
+      // start a zip for each.
       // https://developers.arcgis.com/rest/users-groups-and-items/add-resources.htm
-      const chunkedResourceFiles = chunkArray(files, filesPerZip);
-      chunkedResourceFiles.forEach((chunk, index) => {
-        // Create a zip for this chunk
-        const zipInfo: IZipInfo = {
-          filename: `resources${index}.zip`,
-          zip: new JSZip(),
-          filelist: [] as IAssociatedFileInfo[],
-        };
-        awaitAllItems = awaitAllItems.concat(chunk.map((file) => copyResourceIntoZip(file, zipInfo)));
-        zipInfos.push(zipInfo);
+      const maxZipSize = 49999000; // bytes
+      let zipIndex = 0;
+      let currentZipInfo = _createEmptyZipInfo(zipIndex);
+      zipInfos.push(currentZipInfo);
+      let currentZipSize = 0;
+      files.forEach((file) => {
+        if (currentZipInfo.filelist.length >= maxFilesPerZip || currentZipSize + file.file.size >= maxZipSize) {
+          // Create a new zip for the next chunk
+          zipIndex++;
+          currentZipInfo = _createEmptyZipInfo(zipIndex);
+          zipInfos.push(currentZipInfo);
+          currentZipSize = 0;
+        }
+        awaitAllItems.push(copyResourceIntoZip(file, currentZipInfo));
+        currentZipSize += file.file.size;
       });
     }
 
@@ -268,6 +274,20 @@ export function _copyAssociatedFileZips(
       resolve(results);
     }
   });
+}
+
+/**
+ * Creates an empty zip info object.
+ *
+ * @param index Index of the zip info object, used as a suffix for the filename
+ * @returns An empty zip info object
+ */
+function _createEmptyZipInfo(index: number): IZipInfo {
+  return {
+    filename: `resources${index}.zip`,
+    zip: new JSZip(),
+    filelist: [] as IAssociatedFileInfo[],
+  };
 }
 
 /**

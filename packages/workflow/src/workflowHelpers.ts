@@ -179,7 +179,7 @@ export function _cacheLayerDetails(
   srcId: string,
   itemId: string,
 ): void {
-  if (layers) {
+  if (layers && srcId !== "__proto__" && srcId !== "constructor" && srcId !== "prototype") {
     layers.forEach((layer) => {
       const fields = layer.fields.reduce((prev, cur) => {
         prev[cur.name.toLowerCase()] = {

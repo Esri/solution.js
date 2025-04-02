@@ -40,6 +40,7 @@ import {
   deleteProp,
   deleteProps,
   fail,
+  generateGUID,
   getProp,
   setCreateProp,
   setProp,
@@ -197,13 +198,19 @@ export function templatize(
  * Delete key properties that are system managed
  *
  * @param layer The data layer instance with field name references within
+ * @param isPortal When true we are deploying to portal
  */
-export function deleteViewProps(layer: any) {
+export function deleteViewProps(layer: any, isPortal: boolean) {
   const props: string[] = ["definitionQuery"];
+  const portalOnlyProps: string[] = ["indexes"];
 
-  props.forEach((prop) => {
-    deleteProp(layer, prop);
-  });
+  props.forEach((prop) => deleteProp(layer, prop));
+
+  if (isPortal) {
+    portalOnlyProps.forEach((prop) => {
+      deleteProp(layer, prop);
+    });
+  }
 }
 
 /**
@@ -215,9 +222,11 @@ export function deleteViewProps(layer: any) {
  *
  * @param layer The data layer instance with field name references within
  * @param fieldInfos the object that stores the cached field infos
+ * @param isView When true the current layer is a view and does not need to cache subtype details
+ * @param isPortal When true we are deploying to portal
  * @returns An updated instance of the fieldInfos
  */
-export function cacheFieldInfos(layer: any, fieldInfos: any): any {
+export function cacheFieldInfos(layer: any, fieldInfos: any, isView: boolean, isPortal: boolean): any {
   // cache the source fields as they are in the original source
   if (layer && layer.fields) {
     fieldInfos[layer.id] = {
@@ -225,11 +234,20 @@ export function cacheFieldInfos(layer: any, fieldInfos: any): any {
       type: layer.type,
       id: layer.id,
     };
+    /* istanbul ignore else */
+    if (!isView && isPortal) {
+      fieldInfos[layer.id].subtypes = layer.subtypes;
+      fieldInfos[layer.id].subtypeField = layer.subtypeField;
+      fieldInfos[layer.id].defaultSubtypeCode = layer.defaultSubtypeCode;
+    }
   }
 
   // cache each of these properties as they each can contain field references
   // and will have associated updateDefinition calls when deploying to portal
   // as well as online for relationships...as relationships added with addToDef will cause failure
+  // https://devtopia.esri.com/WebGIS/solutions-development-support/issues/299
+  // subtypes, subtypeField, and defaultSubtypeCode should not exist in initial addToDef call and
+  // should be added with subsequent add and update calls in a specific order
   const props = {
     editFieldsInfo: false,
     types: false,
@@ -239,6 +257,13 @@ export function cacheFieldInfos(layer: any, fieldInfos: any): any {
     timeInfo: false,
     viewDefinitionQuery: false,
   };
+
+  /* istanbul ignore else */
+  if (!isView && isPortal) {
+    props["subtypes"] = true;
+    props["subtypeField"] = true;
+    props["defaultSubtypeCode"] = true;
+  }
 
   Object.keys(props).forEach((k) => {
     _cacheFieldInfo(layer, k, fieldInfos, props[k]);
@@ -264,12 +289,38 @@ export function cacheContingentValues(id: string, fieldInfos: any, itemTemplate:
 }
 
 /**
+ * Cache the stored contingent values so we can add them in subsequent addToDef calls
+ *
+ * @param layer The current layer to check indexes on
+ * @param fieldInfos The object that stores the cached field infos
+ * @returns An updated instance of the fieldInfos
+ */
+export function cacheIndexes(layer: any, fieldInfos: any, isView: boolean, isMsView: boolean): any {
+  /* istanbul ignore else */
+  if (!isView && !isMsView && Array.isArray(layer.indexes)) {
+    const oidField = layer.objectIdField;
+    const guidField = layer.globalIdField;
+    fieldInfos[layer.id].indexes = layer.indexes.filter((i) => {
+      if ((i.isUnique && i.fields !== oidField && i.fields !== guidField) || i.indexType === "FullText") {
+        if (i.name) {
+          delete i.name;
+        }
+        return i;
+      }
+    });
+    delete layer.indexes;
+  }
+  return fieldInfos;
+}
+
+/**
  * Helper function to cache a single property into the fieldInfos object
  * This property will be removed from the layer instance.
  *
  * @param layer the data layer being cloned
  * @param prop the property name used to cache
  * @param fieldInfos the object that will store the cached property
+ * @param removeProp when true relationships prop will be set to null and subtype props will be deleted
  * @private
  */
 export function _cacheFieldInfo(layer: any, prop: string, fieldInfos: any, removeProp: boolean): void {
@@ -279,8 +330,10 @@ export function _cacheFieldInfo(layer: any, prop: string, fieldInfos: any, remov
     // editFieldsInfo does not come through unless its with the layer
     // when it's being added
     /* istanbul ignore else */
-    if (removeProp) {
+    if (removeProp && prop === "relationships") {
       layer[prop] = null;
+    } else if (removeProp) {
+      delete layer[prop];
     }
   }
 }
@@ -416,6 +469,33 @@ export function _updateTypeKeywords(itemTemplate: IItemTemplate, createResponse:
 }
 
 /**
+ * Add layer urls from tracking views to the templateDictionary to be used for adlib replacements
+ *
+ * @param itemTemplate Item to be created; n.b.: this item is modified
+ * @param templateDictionary Hash mapping property names to replacement values
+ * @returns void
+ * @private
+ */
+export function _setTrackingViewLayerSettings(itemTemplate: IItemTemplate, templateDictionary: any): void {
+  const url = itemTemplate.item.url;
+  const newId = itemTemplate.itemId;
+  let k;
+  Object.keys(templateDictionary).some((_k) => {
+    if (newId === templateDictionary[_k].itemId) {
+      k = _k;
+      return true;
+    }
+  });
+
+  itemTemplate.properties.layers.forEach((l) => {
+    const id = l.id.toString();
+    templateDictionary[k][`layer${id}`] = {
+      url: checkUrlPathTermination(url) + id,
+    };
+  });
+}
+
+/**
  * Create the name mapping object that will allow for all templatized field
  * references to be de-templatized.
  * This also removes the stored sourceFields and newFields arrays from fieldInfos.
@@ -449,13 +529,13 @@ export function getLayerSettings(layerInfos: any, url: string, itemId: string, e
  * Set the names and titles for all feature services.
  *
  * This function will ensure that we have unique feature service names.
- * The feature service name will have the solution item id appended.
+ * The feature service name will have a generated GUID appended.
  *
  * @param templates A collection of AGO item templates.
- * @param solutionItemId The item id for the deployed solution item.
  * @returns An updated collection of AGO templates with unique feature service names.
  */
-export function setNamesAndTitles(templates: IItemTemplate[], solutionItemId: string): IItemTemplate[] {
+export function setNamesAndTitles(templates: IItemTemplate[]): IItemTemplate[] {
+  const guid: string = generateGUID();
   const names: string[] = [];
   return templates.map((t) => {
     /* istanbul ignore else */
@@ -473,7 +553,7 @@ export function setNamesAndTitles(templates: IItemTemplate[], solutionItemId: st
 
         // The name length limit is 98
         // Limit the baseName to 50 characters before the _<guid>
-        const name: string = baseName.substring(0, 50) + "_" + solutionItemId;
+        const name: string = baseName.substring(0, 50) + "_" + guid;
 
         // If the name + GUID already exists then append "_occurrenceCount"
         t.item.name = names.indexOf(name) === -1 ? name : `${name}_${names.filter((n) => n === name).length}`;
@@ -738,6 +818,7 @@ export function addFeatureServiceLayersAndTables(
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     if (isTrackingViewTemplate(itemTemplate)) {
+      _setTrackingViewLayerSettings(itemTemplate, templateDictionary);
       resolve(null);
     } else {
       // Create a hash of various properties that contain field references
@@ -776,7 +857,7 @@ export function addFeatureServiceLayersAndTables(
                 updates
                   .reduce((prev, update) => {
                     return prev.then(() => {
-                      return getRequest(update);
+                      return getRequest(update, false, false, templateDictionary.isPortal);
                     });
                   }, Promise.resolve(null))
                   .then(
@@ -845,18 +926,26 @@ export function addFeatureServiceDefinition(
       listToAdd.forEach((toAdd, i) => {
         let item = toAdd.item;
         const originalId = item.id;
-        fieldInfos = cacheFieldInfos(item, fieldInfos);
+        const isView = itemTemplate.properties.service.isView;
+        const isMsView = itemTemplate.properties.service.isMultiServicesView;
+        const isPortal = templateDictionary.isPortal;
+        fieldInfos = cacheFieldInfos(item, fieldInfos, isView, isPortal);
 
         // cache the values to be added in seperate addToDef calls
         fieldInfos = cacheContingentValues(item.id, fieldInfos, itemTemplate);
 
+        // cache specific field indexes when deploying to ArcGIS Enterprise portal
+        if (isPortal) {
+          fieldInfos = cacheIndexes(item, fieldInfos, isView, isMsView);
+        }
+
         /* istanbul ignore else */
         if (item.isView) {
-          deleteViewProps(item);
+          deleteViewProps(item, isPortal);
         }
         // when the item is a view we need to grab the supporting fieldInfos
         /* istanbul ignore else */
-        if (itemTemplate.properties.service.isView) {
+        if (isView) {
           _updateGeomFieldName(item.adminLayerInfo, templateDictionary);
 
           adminLayerInfos[originalId] = item.adminLayerInfo;
@@ -879,7 +968,7 @@ export function addFeatureServiceDefinition(
           }
         }
         /* istanbul ignore else */
-        if (templateDictionary.isPortal) {
+        if (isPortal) {
           item = _updateForPortal(item, itemTemplate, templateDictionary);
         }
 
