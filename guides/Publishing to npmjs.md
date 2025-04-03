@@ -129,6 +129,40 @@ npm run docs:deploy
 
 ---
 
+## Setting the latest version npmjs
+
+The most-recent version published is automatically tagged as the "latest" version. If an earlier version should have that tag because, e.g., the most-recent version is an alpha version, one can reset the tag.
+
+1. Launch a git-bash window
+
+2. Log in to npmjs
+
+3. Get a two-factor code. Because one deprecates one package at a time, you might want to wait until the next code change in your two-factor code app so that the code lasts through all of the deprecation calls.
+
+4. Update the packages using two-factor code; this example Windows batch file updates the version specified by  `<version>` to be the latest using the two-factor code `<2-factor-code>`.
+
+```bat
+set twoFactorCode=<2-factor-code>
+set latestVersion=<version>
+call npm dist-tag add "@esri/solution-common@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-creator@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-deployer@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-feature-layer@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-file@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-form@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-group@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-hub-types@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-simple-types@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-storymap@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-velocity@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-viewer@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-web-experience@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-web-tool@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-workflow@%latestVersion%" latest -otp=%twoFactorCode%
+```
+
+---
+
 ## Deprecating older versions on npmjs
 
 One can mark a version or versions deprecated using the `npm deprecate` command. *Note: If you deprecate your highest version, the whole package will appear as deprecated in npm. This can be reversed.*
@@ -141,10 +175,11 @@ For example:
 
 3. Get a two-factor code. Because one deprecates one package at a time, you might want to wait until the next code change in your two-factor code app so that the code lasts through all of the deprecation calls.
 
-4. Deprecate packages using two-factor code; this example deprecates version 0.20.0 using the deprecation message "obsolete".
-```
+4. Deprecate packages using two-factor code; this example Windows batch file deprecates the version specified by  `<version>` using the deprecation message "obsolete" and using the two-factor code `<2-factor-code>`.
+
+```bat
 set twoFactorCode=<2-factor-code>
-set obsoleteVersion=0.20.0
+set obsoleteVersion=<version>
 call npm deprecate "@esri/solution-common@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 call npm deprecate "@esri/solution-creator@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 call npm deprecate "@esri/solution-deployer@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
@@ -158,7 +193,8 @@ call npm deprecate "@esri/solution-storymap@%obsoleteVersion%" "obsolete" --otp=
 call npm deprecate "@esri/solution-velocity@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 call npm deprecate "@esri/solution-viewer@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 call npm deprecate "@esri/solution-web-experience@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
-call npm deprecate "@esri/solution-webform@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-web-tool@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
+call npm deprecate "@esri/solution-workflow@%obsoleteVersion%" "obsolete" --otp=%twoFactorCode%
 ```
 
 ---
