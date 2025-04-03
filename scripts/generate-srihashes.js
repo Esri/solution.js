@@ -2,8 +2,10 @@
  * Generate a JSON file containing hash of packages and sha384 hashes of minified umd dist files.
  */
 const { join } = require("path");
-const { readFile, writeFile } = require("fs");
+const { mkdir } = require('node:fs/promises');
+const { readFile, writeFileSync } = require("fs");
 const { generate } = require("sri-toolbox");
+const OUTPUTDIR = join(process.cwd(), "docs", "src");
 const OUTPUT = join(process.cwd(), "docs", "src", `srihashes.json`);
 const version = require(join(process.cwd(), "lerna.json")).version;
 
@@ -47,9 +49,13 @@ Promise.all(promises).then((res) => {
   res.forEach((r) => {
     if (r.hash) json.packages[r.package] = r.hash;
   });
-  writeFile(OUTPUT, JSON.stringify(json, null, '  '), "utf8", (err) => {
-    if (err) throw err;
-  });
+
+  mkdir(OUTPUTDIR, { recursive: true }).then(
+    () => {
+      writeFileSync(OUTPUT, JSON.stringify(json, null, '  '), { encoding: 'utf8', flag: 'w' });
+      console.log('File ' + OUTPUT + ' written successfully');
+    }
+  );
 }).catch((err) => {
-  // make node happy to see `catch()`
+  console.error(err)
 });
