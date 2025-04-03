@@ -27,12 +27,12 @@ These are ESRI maintained apps that leverages Solution JS for finer grain change
 
 **v6.0.2-alpha.0** 
  - solution-common
--- copyResource
--- migrateSchema
+	 - copyResource
+	 - migrateSchema
  
  - solution-deployer
--- deploySolution 
--- isSolutionTemplateItem 
+	 - deploySolution 
+	 - isSolutionTemplateItem 
 
  - solution-creator
--- createSolution
+	 - createSolution
