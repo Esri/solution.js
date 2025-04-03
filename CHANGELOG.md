@@ -28,11 +28,17 @@ These are ESRI maintained apps that leverages Solution JS for finer grain change
 **v6.0.2-alpha.0** 
  - solution-common
 	 - copyResource
+   		- Added maxZipSize = 49999000
 	 - migrateSchema
+   		- no changes
  
  - solution-deployer
-	 - deploySolution 
-	 - isSolutionTemplateItem 
+	 - deploySolution
+   		- Added support for not creating solution item during deployment
+	 - isSolutionTemplateItem
+   		- no changes
 
  - solution-creator
 	 - createSolution
+		- Added ability to create a template from a deployed solution by reading from deployed's solution item for Ids and reset tags and keywords.
+		
