@@ -1,7 +1,9 @@
 ## Publishing solution.js to npmjs & GitHub
 
 #### Prerequisites
-* Make sure you have an NPM account and log into your account in Bash and Shell (See step 4 in the details section)
+* Make sure you are an admin to SolutionJS repo.
+* Make sure you have an NPM account and log into your account in Bash and Shell (See step 4 in the details section).
+* Make sure you are an admin in this npm team to be able to write to npm: https://www.npmjs.com/settings/esri/teams/team/solutions/users. If you are not in the team, ask a team owner to add you.
 * Make sure your Bash has access to zip (See step 5 in the details section)
 
 #### Checklist
@@ -15,7 +17,7 @@
 * \[ \] Run `npm run release:review`
 * \[ \] Run `npm run release:publish-git` in a bash shell
 * \[ \] Run `npm run release:publish-npm` in a Windows shell and enter the npm 2-factor code when requested
-* \[ \] Check that publishing worked using `check_npm_package_versions.html` in a browser
+* \[ \] Check that publishing worked using `check_npm_package_versions.html` (file is located in the folder) in a browser
 * \[ \] Run `build.bat` to update the package-lock.json files with the latest version.
 * \[ \] Commit package.json files (publishing updates the `gitHead` property in the files) and the package-lock.json files. 
 * \[ \] Push `master` branch to GitHub
