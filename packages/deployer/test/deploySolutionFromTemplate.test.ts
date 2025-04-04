@@ -206,16 +206,16 @@ describe("Module `deploySolutionFromTemplate`", () => {
           testUtils.PORTAL_SUBSET.restUrl + "/content/items/loc1234567890?f=json&token=fake-token",
           testUtils.getSuccessResponse(),
         )
-        .get(
-          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations?f=json&inSR=102100&outSR=4326&extentOfInterest=%7B%22xmin%22%3A-9821384.714217981%2C%22ymin%22%3A5117339.123090005%2C%22xmax%22%3A-9797228.384715842%2C%22ymax%22%3A5137789.39951188%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%7D%7D",
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
           testUtils.getTransformationsResponse(),
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
           testUtils.getCreateFolderResponse(folderId),
         )
-        .get(
-          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project?f=json&outSR=4326&inSR=102100&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-9821384.714217981%2C%22y%22%3A5117339.123090005%7D%2C%7B%22x%22%3A-9797228.384715842%2C%22y%22%3A5137789.39951188%7D%5D%7D",
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project",
           testUtils.getProjectResponse(),
         )
         .post(
@@ -287,16 +287,16 @@ describe("Module `deploySolutionFromTemplate`", () => {
           testUtils.PORTAL_SUBSET.restUrl + "/content/items/loc1234567890?f=json&token=fake-token",
           testUtils.getSuccessResponse(),
         )
-        .get(
-          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations?f=json&inSR=102100&outSR=4326&extentOfInterest=%7B%22xmin%22%3A-9821384.714217981%2C%22ymin%22%3A5117339.123090005%2C%22xmax%22%3A-9797228.384715842%2C%22ymax%22%3A5137789.39951188%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%7D%7D",
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
           testUtils.getTransformationsResponse(),
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
           testUtils.getCreateFolderResponse(folderId),
         )
-        .get(
-          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project?f=json&outSR=4326&inSR=102100&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-9821384.714217981%2C%22y%22%3A5117339.123090005%7D%2C%7B%22x%22%3A-9797228.384715842%2C%22y%22%3A5137789.39951188%7D%5D%7D",
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project",
           testUtils.getProjectResponse(),
         )
         .post(
@@ -392,16 +392,16 @@ describe("Module `deploySolutionFromTemplate`", () => {
           testUtils.PORTAL_SUBSET.restUrl + "/content/items/loc1234567890?f=json&token=fake-token",
           testUtils.getSuccessResponse(),
         )
-        .get(
-          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations?f=json&inSR=102100&outSR=4326&extentOfInterest=%7B%22xmin%22%3A-9821384.714217981%2C%22ymin%22%3A5117339.123090005%2C%22xmax%22%3A-9797228.384715842%2C%22ymax%22%3A5137789.39951188%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%7D%7D",
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
           testUtils.getTransformationsResponse(),
         )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
           testUtils.getCreateFolderResponse(folderId),
         )
-        .get(
-          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project?f=json&outSR=4326&inSR=102100&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-9821384.714217981%2C%22y%22%3A5117339.123090005%7D%2C%7B%22x%22%3A-9797228.384715842%2C%22y%22%3A5137789.39951188%7D%5D%7D",
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project",
           testUtils.getProjectResponse(),
         )
         .post(
