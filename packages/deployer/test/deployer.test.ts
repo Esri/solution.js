@@ -279,12 +279,8 @@ describe("Module `deployer`", () => {
           testUtils.getCreateFolderResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
-        .post(
-          geometryServer + "/findTransformations", testUtils.getTransformationsResponse(),
-        )
-        .post(
-          geometryServer + "/project", testUtils.getProjectResponse(),
-        )
+        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
+        .post(geometryServer + "/project", testUtils.getProjectResponse())
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           testUtils.getSuccessResponse({
@@ -856,12 +852,8 @@ describe("Module `deployer`", () => {
           testUtils.getCreateFolderResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
-        .post(
-          geometryServer + "/findTransformations", testUtils.getTransformationsResponse(),
-        )
-        .post(
-          geometryServer + "/project", testUtils.getProjectResponse(),
-        )
+        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
+        .post(geometryServer + "/project", testUtils.getProjectResponse())
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           mockItems.get200Failure(),
@@ -973,9 +965,7 @@ describe("Module `deployer`", () => {
           testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/info/metadata/metadata.xml",
           mockItems.get400Failure(),
         )
-        .post(
-          geometryServer + "/findTransformations", testUtils.getTransformationsResponse(),
-        )
+        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           testUtils.getSuccessResponse({
@@ -1031,9 +1021,7 @@ describe("Module `deployer`", () => {
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
           testUtils.getSuccessResponse(),
         )
-        .post(
-          geometryServer + "/project", mockItems.get400Failure(),
-        )
+        .post(geometryServer + "/project", mockItems.get400Failure())
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
           testUtils.getCreateServiceResponse(),
@@ -1136,12 +1124,8 @@ describe("Module `deployer`", () => {
           testUtils.getCreateFolderResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
-        .post(
-          geometryServer + "/findTransformations", testUtils.getTransformationsResponse(),
-        )
-        .post(
-          geometryServer + "/project", testUtils.getProjectResponse(),
-        )
+        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
+        .post(geometryServer + "/project", testUtils.getProjectResponse())
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           testUtils.getSuccessResponse({
