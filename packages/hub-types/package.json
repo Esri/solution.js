@@ -49,6 +49,7 @@
     "access": "public"
   },
   "repository": {
+    "directory": "packages/hub-types",
     "type": "git",
     "url": "git+https://github.com/Esri/solution.js.git"
   },

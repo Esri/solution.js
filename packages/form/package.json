@@ -45,6 +45,7 @@
     "access": "public"
   },
   "repository": {
+    "directory": "packages/form",
     "type": "git",
     "url": "git+https://github.com/Esri/solution.js.git"
   },

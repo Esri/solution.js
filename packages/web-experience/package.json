@@ -45,6 +45,7 @@
     "access": "public"
   },
   "repository": {
+    "directory": "packages/web-experience",
     "type": "git",
     "url": "git+https://github.com/Esri/solution.js.git"
   },

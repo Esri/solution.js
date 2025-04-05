@@ -43,6 +43,7 @@
     "access": "public"
   },
   "repository": {
+    "directory": "packages/velocity",
     "type": "git",
     "url": "git+https://github.com/Esri/solution.js.git"
   },
