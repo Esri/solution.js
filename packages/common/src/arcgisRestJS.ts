@@ -76,14 +76,12 @@ export { ICredential, IUserRequestOptions, IUserSessionOptions } from "@esri/arc
 
 import { UserSession as UserSession_rest } from "@esri/arcgis-rest-auth";
 UserSession_rest.prototype.getDomainCredentials = function (url) {
-  console.log("getDomainCredentials", url); //???
   const trustedDomains: string[] = this["trustedDomains"] || [];
   if (!trustedDomains || !trustedDomains.length) {
     return "same-origin";
   }
 
   url = url.toLocaleLowerCase();
-  console.log("getDomainCredentials toLower", url); //???
   return trustedDomains.some(function (domainWithProtocol: string) {
     return url.startsWith(domainWithProtocol.toLocaleLowerCase());
   })
