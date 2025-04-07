@@ -97,4 +97,39 @@ describe("Module arcgisRestJS", () => {
     await arcgisRestJS.unprotectItem(requestOptions);
     expect(unprotectItemSpy.called);
   });
+
+  it("tests getDomainCredentials with no trusted domains property", () => {
+    MOCK_USER_SESSION["trustedDomains"] = undefined;
+    const url: string = "https://www.arcgis.com";
+    const originValue: string = MOCK_USER_SESSION.getDomainCredentials(url);
+    expect(originValue).toBe("same-origin");
+  });
+
+  it("tests getDomainCredentials with trusted domains that doesn't include supplied url", () => {
+    MOCK_USER_SESSION["trustedDomains"] = ["https://www.example.com"];
+    const url: string = "https://www.arcgis.com";
+    const originValue: string = MOCK_USER_SESSION.getDomainCredentials(url);
+    expect(originValue).toBe("same-origin");
+  });
+
+  it("tests getDomainCredentials with trusted domains that includes supplied url", () => {
+    MOCK_USER_SESSION["trustedDomains"] = ["https://www.example.com", "https://www.arcgis.com"];
+    const url: string = "https://www.arcgis.com";
+    const originValue: string = MOCK_USER_SESSION.getDomainCredentials(url);
+    expect(originValue).toBe("include");
+  });
+
+  it("tests getDomainCredentials with trusted domains that includes supplied url but with different casing in authorized domains", () => {
+    MOCK_USER_SESSION["trustedDomains"] = ["https://www.example.com", "https://www.ARCGIS.com"];
+    const url: string = "https://www.arcgis.com";
+    const originValue: string = MOCK_USER_SESSION.getDomainCredentials(url);
+    expect(originValue).toBe("include");
+  });
+
+  it("tests getDomainCredentials with trusted domains that includes supplied url but with different casing in supplied url", () => {
+    MOCK_USER_SESSION["trustedDomains"] = ["https://www.example.com", "https://www.arcgis.com"];
+    const url: string = "https://www.ARCGIS.com";
+    const originValue: string = MOCK_USER_SESSION.getDomainCredentials(url);
+    expect(originValue).toBe("include");
+  });
 });
