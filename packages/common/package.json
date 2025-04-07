@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-common",
-  "version": "6.1.5",
+  "version": "6.1.6",
   "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -95,5 +95,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "e6fcdfb5c1f96e31dd1d62387e5bf18281915eaa"
+  "gitHead": "2f52719b5467deab620f0be684c02e4ca163088f"
 }
