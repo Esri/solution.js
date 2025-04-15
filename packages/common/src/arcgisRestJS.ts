@@ -72,7 +72,24 @@ import {
   addToServiceDefinition,
 } from "@esri/arcgis-rest-service-admin";
 
-export { ICredential, IUserRequestOptions, IUserSessionOptions, UserSession } from "@esri/arcgis-rest-auth";
+export { ICredential, IUserRequestOptions, IUserSessionOptions } from "@esri/arcgis-rest-auth";
+
+import { UserSession as UserSession_rest } from "@esri/arcgis-rest-auth";
+UserSession_rest.prototype.getDomainCredentials = function (url) {
+  const trustedDomains: string[] = this["trustedDomains"] || [];
+  if (!trustedDomains || !trustedDomains.length) {
+    return "same-origin";
+  }
+
+  url = url.toLocaleLowerCase();
+  return trustedDomains.some(function (domainWithProtocol: string) {
+    return url.startsWith(domainWithProtocol.toLocaleLowerCase());
+  })
+    ? "include"
+    : "same-origin";
+};
+export { UserSession_rest as UserSession };
+
 export {
   IFeature,
   IQueryRelatedOptions,
