@@ -1,0 +1,17 @@
+set twoFactorCode=123456
+set latestVersion=6.2.0
+call npm dist-tag add "@esri/solution-common@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-creator@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-deployer@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-feature-layer@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-file@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-form@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-group@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-hub-types@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-simple-types@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-storymap@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-velocity@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-viewer@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-web-experience@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-web-tool@%latestVersion%" latest -otp=%twoFactorCode%
+call npm dist-tag add "@esri/solution-workflow@%latestVersion%" latest -otp=%twoFactorCode%
