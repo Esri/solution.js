@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-common",
-  "version": "6.0.4-alpha.0",
+  "version": "6.0.5-alpha.0",
   "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -36,10 +36,10 @@
     "@esri/arcgis-rest-portal": "^4.0.0",
     "@esri/arcgis-rest-request": "^4.0.0",
     "@esri/arcgis-rest-routing": "^4.0.3",
-    "@esri/hub-common": "https://hub-library-preview.s3.amazonaws.com/@esri/hub-common/PR-1850/86607069d967e4c20d11826a50faeb711bf6f437.tgz",
-    "@esri/hub-initiatives": "https://hub-library-preview.s3.amazonaws.com/@esri/hub-initiatives/PR-1850/86607069d967e4c20d11826a50faeb711bf6f437.tgz",
-    "@esri/hub-sites": "https://hub-library-preview.s3.amazonaws.com/@esri/hub-sites/PR-1850/86607069d967e4c20d11826a50faeb711bf6f437.tgz",
-    "@esri/hub-teams": "https://hub-library-preview.s3.amazonaws.com/@esri/hub-teams/PR-1850/86607069d967e4c20d11826a50faeb711bf6f437.tgz",
+    "@esri/hub-common": "^17.0.0",
+    "@esri/hub-initiatives": "^17.0.0",
+    "@esri/hub-sites": "^18.0.0",
+    "@esri/hub-teams": "^17.0.0",
     "adlib": "3.0.8",
     "jszip": "3.10.1",
     "tslib": "1.14.1"
