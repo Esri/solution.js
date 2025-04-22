@@ -1,5 +1,10 @@
-set twoFactorCode=123456
-set nextVersion=6.3.0
+rem Syntax: setNextVersion.bat <next version; e.g., 6.0.3> <two factor code>
+@echo off
+if "%1%"=="" goto end
+if "%2%"=="" goto end
+set nextVersion=%1%
+set twoFactorCode=%2%
+@echo on
 call npm dist-tag add "@esri/solution-common@%nextVersion%" next -otp=%twoFactorCode%
 call npm dist-tag add "@esri/solution-creator@%nextVersion%" next -otp=%twoFactorCode%
 call npm dist-tag add "@esri/solution-deployer@%nextVersion%" next -otp=%twoFactorCode%
@@ -15,3 +20,4 @@ call npm dist-tag add "@esri/solution-viewer@%nextVersion%" next -otp=%twoFactor
 call npm dist-tag add "@esri/solution-web-experience@%nextVersion%" next -otp=%twoFactorCode%
 call npm dist-tag add "@esri/solution-web-tool@%nextVersion%" next -otp=%twoFactorCode%
 call npm dist-tag add "@esri/solution-workflow@%nextVersion%" next -otp=%twoFactorCode%
+:end
