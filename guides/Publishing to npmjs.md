@@ -14,7 +14,7 @@
 * \[ \] Run `npm run release:prepare` and pick new version number (works best in Windows shell)
 * \[ \] Run `npm run release:review`
 * \[ \] Run `npm run release:publish-git` in a bash shell
-* \[ \] Run `npm run release:publish-npm` in a Windows shell and enter the npm 2-factor code when requested
+* \[ \] Run `npm run release:publish-npm` in a Windows shell and enter the npm 2-factor code when requested (if you've set up the .npmrc file with an npm granular access token, you won't be prompted for the code; see below)
 * \[ \] Check that publishing worked using `check_npm_package_versions.html` in a browser
 * \[ \] Run `build.bat` to update the package-lock.json files with the latest version.
 * \[ \] Commit package.json files (publishing updates the `gitHead` property in the files) and the package-lock.json files. 
@@ -81,6 +81,16 @@ Copyright (c) 1990-2008 Info-ZIP...
  Note that you won't see the new version in your GitHub client until the next time that you refresh the repository.
 
  It's OK to push the version to GitHub even if not all packages appear to have been published. "Publishing" is sending them to npm and is a separate process that we can patch below.
+
+   - Publishing with a granular access token
+		1. Create a [granular access token on the npmjs.com website](https://docs.npmjs.com/creating-and-viewing-access-tokens#creating-granular-access-tokens-on-the-website)
+		    * Set expiration of token
+		    * Skip IP Range
+		    * Grant "Read and write" permissions to "All packages"
+		2. Create a file at the top level of solution.js called `.npmrc` and containing the following text (the generated token is added after the equals sign):
+		```bat
+		//registry.npmjs.org/:_authToken=
+		```
 
 8. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take ten or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
 

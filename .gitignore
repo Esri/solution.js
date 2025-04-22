@@ -102,3 +102,5 @@ demos/deploy-harness
 demos/**/index-local.html
 
 demos/ember-build-harness
+
+.npmrc
