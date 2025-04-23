@@ -21,7 +21,7 @@
     "npm-check-updates": "^17.1.0"
   },
   "dependencies": {
-    "@esri/hub-common": "^17.0.0",
+    "@esri/hub-common": "^17.0.2",
     "@esri/solution-common": "^6.0.5-alpha.0",
     "tslib": "1.14.1"
   },
