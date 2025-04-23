@@ -3,8 +3,8 @@
 #### Checklist
 
 * \[ \] Stop any code-change watchers that automatically recompile the project
-* \[ \] Run `npm run clean` in a bash shell
-* \[ \] Switch to Windows shell
+* \[ \] Open a Windows shell and go to the top level of the repo
+* \[ \] Run `npm run clean:dist`
 * \[ \] Run `build.bat`
 * \[ \] Create a .npmrc file if you don't want to have to enter a one-time password during publishing
 * \[ \] Pick and run a publishing option:

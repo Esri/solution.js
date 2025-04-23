@@ -95,10 +95,8 @@ These commands are
   * `npm run build` Creates esm and cjs outputs for each package
   * `npm run build:esm` Creates esm outputs for each package
   * `npm run build:cjs` Creates cjs outputs for each package
-  * `npm run clean` runs `clean:src` and `clean:dist` _(requires bash console)_
-    * `npm run clean:src` deletes `.d.ts`, `.js`, and `.js.map` files
-    * `npm run clean:dist` deletes `.rpt2_cache` and `dist` folders
-  * `npm run deepclean` deletes node_modules and runs `clean`
+  * `npm run clean:dist` deletes `dist` folders in the demos and packages subfolders
+  * `npm run clean:node` deletes `node_modules` in the top level and in the demos and packages subfolders
   * `npm run lint` lints the TypeScript files
   * `npm run lint:fix` lints the TypeScript files and fixes what it can
   * `npm run prettify` beautifies TypeScript files
