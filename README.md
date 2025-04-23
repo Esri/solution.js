@@ -95,10 +95,8 @@ These commands are
   * `npm run build` Creates esm and cjs outputs for each package
   * `npm run build:esm` Creates esm outputs for each package
   * `npm run build:cjs` Creates cjs outputs for each package
-  * `npm run clean` runs `clean:src` and `clean:dist` _(requires bash console)_
-    * `npm run clean:src` deletes `.d.ts`, `.js`, and `.js.map` files
-    * `npm run clean:dist` deletes `.rpt2_cache` and `dist` folders
-  * `npm run deepclean` deletes node_modules and runs `clean`
+  * `npm run clean:dist` deletes `dist` folders in the demos and packages subfolders
+  * `npm run clean:node` deletes `node_modules` in the top level and in the demos and packages subfolders
   * `npm run lint` lints the TypeScript files
   * `npm run lint:fix` lints the TypeScript files and fixes what it can
   * `npm run prettify` beautifies TypeScript files
@@ -121,11 +119,10 @@ These commands are
 * publishing doc
   * `npm run docs:build` builds the documentation ___(note that this script creates a `docs` folder, deleting any existing one)___
   * `npm run docs:deploy` pushes the documentation to the repository's gh-pages
-  * `npm run docs:srihash` generates the srihashes. Learn more about SRI Hash at https://www.srihash.org/
 
 
 * publishing code
-  * `npm run publish` to publish the repo to GitHub & npm as the latest version 
+  * `npm run publish` to publish the repo to GitHub & npm as the latest version
   * `npm run publish:next` to publish the repo to GitHub & npm as the next version
 
 Both publishing commands support an optional command-line argument to specify the version number to use; if omitted, one is prompted for the version number. The argument can either be a version value such as "5.8.8" or one of these strings for an automatic version bump: major | minor | patch | premajor | preminor | prepatch | prerelease.
@@ -156,8 +153,11 @@ if you don't see your concern, please let us know by [submitting an issue](https
 
 ### Versioning
 
-For transparency into the release cycle and in striving to maintain backward compatibility, @esri/solution.js is maintained under Semantic Versioning guidelines and will adhere to these rules whenever possible. For more information on SemVer, please visit <http://semver.org/>.
+__Major:__ Significant changes in solution.js (e.g., when the repo moved from ArcGIS REST JS v3 (solution.js v5.x) to v4 (solution.js v6.x))
+__Minor:__ 3 times a year coinciding with our ArcGIS Online releases. For example, starting at 6.2 for 2025.R2, we continue with 6.3 for 2025.R3, 6.4 2026.R1, etc.
+__Patch:__ Incremental fixes and enhancements
 
+In npmjs.com, the current ArcGIS Online release will be labeled as "latest", and the versions for the next ArcGIS Online release will be labeled as "next".
 
 ## Contributing
 

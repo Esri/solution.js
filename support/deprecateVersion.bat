@@ -1,3 +1,4 @@
+rem Deprecates a version in npmjs
 @echo off
 if "%1%"=="" goto syntax
 set obsoleteVersion=%1%
