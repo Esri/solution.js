@@ -1,7 +1,7 @@
 @echo off
 if "%1%"=="" goto syntax
 set nextVersion=%1%
-if "%2%"=="" goto syntax
+if "%2%"=="" goto token
 
 set twoFactorCode=%2%
 @echo on
@@ -39,6 +39,7 @@ call npm dist-tag add "@esri/solution-viewer@%nextVersion%" next
 call npm dist-tag add "@esri/solution-web-experience@%nextVersion%" next
 call npm dist-tag add "@esri/solution-web-tool@%nextVersion%" next
 call npm dist-tag add "@esri/solution-workflow@%nextVersion%" next
+goto end
 
 :syntax
 @echo on
