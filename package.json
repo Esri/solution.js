@@ -38,11 +38,8 @@
     "docs:build": "typedoc",
     "docs:deploy": "node support/deploy-doc-site.js",
     "docs:srihash": "node scripts/generate-srihashes.js",
-    "release:prepare": "lerna publish --no-git-tag-version --no-push --skip-npm --yes",
-    "release:review": "git --no-pager diff --word-diff",
-    "release:publish-git": "bash ./support/publish.sh",
-    "release:publish-npm": "lerna publish from-package --force-publish=* --no-git-tag-version --no-push --yes --no-git-reset",
-    "release:publish-retry": "lerna publish from-package --no-git-tag-version --no-push --yes",
+    "publish": "support\\publish.bat",
+    "publish:next": "support\\publish-next.bat",
     "precommit": "lint-staged"
   },
   "publishConfig": {
@@ -92,7 +89,7 @@
     "karma-spec-reporter": "0.0.36",
     "karma-typescript": "^5.5.4",
     "karma-typescript-es6-transform": "^5.5.4",
-    "lerna": "^8.1.8",
+    "lerna": "^8.2.1",
     "lint-staged": "^15.2.2",
     "magic-string": "^0.30.11",
     "npm-check-updates": "^17.1.0",
