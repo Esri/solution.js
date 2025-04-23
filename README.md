@@ -125,12 +125,10 @@ These commands are
 
 
 * publishing code
-  * `npm run release:prepare` to set up the publish and to pick a new version number
-  * `npm run release:review` shows summary of git changes
-  * `npm run release:publish-git` publishes a version to GitHub _(requires bash shell)_
-  * `npm run release:publish-npm` publishes a version to npm _(requires Windows shell)_
-  * `npm run release:publish-retry` is for retrying to publish npm; it does not update the git tag
+  * `npm run publish` to publish the repo to GitHub & npm as the latest version 
+  * `npm run publish:next` to publish the repo to GitHub & npm as the next version
 
+Both publishing commands support an optional command-line argument to specify the version number to use; if omitted, one is prompted for the version number. The argument can either be a version value such as "5.8.8" or one of these strings for an automatic version bump: major | minor | patch | premajor | preminor | prepatch | prerelease.
 
 * lifecycle
   * precommit lints staged files

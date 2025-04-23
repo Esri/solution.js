@@ -1,7 +1,7 @@
 @echo off
 if "%1%"=="" goto syntax
 set latestVersion=%1%
-if "%2%"=="" goto syntax
+if "%2%"=="" goto token
 
 set twoFactorCode=%2%
 @echo on
@@ -39,8 +39,9 @@ call npm dist-tag add "@esri/solution-viewer@%latestVersion%" latest
 call npm dist-tag add "@esri/solution-web-experience@%latestVersion%" latest
 call npm dist-tag add "@esri/solution-web-tool@%latestVersion%" latest
 call npm dist-tag add "@esri/solution-workflow@%latestVersion%" latest
+goto end
 
 :syntax
 @echo on
-rem Syntax: setLatestVersion.bat.bat <current version; e.g., 5.22.0> [<two factor code if you don't have .npmrc>]
+rem Syntax: setLatestVersion.bat <current version; e.g., 5.22.0> [<two factor code if you don't have .npmrc>]
 :end
