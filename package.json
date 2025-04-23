@@ -37,7 +37,6 @@
     "test:all:win": "npm run test:chrome && npm run test:edge && npm run test:firefox",
     "docs:build": "typedoc",
     "docs:deploy": "node support/deploy-doc-site.js",
-    "docs:srihash": "node scripts/generate-srihashes.js",
     "publish": "support\\publish.bat",
     "publish:next": "support\\publish-next.bat",
     "precommit": "lint-staged"
