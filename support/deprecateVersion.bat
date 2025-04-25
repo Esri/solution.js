@@ -1,5 +1,10 @@
-rem Deprecates a version in npmjs
-@echo off
+rem Deprecates a version on npm
+rem Syntax deprecateVersion.bat version [two-factor code]
+rem e.g, to deprecate 6.1.0 using a two-factor code: deprecateVersion.bat 6.1.0 123456
+rem e.g, to deprecate 6.1.0 using the auth token in .npmrc: deprecateVersion.bat 6.1.0
+setlocal
+echo off
+
 if "%1%"=="" goto syntax
 set obsoleteVersion=%1%
 if "%2%"=="" goto token
@@ -46,3 +51,4 @@ goto end
 @echo on
 rem Syntax: deprecateVersion.bat <obsolete version; e.g., 6.0.3> [<two factor code if you don't have .npmrc>]
 :end
+endlocal
