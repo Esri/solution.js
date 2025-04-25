@@ -1,6 +1,7 @@
 rem Publishes the repo to GitHub & npm as the latest version
 rem Syntax publish.bat [ <version> | major | minor | patch | premajor | preminor | prepatch | prerelease ]
 setlocal
+echo off
 
 rem Make sure user is logged in to npm
 call npm whoami 2>err.out

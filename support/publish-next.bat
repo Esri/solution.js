@@ -1,6 +1,7 @@
 rem Publishes the repo to GitHub & npm as the next version
 rem Syntax publish-next.bat [ <version> | major | minor | patch | premajor | preminor | prepatch | prerelease ]
 setlocal
+echo off
 
 rem Save latest version
 call npm view @esri/solution-common version >temp.txt
