@@ -688,7 +688,6 @@ describe("Module `creator`", () => {
         ],
       };
 
-      //spyOn(common, "getItemBase").and.callFake(() => Promise.resolve(sourceItem));
       spyOn(common, "getItemBase").and.resolveTo(sourceItem);
       spyOn(common, "getItemDataAsJson").and.callFake(() => Promise.resolve(itemAsJson));
 
