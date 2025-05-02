@@ -60,16 +60,13 @@ import {
 } from "@esri/arcgis-rest-portal";
 import { IRequestOptions, request as restRequest } from "@esri/arcgis-rest-request";
 import {
-  //IFeature,
   IAddToServiceDefinitionOptions,
   IAddToServiceDefinitionResult,
   IQueryRelatedOptions,
   IQueryRelatedResponse,
-  //IRelatedRecordGroup,
   addToServiceDefinition,
   queryRelated as restQueryRelated,
 } from "@esri/arcgis-rest-feature-service";
-//export { ICredential, IUserRequestOptions, IUserSessionOptions} from "@esri/arcgis-rest-auth";
 export {
   IAddToServiceDefinitionOptions,
   IAddToServiceDefinitionResult,

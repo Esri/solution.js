@@ -161,9 +161,6 @@ export function deployAndDisplaySolution (
     dontCreateSolutionItem
   };
 
-  console.log(customParams);
-  console.log(options);
-
   return deployer.deploySolution(templateSolutionId, destAuthentication, options)
     .then((createdSolutionId: string) => {
       if (dontCreateSolutionItem) {

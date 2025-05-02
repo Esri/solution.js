@@ -19,6 +19,7 @@ import {
   ICreateItemFromTemplateResponse,
   getTemplateById,
   addItemRelationship,
+  IManageItemRelationshipOptions,
 } from "@esri/solution-common";
 import { moduleMap } from "../module-map";
 import { shareTemplatesToGroups } from "./share-templates-to-groups";
@@ -47,14 +48,13 @@ export function postProcess(
     // connect the solution with its items; groups cannot be connected
     relationshipPromises = clonedSolutions
       .filter((entry) => entry.type !== "Group")
-      .map(
-        (entry) =>
-          addItemRelationship({
-            originItemId: deployedSolutionId,
-            destinationItemId: entry.id,
-            relationshipType: "Solution2Item",
-            authentication: authentication,
-          } as any), // TODO: remove `as any`, which is here until arcgis-rest-js' ItemRelationshipType defn catches up
+      .map((entry) =>
+        addItemRelationship({
+          originItemId: deployedSolutionId,
+          destinationItemId: entry.id,
+          relationshipType: "Solution2Item",
+          authentication: authentication,
+        } as IManageItemRelationshipOptions),
       );
   }
 

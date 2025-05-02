@@ -177,8 +177,6 @@ export async function deploySolutionFromTemplate(
     };
     await common.protectItem(protectOptions);
 
-    // TODO: Attach the whole solution model so we can
-    // have stuff like `{{solution.item.title}}
     templateDictionary.solutionItemId = deployedSolutionId;
     solutionTemplateBase.id = deployedSolutionId;
 
