@@ -1,3 +1,4 @@
+rem Sets the "next" version tag in npmjs
 @echo off
 if "%1%"=="" goto syntax
 set nextVersion=%1%
