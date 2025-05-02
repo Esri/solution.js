@@ -15,7 +15,6 @@
   - (One can replace "patch" with "major" | "minor" | "premajor" | "preminor" | "prepatch" | "prerelease")
 * \[ \] Check that publishing to the current AGO release worked using `check_npm_package_versions.html` in a browser
 * \[ \] Create a release from the build's tag in GitHub
-* \[ \] If publishing a version for the next AGO release, run `setLatestversion.bat` after updating its npm 2-factor code and the version number of the current AGO release version, and then run `setNextVersion.bat` after updating its npm 2-factor code and the new next-release version number. This step is not necessary for publishing a version for the current AGO release because npm will automatically set the "latest" tag on the most-recently-published version whatever it is.
 * \[ \] Update documentation via `npm run docs:build`
 * \[ \] Deploy documentation via `npm run docs:deploy`
 
@@ -28,9 +27,6 @@ __Patch:__ Incremental fixes and enhancements
 In npmjs.com, the current ArcGIS Online release will be labeled as "latest", and the versions for the next ArcGIS Online release will be labeled as "next".
 
 #### Notes
-
-##### Shells
-Launch a Windows command-prompt window and a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program). The current state of the npm tools appear to require us to use both of these windows to create a build: the command prompt window for selecting the build version and for entering the OTP for pushing the build to npm; the git-bash window for pre-publish cleaning and for running a useful script. When a step does not specify the window to use, either is OK.
 
 ##### Log in to npmjs
 *Note: the computer remembers for a long time that you're logged in; you can check that you are logged in by typing `npm whoami`*
