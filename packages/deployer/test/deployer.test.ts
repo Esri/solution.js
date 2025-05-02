@@ -279,8 +279,16 @@ describe("Module `deployer`", () => {
           testUtils.getCreateFolderResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
-        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
-        .post(geometryServer + "/project", testUtils.getProjectResponse())
+        .get(
+          geometryServer +
+            "/findTransformations?f=json&inSR=102100&outSR=4326&extentOfInterest=%7B%22xmin%22%3A-9821384.714217981%2C%22ymin%22%3A5117339.123090005%2C%22xmax%22%3A-9797228.384715842%2C%22ymax%22%3A5137789.39951188%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%7D%7D",
+          testUtils.getTransformationsResponse(),
+        )
+        .get(
+          geometryServer +
+            "/project?f=json&outSR=4326&inSR=102100&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-9821384.714217981%2C%22y%22%3A5117339.123090005%7D%2C%7B%22x%22%3A-9797228.384715842%2C%22y%22%3A5137789.39951188%7D%5D%7D",
+          testUtils.getProjectResponse(),
+        )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           testUtils.getSuccessResponse({
@@ -748,8 +756,8 @@ describe("Module `deployer`", () => {
         )
         .post(imageUrl, expectedImage)
         .post(imageUrl2, expectedImage)
-        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
-        .post(
+        .get(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
+        .get(
           "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/project",
           testUtils.getProjectResponse(),
         )
@@ -852,8 +860,16 @@ describe("Module `deployer`", () => {
           testUtils.getCreateFolderResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
-        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
-        .post(geometryServer + "/project", testUtils.getProjectResponse())
+        .get(
+          geometryServer +
+            "/findTransformations?f=json&inSR=102100&outSR=4326&extentOfInterest=%7B%22xmin%22%3A-9821384.714217981%2C%22ymin%22%3A5117339.123090005%2C%22xmax%22%3A-9797228.384715842%2C%22ymax%22%3A5137789.39951188%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%7D%7D",
+          testUtils.getTransformationsResponse(),
+        )
+        .get(
+          geometryServer +
+            "/project?f=json&outSR=4326&inSR=102100&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-9821384.714217981%2C%22y%22%3A5117339.123090005%7D%2C%7B%22x%22%3A-9797228.384715842%2C%22y%22%3A5137789.39951188%7D%5D%7D",
+          testUtils.getProjectResponse(),
+        )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           mockItems.get200Failure(),
@@ -965,7 +981,11 @@ describe("Module `deployer`", () => {
           testUtils.PORTAL_SUBSET.restUrl + "/content/items/" + itemInfo.item.id + "/info/metadata/metadata.xml",
           mockItems.get400Failure(),
         )
-        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
+        .get(
+          geometryServer +
+            "/findTransformations?f=json&inSR=102100&outSR=4326&extentOfInterest=%7B%22xmin%22%3A-9821384.714217981%2C%22ymin%22%3A5117339.123090005%2C%22xmax%22%3A-9797228.384715842%2C%22ymax%22%3A5137789.39951188%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%7D%7D",
+          testUtils.getTransformationsResponse(),
+        )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           testUtils.getSuccessResponse({
@@ -1021,7 +1041,11 @@ describe("Module `deployer`", () => {
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
           testUtils.getSuccessResponse(),
         )
-        .post(geometryServer + "/project", mockItems.get400Failure())
+        .get(
+          geometryServer +
+            "/project?f=json&outSR=4326&inSR=102100&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-9821384.714217981%2C%22y%22%3A5117339.123090005%7D%2C%7B%22x%22%3A-9797228.384715842%2C%22y%22%3A5137789.39951188%7D%5D%7D",
+          mockItems.get400Failure(),
+        )
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890?f=json&token=fake-token",
           testUtils.getCreateServiceResponse(),
@@ -1124,8 +1148,16 @@ describe("Module `deployer`", () => {
           testUtils.getCreateFolderResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
-        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
-        .post(geometryServer + "/project", testUtils.getProjectResponse())
+        .get(
+          geometryServer +
+            "/findTransformations?f=json&inSR=102100&outSR=4326&extentOfInterest=%7B%22xmin%22%3A-9821384.714217981%2C%22ymin%22%3A5117339.123090005%2C%22xmax%22%3A-9797228.384715842%2C%22ymax%22%3A5137789.39951188%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%7D%7D",
+          testUtils.getTransformationsResponse(),
+        )
+        .get(
+          geometryServer +
+            "/project?f=json&outSR=4326&inSR=102100&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-9821384.714217981%2C%22y%22%3A5117339.123090005%7D%2C%7B%22x%22%3A-9797228.384715842%2C%22y%22%3A5137789.39951188%7D%5D%7D",
+          testUtils.getProjectResponse(),
+        )
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           testUtils.getSuccessResponse({
@@ -1284,8 +1316,8 @@ describe("Module `deployer`", () => {
           testUtils.getCreateFolderResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", testUtils.UTILITY_SERVER_INFO)
-        .post(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
-        .post(geometryServer + "/project", testUtils.getProjectResponse())
+        .get(geometryServer + "/findTransformations", testUtils.getTransformationsResponse())
+        .get(geometryServer + "/project", testUtils.getProjectResponse())
         .post(
           testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
           testUtils.getSuccessResponse({

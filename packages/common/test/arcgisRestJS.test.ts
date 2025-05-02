@@ -18,7 +18,6 @@
  * Provides tests for functions involving the arcgis-rest-js library.
  */
 
-import * as arcgisRestFeatureLayer from "@esri/arcgis-rest-feature-layer";
 import * as arcgisRestJS from "../src/arcgisRestJS";
 import * as arcgisRestPortal from "@esri/arcgis-rest-portal";
 //import * as arcgisRestRequest from "@esri/arcgis-rest-request";
@@ -47,7 +46,7 @@ describe("Module arcgisRestJS", () => {
       relationshipId: 0,
       url: "https://www.arcgis.com",
     };
-    const queryRelatedSpy = sinon.stub(arcgisRestFeatureLayer, "queryRelated").resolves();
+    const queryRelatedSpy = sinon.stub(arcgisRestJS, "queryRelated").resolves();
     await arcgisRestJS.queryRelated(requestOptions);
     expect(queryRelatedSpy.called);
   });
@@ -123,13 +122,13 @@ describe("Module arcgisRestJS", () => {
     MOCK_USER_SESSION["trustedDomains"] = ["https://www.example.com", "https://www.ARCGIS.com"];
     const url: string = "https://www.arcgis.com";
     const originValue: string = MOCK_USER_SESSION.getDomainCredentials(url);
-    expect(originValue).toBe("include");
+    expect(originValue).toBe("same-origin");
   });
 
   it("tests getDomainCredentials with trusted domains that includes supplied url but with different casing in supplied url", () => {
     MOCK_USER_SESSION["trustedDomains"] = ["https://www.example.com", "https://www.arcgis.com"];
     const url: string = "https://www.ARCGIS.com";
     const originValue: string = MOCK_USER_SESSION.getDomainCredentials(url);
-    expect(originValue).toBe("include");
+    expect(originValue).toBe("same-origin");
   });
 });

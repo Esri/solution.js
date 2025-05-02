@@ -412,7 +412,7 @@ export function createRuntimeMockUserSession(now?: number, portalUrl?: string, i
     tokenExpires: tomorrow,
     refreshToken: "refreshToken",
     refreshTokenExpires: tomorrow,
-    refreshTokenTTL: 1440,
+    tokenDuration: 1440,
     username: "casey",
     password: "123456",
     portal: (portalUrl || PORTAL_URL) + "/sharing/rest",

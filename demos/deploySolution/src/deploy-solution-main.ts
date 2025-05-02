@@ -26,7 +26,7 @@ export interface ISolutionInfoCard {
 }
 
 
-export function deploySolutionsInFolder(
+export function deploySolutionsInFolder (
   folderId: string,
   srcAuthentication: common.UserSession,
   destAuthentication: common.UserSession,
@@ -62,7 +62,7 @@ export function deploySolutionsInFolder(
     });
 }
 
-function deployBatchOfSolutions(
+function deployBatchOfSolutions (
   solutionsToDeploy: ISolutionInfoCard[],
   totalNumberOfSolutions: number,
   srcAuthentication: common.UserSession,
@@ -107,7 +107,7 @@ function deployBatchOfSolutions(
     });
 }
 
-export function deploySolution(
+export function deploySolution (
   templateSolution: ISolutionInfoCard,
   jobId: string,
   srcAuthentication: common.UserSession,
@@ -138,7 +138,7 @@ export function deploySolution(
     });
 }
 
-export function deployAndDisplaySolution(
+export function deployAndDisplaySolution (
   templateSolutionId: string,
   srcAuthentication: common.UserSession,
   destAuthentication: common.UserSession,
@@ -171,7 +171,7 @@ export function deployAndDisplaySolution(
     });
 }
 
-export function getFolders(
+export function getFolders (
   authentication: common.UserSession,
 ): Promise<ISolutionInfoCard[]> {
   return common.getUserContent({ authentication })
@@ -187,7 +187,7 @@ export function getFolders(
     });
 }
 
-export function getTemplates(
+export function getTemplates (
   primarySolutionsGroupId: string,
   agoBasedEnterpriseSolutionsGroupId: string,
   authentication?: common.UserSession
@@ -252,7 +252,7 @@ export function getTemplates(
     });
 }
 
-export function isJsonStr(
+export function isJsonStr (
   v: string
 ): boolean {
   // string must contain valid json object with at least one key

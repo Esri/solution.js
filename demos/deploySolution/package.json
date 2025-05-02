@@ -1,6 +1,6 @@
 {
   "name": "deploySolution",
-  "version": "5.8.26",
+  "version": "6.2.0-alpha.0",
   "description": "deploySolution demo",
   "author": "Esri",
   "license": "Apache-2.0",
@@ -21,9 +21,6 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@esri/arcgis-rest-auth": "^3.7.0",
-    "@esri/arcgis-rest-portal": "^3.7.0",
-    "@esri/arcgis-rest-request": "^3.7.0",
     "@esri/solution-common": "file:../../packages/common/dist",
     "@esri/solution-deployer": "file:../../packages/deployer/dist"
   },

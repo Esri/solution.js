@@ -65,7 +65,7 @@ import {
   ItemRelationshipType,
   IRequestOptions,
   IUpdateItemResponse,
-  IUserSessionOptions,
+  IArcGISIdentityManagerOptions,
   IAddItemDataOptions,
   ICreateItemOptions,
   IFolderIdOptions,
@@ -118,22 +118,22 @@ import { isTrackingViewTemplate, setTrackingOptions } from "./trackingHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function addItemData(id: string, data: any, authentication: UserSession): Promise<IUpdateItemResponse> {
+export function addItemData(id: string, file: any, authentication: UserSession): Promise<IUpdateItemResponse> {
   const addDataOptions: IAddItemDataOptions = {
     id,
-    data,
+    file,
     authentication,
   };
   return portalAddItemData(addDataOptions);
 }
 
 /**
- * Creates a UserSession via a function so that the global arcgisSolution variable can access authentication.
+ * Creates a ArcGISIdentityManager via a function so that the global arcgisSolution variable can access authentication.
  *
- * @param options See https://esri.github.io/arcgis-rest-js/api/auth/IUserSessionOptions/
- * @returns UserSession
+ * @param options See https://developers.arcgis.com/arcgis-rest-js/api-reference/arcgis-rest-request/IArcGISIdentityManagerOptions/
+ * @returns UserSession (ArcGISIdentityManager)
  */
-export function getUserSession(options: IUserSessionOptions = {}): UserSession {
+export function getUserSession(options: IArcGISIdentityManagerOptions = {}): UserSession {
   return new UserSession(options);
 }
 
@@ -446,7 +446,10 @@ export function convertExtent(
   geometryServiceUrl: string,
   authentication: UserSession,
 ): Promise<any> {
-  const _requestOptions: any = { authentication };
+  const _requestOptions: any = {
+    authentication,
+    httpMethod: "GET",
+  };
   return new Promise<any>((resolve, reject) => {
     if (extent.spatialReference.wkid === outSR?.wkid || !outSR) {
       resolve(extent);
@@ -692,6 +695,28 @@ export function createItemWithData(
         thumbnail: itemInfo.thumbnail,
       };
       delete createOptions.item.thumbnail;
+    }
+
+    if (createOptions.params && createOptions.params.data) {
+      createOptions.params[createOptions.params.data instanceof File ? "file" : "text"] = createOptions.params.data;
+    } else {
+      if (createOptions.params) {
+        if (dataInfo instanceof File) {
+          createOptions.params["file"] = dataInfo;
+        } else {
+          createOptions.params["text"] = dataInfo;
+        }
+      } else {
+        if (dataInfo instanceof File) {
+          createOptions.params = {
+            file: dataInfo,
+          };
+        } else {
+          createOptions.params = {
+            text: dataInfo ? dataInfo : {},
+          };
+        }
+      }
     }
 
     createItemInFolder(createOptions).then(
@@ -1802,6 +1827,14 @@ export function updateItem(
         ...(additionalParams ?? {}),
       },
     };
+    if (itemInfo?.data instanceof File) {
+      //updateOptions.file = itemInfo.data;
+      updateOptions.params.file = itemInfo.data;
+    } else {
+      //updateOptions.text = itemInfo.data;
+      updateOptions.params.text = itemInfo.data;
+    }
+
     portalUpdateItem(updateOptions).then(
       (response) => (response.success ? resolve(response) : reject(response)),
       (err) => reject(err),
@@ -1871,6 +1904,7 @@ export function updateItemExtended(
     if (isTrackingViewTemplate(undefined, itemInfo) && templateDictionary) {
       updateOptions.owner = templateDictionary.locationTracking.owner;
     }
+
     portalUpdateItem(updateOptions).then(
       (result) => {
         if (access && access !== "private") {

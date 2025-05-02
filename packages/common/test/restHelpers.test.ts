@@ -549,8 +549,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
         .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/aabb123456/createService", mockItems.get400Failure())
-        .post(
-          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
+        .get(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations?f=json&inSR=102100&outSR=-1&extentOfInterest=%7B%22xmin%22%3A-9821384.714217981%2C%22ymin%22%3A5117339.123090005%2C%22xmax%22%3A-9797228.384715842%2C%22ymax%22%3A5137789.39951188%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%7D%7D",
+          mockItems.get400Failure(),
+        )
+        .get(
+          "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations?f=json&inSR=4326&outSR=-1&extentOfInterest=%7B%22xmin%22%3A-179%2C%22xmax%22%3A179%2C%22ymin%22%3A-89%2C%22ymax%22%3A89%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D",
           mockItems.get400Failure(),
         );
 
@@ -1510,18 +1514,26 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.getPortalsSelfResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
-        .post(geometryServiceUrl + "/findTransformations", {
-          transformations: [
-            {
-              wkid: 3,
-            },
-          ],
-        })
-        .post(geometryServiceUrl + "/project", {
-          geometries: projectedGeometries,
-        })
-        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
-        .post(geometryServiceUrl + "/project/rest/info", "{}");
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=1&outSR=2&extentOfInterest=%7B%22xmin%22%3A-131%2C%22ymin%22%3A16%2C%22xmax%22%3A-57%2C%22ymax%22%3A58%2C%22spatialReference%22%3A%7B%22wkid%22%3A1%7D%7D",
+          {
+            transformations: [
+              {
+                wkid: 3,
+              },
+            ],
+          },
+        )
+        .get(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=1&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-131%2C%22y%22%3A16%7D%2C%7B%22x%22%3A-57%2C%22y%22%3A58%7D%5D%7D&transformation=3",
+          {
+            geometries: projectedGeometries,
+          },
+        )
+        .get(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .get(geometryServiceUrl + "/project/rest/info", "{}");
 
       const _extent = await restHelpers.convertExtent(extent, serviceSR, geometryServiceUrl, MOCK_USER_SESSION);
       expect(_extent).toEqual(expectedExtent);
@@ -1534,18 +1546,26 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.getPortalsSelfResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
-        .post(geometryServiceUrl + "/findTransformations", {
-          transformations: [
-            {
-              geoTransforms: 3,
-            },
-          ],
-        })
-        .post(geometryServiceUrl + "/project", {
-          geometries: projectedGeometries,
-        })
-        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
-        .post(geometryServiceUrl + "/project/rest/info", "{}");
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=1&outSR=2&extentOfInterest=%7B%22xmin%22%3A-131%2C%22ymin%22%3A16%2C%22xmax%22%3A-57%2C%22ymax%22%3A58%2C%22spatialReference%22%3A%7B%22wkid%22%3A1%7D%7D",
+          {
+            transformations: [
+              {
+                geoTransforms: 3,
+              },
+            ],
+          },
+        )
+        .get(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=1&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-131%2C%22y%22%3A16%7D%2C%7B%22x%22%3A-57%2C%22y%22%3A58%7D%5D%7D&transformation=%7B%22geoTransforms%22%3A3%7D",
+          {
+            geometries: projectedGeometries,
+          },
+        )
+        .get(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .get(geometryServiceUrl + "/project/rest/info", "{}");
 
       const _extent = await restHelpers.convertExtent(extent, serviceSR, geometryServiceUrl, MOCK_USER_SESSION);
       expect(_extent).toEqual(expectedExtent);
@@ -1558,12 +1578,20 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.getPortalsSelfResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
-        .post(geometryServiceUrl + "/findTransformations", {})
-        .post(geometryServiceUrl + "/project", {
-          geometries: projectedGeometries,
-        })
-        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
-        .post(geometryServiceUrl + "/project/rest/info", "{}");
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=1&outSR=2&extentOfInterest=%7B%22xmin%22%3A-131%2C%22ymin%22%3A16%2C%22xmax%22%3A-57%2C%22ymax%22%3A58%2C%22spatialReference%22%3A%7B%22wkid%22%3A1%7D%7D",
+          {},
+        )
+        .get(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=1&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-131%2C%22y%22%3A16%7D%2C%7B%22x%22%3A-57%2C%22y%22%3A58%7D%5D%7D",
+          {
+            geometries: projectedGeometries,
+          },
+        )
+        .get(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .get(geometryServiceUrl + "/project/rest/info", "{}");
 
       const _extent = await restHelpers.convertExtent(extent, serviceSR, geometryServiceUrl, MOCK_USER_SESSION);
       expect(_extent).toEqual(expectedExtent);
@@ -1576,14 +1604,22 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.getPortalsSelfResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
-        .post(geometryServiceUrl + "/findTransformations", {
-          transformations: [{}],
-        })
-        .post(geometryServiceUrl + "/project", {
-          geometries: projectedGeometries,
-        })
-        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
-        .post(geometryServiceUrl + "/project/rest/info", "{}");
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=1&outSR=2&extentOfInterest=%7B%22xmin%22%3A-131%2C%22ymin%22%3A16%2C%22xmax%22%3A-57%2C%22ymax%22%3A58%2C%22spatialReference%22%3A%7B%22wkid%22%3A1%7D%7D",
+          {
+            transformations: [{}],
+          },
+        )
+        .get(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=1&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-131%2C%22y%22%3A16%7D%2C%7B%22x%22%3A-57%2C%22y%22%3A58%7D%5D%7D",
+          {
+            geometries: projectedGeometries,
+          },
+        )
+        .get(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .get(geometryServiceUrl + "/project/rest/info", "{}");
 
       const _extent = await restHelpers.convertExtent(extent, serviceSR, geometryServiceUrl, MOCK_USER_SESSION);
       expect(_extent).toEqual(expectedExtent);
@@ -1596,18 +1632,26 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.getPortalsSelfResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
-        .post(geometryServiceUrl + "/findTransformations", {
-          transformations: [
-            {
-              wkid: 3,
-            },
-          ],
-        })
-        .post(geometryServiceUrl + "/project", {
-          geometries: [],
-        })
-        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
-        .post(geometryServiceUrl + "/project/rest/info", "{}");
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=1&outSR=2&extentOfInterest=%7B%22xmin%22%3A-131%2C%22ymin%22%3A16%2C%22xmax%22%3A-57%2C%22ymax%22%3A58%2C%22spatialReference%22%3A%7B%22wkid%22%3A1%7D%7D",
+          {
+            transformations: [
+              {
+                wkid: 3,
+              },
+            ],
+          },
+        )
+        .get(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=1&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-131%2C%22y%22%3A16%7D%2C%7B%22x%22%3A-57%2C%22y%22%3A58%7D%5D%7D&transformation=3",
+          {
+            geometries: [],
+          },
+        )
+        .get(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .get(geometryServiceUrl + "/project/rest/info", "{}");
 
       const expected: any = undefined;
 
@@ -1622,16 +1666,24 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.getPortalsSelfResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
-        .post(geometryServiceUrl + "/findTransformations", {
-          transformations: [
-            {
-              wkid: 3,
-            },
-          ],
-        })
-        .post(geometryServiceUrl + "/project", mockItems.get400Failure())
-        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
-        .post(geometryServiceUrl + "/project/rest/info", "{}");
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=1&outSR=2&extentOfInterest=%7B%22xmin%22%3A-131%2C%22ymin%22%3A16%2C%22xmax%22%3A-57%2C%22ymax%22%3A58%2C%22spatialReference%22%3A%7B%22wkid%22%3A1%7D%7D",
+          {
+            transformations: [
+              {
+                wkid: 3,
+              },
+            ],
+          },
+        )
+        .get(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=1&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-131%2C%22y%22%3A16%7D%2C%7B%22x%22%3A-57%2C%22y%22%3A58%7D%5D%7D&transformation=3",
+          mockItems.get400Failure(),
+        )
+        .get(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .get(geometryServiceUrl + "/project/rest/info", "{}");
 
       await expectAsync(
         restHelpers.convertExtent(extent, serviceSR, geometryServiceUrl, MOCK_USER_SESSION),
@@ -1645,9 +1697,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.getPortalsSelfResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
-        .post(geometryServiceUrl + "/findTransformations", mockItems.get400Failure())
-        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
-        .post(geometryServiceUrl + "/project/rest/info", "{}");
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=1&outSR=2&extentOfInterest=%7B%22xmin%22%3A-131%2C%22ymin%22%3A16%2C%22xmax%22%3A-57%2C%22ymax%22%3A58%2C%22spatialReference%22%3A%7B%22wkid%22%3A1%7D%7D",
+          mockItems.get400Failure(),
+        )
+        .get(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .get(geometryServiceUrl + "/project/rest/info", "{}");
 
       await expectAsync(
         restHelpers.convertExtent(extent, serviceSR, geometryServiceUrl, MOCK_USER_SESSION),
@@ -1685,16 +1741,27 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.getPortalsSelfResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
-        .post(geometryServiceUrl + "/findTransformations", {})
-        .postOnce(
-          geometryServiceUrl + "/project",
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=4326&outSR=2&extentOfInterest=%7B%22xmax%22%3A180%2C%22xmin%22%3A-180%2C%22ymax%22%3A90%2C%22ymin%22%3A-90%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D",
+          {},
+        )
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=4326&outSR=2&extentOfInterest=%7B%22xmin%22%3A-179%2C%22xmax%22%3A179%2C%22ymin%22%3A-89%2C%22ymax%22%3A89%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D",
+          {},
+        )
+        .getOnce(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=4326&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-180%2C%22y%22%3A-90%7D%2C%7B%22x%22%3A180%2C%22y%22%3A90%7D%5D%7D",
           {
             geometries: NaNGeoms,
           },
           { overwriteRoutes: false },
         )
-        .postOnce(
-          geometryServiceUrl + "/project",
+        .getOnce(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=4326&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-179%2C%22y%22%3A-89%7D%2C%7B%22x%22%3A179%2C%22y%22%3A89%7D%5D%7D",
           {
             geometries: projectedGeometries,
           },
@@ -1740,9 +1807,19 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.getPortalsSelfResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
-        .post(geometryServiceUrl + "/findTransformations", {})
-        .postOnce(
-          geometryServiceUrl + "/project",
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=4326&outSR=2&extentOfInterest=%7B%22xmax%22%3A180%2C%22xmin%22%3A-180%2C%22ymax%22%3A90%2C%22ymin%22%3A-90%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D",
+          {},
+        )
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=4326&outSR=2&extentOfInterest=%7B%22xmin%22%3A-179%2C%22xmax%22%3A179%2C%22ymin%22%3A-89%2C%22ymax%22%3A89%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D",
+          {},
+        )
+        .getOnce(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=4326&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-180%2C%22y%22%3A-90%7D%2C%7B%22x%22%3A180%2C%22y%22%3A90%7D%5D%7D",
           {
             geometries: NaNGeoms,
           },
@@ -1787,17 +1864,32 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.getPortalsSelfResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
-        .post(geometryServiceUrl + "/findTransformations", {})
-        .postOnce(
-          geometryServiceUrl + "/project",
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=4326&outSR=2&extentOfInterest=%7B%22xmax%22%3A180%2C%22xmin%22%3A-180%2C%22ymax%22%3A90%2C%22ymin%22%3A-90%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D",
+          {},
+        )
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=4326&outSR=2&extentOfInterest=%7B%22xmin%22%3A-179%2C%22xmax%22%3A179%2C%22ymin%22%3A-89%2C%22ymax%22%3A89%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D",
+          {},
+        )
+        .getOnce(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=4326&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-180%2C%22y%22%3A-90%7D%2C%7B%22x%22%3A180%2C%22y%22%3A90%7D%5D%7D",
           {
             geometries: NaNGeoms,
           },
           { overwriteRoutes: false },
         )
-        .postOnce(geometryServiceUrl + "/project", mockItems.get400Failure(), {
-          overwriteRoutes: false,
-        });
+        .getOnce(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=4326&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-179%2C%22y%22%3A-89%7D%2C%7B%22x%22%3A179%2C%22y%22%3A89%7D%5D%7D",
+          mockItems.get400Failure(),
+          {
+            overwriteRoutes: false,
+          },
+        );
 
       await expectAsync(
         restHelpers.convertExtentWithFallback(ext, undefined, serviceSR, geometryServiceUrl, MOCK_USER_SESSION),
@@ -3203,6 +3295,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         authentication: MOCK_USER_SESSION,
         params: {
           data: "fred",
+          text: undefined,
         },
       });
     });
@@ -3542,7 +3635,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response.success).toBeTruthy();
       const options: any = fetchMock.lastOptions(url);
       const fetchBody = options.body;
-      expect(fetchBody).toEqual("f=json&id=itm1234567890&text=this%20is%20some%20text&token=fake-token");
+      expect(fetchBody).toEqual("f=json&id=itm1234567890&file=this%20is%20some%20text&token=fake-token");
     });
 
     it("should add application/json data", async () => {
@@ -3559,7 +3652,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const options: any = fetchMock.lastOptions(url);
       const fetchBody = options.body;
       expect(fetchBody).toEqual(
-        "f=json&id=itm1234567890&text=%7B%22a%22%3A%22a%22%2C%22b%22%3A1%2C%22c%22%3A%7B%22d%22%3A%22d%22%7D%7D&token=fake-token",
+        "f=json&id=itm1234567890&file=%7B%22a%22%3A%22a%22%2C%22b%22%3A1%2C%22c%22%3A%7B%22d%22%3A%22d%22%7D%7D&token=fake-token",
       );
     });
 
@@ -3733,7 +3826,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         wkid: 102100,
       };
 
-      fetchMock.post(geometryServiceUrl + "/findTransformations", "{}");
+      fetchMock.get(geometryServiceUrl + "/findTransformations", "{}");
 
       const options = await restHelpers._getCreateServiceOptions(itemTemplate, userSession, templateDictionary);
       expect(options).toEqual({
@@ -3799,7 +3892,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         solutionItemExtent: solutionItemExtent,
       };
 
-      fetchMock.post(
+      fetchMock.get(
         "http://utility/geomServer/findTransformations/rest/info",
         '{"error":{"code":403,"message":"Access not allowed request","details":[]}}',
       );
@@ -3877,7 +3970,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
       };
 
-      fetchMock.post(
+      fetchMock.get(
         "http://utility/geomServer/findTransformations/rest/info",
         '{"error":{"code":403,"message":"Access not allowed request","details":[]}}',
       );
@@ -3946,7 +4039,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         solutionItemExtent: solutionItemExtent,
       };
 
-      fetchMock.post(
+      fetchMock.get(
         "http://utility/geomServer/findTransformations/rest/info",
         '{"error":{"code":403,"message":"Access not allowed request","details":[]}}',
       );
@@ -4020,7 +4113,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         solutionItemExtent: solutionItemExtent,
       };
 
-      fetchMock.post(
+      fetchMock.get(
         "http://utility/geomServer/findTransformations/rest/info",
         '{"error":{"code":403,"message":"Access not allowed request","details":[]}}',
       );
@@ -4099,7 +4192,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           utils.getPortalsSelfResponse(),
         )
         .post("https://utility.arcgisonline.com/arcgis/rest/info", utils.getPortalsSelfResponse())
-        .post(geometryServiceUrl + "/findTransformations", mockItems.get400Failure())
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=102100&outSR=3857&extentOfInterest=%7B%22xmin%22%3A-9821384.714217981%2C%22ymin%22%3A5117339.123090005%2C%22xmax%22%3A-9797228.384715842%2C%22ymax%22%3A5137789.39951188%2C%22spatialReference%22%3A%7B%22wkid%22%3A102100%7D%7D",
+          mockItems.get400Failure(),
+        )
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=4326&outSR=3857&extentOfInterest=%7B%22xmin%22%3A-179%2C%22xmax%22%3A179%2C%22ymin%22%3A-89%2C%22ymax%22%3A89%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D",
+          mockItems.get400Failure(),
+        )
         .post(
           "http://utility/geomServer/findTransformations/rest/info",
           '{"error":{"code":403,"message":"Access not allowed request","details":[]}}',

@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-common",
-  "version": "5.8.26",
+  "version": "6.2.0-alpha.0",
   "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -30,15 +30,16 @@
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "4.0.3",
-    "@esri/arcgis-rest-auth": "^3.7.0",
-    "@esri/arcgis-rest-feature-layer": "^3.7.0",
-    "@esri/arcgis-rest-portal": "^3.7.0",
-    "@esri/arcgis-rest-request": "^3.7.0",
-    "@esri/arcgis-rest-service-admin": "^3.7.0",
-    "@esri/hub-common": "^15.23.2",
-    "@esri/hub-initiatives": "^15.0.0",
-    "@esri/hub-sites": "^16.0.0",
-    "@esri/hub-teams": "^15.0.0",
+    "@esri/arcgis-rest-demographics": "^4.0.3",
+    "@esri/arcgis-rest-feature-service": "~4.0.5",
+    "@esri/arcgis-rest-geocoding": "^4.0.3",
+    "@esri/arcgis-rest-portal": "^4.0.0",
+    "@esri/arcgis-rest-request": "^4.0.0",
+    "@esri/arcgis-rest-routing": "^4.0.3",
+    "@esri/hub-common": "^17.0.2",
+    "@esri/hub-initiatives": "^17.0.1",
+    "@esri/hub-sites": "^18.0.1",
+    "@esri/hub-teams": "^17.0.1",
     "adlib": "3.0.8",
     "jszip": "3.10.1",
     "tslib": "1.14.1"
@@ -95,5 +96,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "2b4befaf996bc999467ef4d383d99e950943d931"
+  "gitHead": "fbecb9f8977e44ba6254f9b68b43292b3ab525ae"
 }

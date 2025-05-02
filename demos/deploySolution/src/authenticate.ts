@@ -23,8 +23,9 @@ const match = window.location.href.match(
 ) || [""];
 const clientId = match[1];
 
-const session = common.UserSession.completeOAuth2({
+common.UserSession.completeOAuth2({
   clientId,
   redirectUri: window.location.href
+}).then((session) => {
+  localStorage.setItem('__SOLUTION_JS_USER_SESSION__', session.serialize());
 });
-localStorage.setItem('__SOLUTION_JS_USER_SESSION__', session.serialize());

@@ -28,9 +28,6 @@ In npmjs.com, the current ArcGIS Online release will be labeled as "latest", and
 
 #### Notes
 
-##### Shells
-Launch a Windows command-prompt window and a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program). The current state of the npm tools appear to require us to use both of these windows to create a build: the command prompt window for selecting the build version and for entering the OTP for pushing the build to npm; the git-bash window for pre-publish cleaning and for running a useful script. When a step does not specify the window to use, either is OK.
-
 ##### Log in to npmjs
 *Note: the computer remembers for a long time that you're logged in; you can check that you are logged in by typing `npm whoami`*
 ```

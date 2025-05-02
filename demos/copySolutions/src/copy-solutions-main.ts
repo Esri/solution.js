@@ -17,6 +17,13 @@
 
 import * as common from "@esri/solution-common";
 
+interface PagingParameters {
+  start: number,
+  num: number,
+  sortField: string,
+  sortOrder: "asc" | "desc"
+}
+
 /**
  * Copies an item.
  *
@@ -25,7 +32,7 @@ import * as common from "@esri/solution-common";
  * @param destinationAuthentication Authentication for destination; can be same as source for copying
  * within source organization
  */
-export function copyItemInfo(
+export function copyItemInfo (
   itemId: string,
   sourceAuthentication: common.UserSession,
   destinationAuthentication: common.UserSession
@@ -123,7 +130,7 @@ export function copyItemInfo(
  * @param sourceItem Item from which to copy properties
  * @returns Object containing copyable properties from sourceItem
  */
-export function getCopyableItemBaseProperties(sourceItem: any): any {
+export function getCopyableItemBaseProperties (sourceItem: any): any {
   const copyableItem: any = {
     accessInformation: sourceItem.accessInformation,
     categories: sourceItem.categories,
@@ -151,7 +158,7 @@ export function getCopyableItemBaseProperties(sourceItem: any): any {
  * @param getAllOrgSolutions If true, gets all Solution templates in organization regardless of owner
  * @returns Solution templates
  */
-export function getTemplates(
+export function getTemplates (
   authentication: common.UserSession,
   getAllOrgSolutions?: boolean
 ): Promise<common.ISearchResult<common.IItem>> {
@@ -170,7 +177,7 @@ export function getTemplates(
         if (portalResponse.user.orgId) {
           availSolnsQuery += " orgid:" + portalResponse.user.orgId;
         }
-        const pagingParam = {
+        const pagingParam: PagingParameters = {
           start: 1,
           num: 100, // maximum page size permitted by REST API
           sortField: "title",
@@ -179,7 +186,7 @@ export function getTemplates(
         const requestOptions = {
           authentication: authentication
         };
-        const searchOptions = {
+        const searchOptions: common.ISearchOptions = {
           q: availSolnsQuery,
           ...requestOptions,
           ...pagingParam
@@ -187,12 +194,12 @@ export function getTemplates(
         return common.searchItems(searchOptions)
       }
     )
-    .then(
-      searchTrancheResponse => resolve(accumulateSearchResults(searchTrancheResponse))
-    )
-    .catch(
-      error => reject(error)
-    );
+      .then(
+        searchTrancheResponse => resolve(accumulateSearchResults(searchTrancheResponse))
+      )
+      .catch(
+        error => reject(error)
+      );
   });
 }
 

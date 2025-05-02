@@ -1,6 +1,6 @@
 ## createSolution
 
-This demo re-creates a ArcGIS Solution using an existing deployed Soution.
+This demo re-creates a ArcGIS Solution using an existing deployed Solution.
 
 ### Building
 

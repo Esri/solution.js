@@ -1122,7 +1122,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         tokenExpires: utils.TOMORROW,
         refreshToken: "refreshToken",
         refreshTokenExpires: utils.TOMORROW,
-        refreshTokenTTL: 1440,
+        tokenDuration: 1440,
         username: "casey",
         password: "123456",
       });
@@ -1146,7 +1146,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         tokenExpires: utils.TOMORROW,
         refreshToken: "refreshToken",
         refreshTokenExpires: utils.TOMORROW,
-        refreshTokenTTL: 1440,
+        tokenDuration: 1440,
         username: "casey",
         password: "123456",
       });

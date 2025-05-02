@@ -24,11 +24,6 @@ pushd demos\createSolution
 call npm install
 popd
 
-pushd demos\recreateSolution
-call npm install
-popd
-
-
 pushd demos\deleteSolution
 call npm install
 popd
@@ -55,6 +50,7 @@ popd
 
 rem install and build the packages
 call npm install
+call install_hub4.bat
 call npm run prettify
 call npm run lint:fix
 call npm run build
@@ -113,10 +109,6 @@ pushd demos\createSolution
 call npm run build
 popd
 
-pushd demos\recreateSolution
-call npm run build
-popd
-
 pushd demos\deleteSolution
 call npm run build
 popd
@@ -142,4 +134,3 @@ call npm run build
 popd
 
 call rmdir/q/s coverage
-call npm run test

@@ -60,46 +60,29 @@ import {
 } from "@esri/arcgis-rest-portal";
 import { IRequestOptions, request as restRequest } from "@esri/arcgis-rest-request";
 import {
-  //IFeature,
-  IQueryRelatedOptions,
-  IQueryRelatedResponse,
-  //IRelatedRecordGroup,
-  queryRelated as restQueryRelated,
-} from "@esri/arcgis-rest-feature-layer";
-import {
   IAddToServiceDefinitionOptions,
   IAddToServiceDefinitionResult,
+  IQueryRelatedOptions,
+  IQueryRelatedResponse,
   addToServiceDefinition,
-} from "@esri/arcgis-rest-service-admin";
-
-export { ICredential, IUserRequestOptions, IUserSessionOptions } from "@esri/arcgis-rest-auth";
-
-import { UserSession as UserSession_rest } from "@esri/arcgis-rest-auth";
-UserSession_rest.prototype.getDomainCredentials = function (url) {
-  const trustedDomains: string[] = this["trustedDomains"] || [];
-  if (!trustedDomains || !trustedDomains.length) {
-    return "same-origin";
-  }
-
-  url = url.toLocaleLowerCase();
-  return trustedDomains.some(function (domainWithProtocol: string) {
-    return url.startsWith(domainWithProtocol.toLocaleLowerCase());
-  })
-    ? "include"
-    : "same-origin";
-};
-export { UserSession_rest as UserSession };
-
+  queryRelated as restQueryRelated,
+} from "@esri/arcgis-rest-feature-service";
 export {
+  IAddToServiceDefinitionOptions,
+  IAddToServiceDefinitionResult,
+  ICreateServiceParams,
+  ICreateServiceResult,
+  IExtent,
+  ISpatialReference,
   IFeature,
   IQueryRelatedOptions,
   IQueryRelatedResponse,
   IRelatedRecordGroup,
-  queryFeatures as rest_queryFeatures,
-  addFeatures as rest_addFeatures,
-  applyEdits,
+  createFeatureService as svcAdminCreateFeatureService,
   queryFeatures,
-} from "@esri/arcgis-rest-feature-layer";
+  addFeatures,
+  applyEdits,
+} from "@esri/arcgis-rest-feature-service";
 export {
   IAddFolderResponse,
   IAddItemDataOptions,
@@ -159,14 +142,15 @@ export {
   removeGroupUsers,
   removeItem as restRemoveItem,
 } from "@esri/arcgis-rest-portal";
-export { IRequestOptions, IParams, ArcGISAuthError, encodeFormData } from "@esri/arcgis-rest-request";
 export {
-  ICreateServiceParams,
-  ICreateServiceResult,
-  IExtent,
-  ISpatialReference,
-  createFeatureService as svcAdminCreateFeatureService,
-} from "@esri/arcgis-rest-service-admin";
+  IArcGISIdentityManagerOptions,
+  ICredential,
+  IRequestOptions,
+  IParams,
+  ArcGISAuthError,
+  encodeFormData,
+  ArcGISIdentityManager as UserSession,
+} from "@esri/arcgis-rest-request";
 export interface IFolderSuccessResult {
   success: boolean;
   folder: {
@@ -225,12 +209,13 @@ export function restRemoveGroup(requestOptions: IUserGroupOptions): Promise<any>
 export function restSearchItems(search: string | ISearchOptions | SearchQueryBuilder): Promise<ISearchResult<IItem>> {
   return searchItems(search);
 }
+//updateGroup already exists as an custom export in restHelperGet so this export has 'rest' prefix to denote it's from rest.
+export function restUpdateGroup(requestOptions: IUpdateGroupOptions): Promise<IGroupSuccessResult> {
+  return updateGroup(requestOptions);
+}
 //supdateItem already exists as an custom export in restHelperGet so this export has 'rest' prefix to denote it's from rest.
 export function restUpdateItem(requestOptions: IUpdateItemOptions): Promise<IUpdateItemResponse> {
   return updateItem(requestOptions);
-}
-export function restUpdateGroup(requestOptions: IUpdateGroupOptions): Promise<IGroupSuccessResult> {
-  return updateGroup(requestOptions);
 }
 export function shareItemWithGroup(requestOptions: IGroupSharingOptions): Promise<ISharingResponse> {
   return restShareItemWithGroup(requestOptions);
