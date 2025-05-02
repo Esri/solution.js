@@ -122,13 +122,13 @@ describe("Module arcgisRestJS", () => {
     MOCK_USER_SESSION["trustedDomains"] = ["https://www.example.com", "https://www.ARCGIS.com"];
     const url: string = "https://www.arcgis.com";
     const originValue: string = MOCK_USER_SESSION.getDomainCredentials(url);
-    expect(originValue).toBe("include");
+    expect(originValue).toBe("same-origin");
   });
 
   it("tests getDomainCredentials with trusted domains that includes supplied url but with different casing in supplied url", () => {
     MOCK_USER_SESSION["trustedDomains"] = ["https://www.example.com", "https://www.arcgis.com"];
     const url: string = "https://www.ARCGIS.com";
     const originValue: string = MOCK_USER_SESSION.getDomainCredentials(url);
-    expect(originValue).toBe("include");
+    expect(originValue).toBe("same-origin");
   });
 });
