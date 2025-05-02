@@ -1,3 +1,4 @@
+rem Sets the "latest" version tag in npmjs
 @echo off
 if "%1%"=="" goto syntax
 set latestVersion=%1%
