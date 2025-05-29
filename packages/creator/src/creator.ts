@@ -105,7 +105,7 @@ export async function createSolution(
               if (itemBase.type === "Solution" && itemBase.typeKeywords && itemBase.typeKeywords.includes("Deployed")) {
                 _updateCreateOptionForReDeployedTemplate(sourceId, srcAuthentication, createOptions, itemBase).then(
                   (modifiedCreateOptions) => {
-                    resolve(_applySourceToCreateOptions(modifiedCreateOptions, itemBase, srcAuthentication, false));
+                    resolve(_applySourceToCreateOptions(modifiedCreateOptions, itemBase, srcAuthentication, true));
                   },
                   reject,
                 );

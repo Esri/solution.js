@@ -118,12 +118,16 @@ import { isTrackingViewTemplate, setTrackingOptions } from "./trackingHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function addItemData(id: string, file: any, authentication: UserSession): Promise<IUpdateItemResponse> {
+export function addItemData(id: string, data: any, authentication: UserSession): Promise<IUpdateItemResponse> {
   const addDataOptions: IAddItemDataOptions = {
     id,
-    file,
     authentication,
   };
+  if (data instanceof File) {
+    addDataOptions["file"] = data;
+  } else {
+    addDataOptions["text"] = data;
+  }
   return portalAddItemData(addDataOptions);
 }
 
@@ -697,25 +701,21 @@ export function createItemWithData(
       delete createOptions.item.thumbnail;
     }
 
-    if (createOptions.params && createOptions.params.data) {
-      createOptions.params[createOptions.params.data instanceof File ? "file" : "text"] = createOptions.params.data;
-    } else {
-      if (createOptions.params) {
-        if (dataInfo instanceof File) {
-          createOptions.params["file"] = dataInfo;
-        } else {
-          createOptions.params["text"] = dataInfo;
-        }
+    if (createOptions.params) {
+      if (dataInfo instanceof File) {
+        createOptions.params["file"] = dataInfo;
       } else {
-        if (dataInfo instanceof File) {
-          createOptions.params = {
-            file: dataInfo,
-          };
-        } else {
-          createOptions.params = {
-            text: dataInfo ? dataInfo : {},
-          };
-        }
+        createOptions.params["text"] = dataInfo;
+      }
+    } else {
+      if (dataInfo instanceof File) {
+        createOptions.params = {
+          file: dataInfo,
+        };
+      } else {
+        createOptions.params = {
+          text: dataInfo ? dataInfo : {},
+        };
       }
     }
 

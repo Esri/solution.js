@@ -1124,6 +1124,54 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         (response) => expect(response.success).toEqual(false),
       );
     });
+
+    it("can handle data as a file", async () => {
+      const itemInfo: any = {};
+      const dataInfo: any = utils.getSampleImageAsFile();
+      const folderId = "fld1234567890";
+      const access = "private";
+
+      const createUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/fld1234567890/addItem";
+      const expectedCreate = {
+        success: true,
+        id: "itm1234567980",
+        folder: folderId,
+      };
+      fetchMock.post(createUrl, expectedCreate);
+
+      const response: ICreateItemResponse = await restHelpers.createItemWithData(
+        itemInfo,
+        dataInfo,
+        MOCK_USER_SESSION,
+        folderId,
+        access,
+      );
+      expect(response).toEqual(expectedCreate);
+    });
+
+    it("can handle data as a file with param property defined", async () => {
+      const itemInfo: any = { thumbnail: "testImage.png" };
+      const dataInfo: any = utils.getSampleImageAsFile();
+      const folderId = "fld1234567890";
+      const access = "private";
+
+      const createUrl = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/fld1234567890/addItem";
+      const expectedCreate = {
+        success: true,
+        id: "itm1234567980",
+        folder: folderId,
+      };
+      fetchMock.post(createUrl, expectedCreate);
+
+      const response: ICreateItemResponse = await restHelpers.createItemWithData(
+        itemInfo,
+        dataInfo,
+        MOCK_USER_SESSION,
+        folderId,
+        access,
+      );
+      expect(response).toEqual(expectedCreate);
+    });
   });
 
   describe("createUniqueFolder", () => {
@@ -3299,6 +3347,43 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
       });
     });
+
+    it("handles update with data parameter", async () => {
+      const itemInfo: IItemUpdate = {
+        id: "itm1234567890",
+        data: "fred"
+      };
+      const additionalParams: any = {};
+      const updateItemFnStub = sinon.stub(arcGISRestJS, "restUpdateItem").resolves(utils.getSuccessResponse());
+
+      await restHelpers.updateItem(itemInfo, MOCK_USER_SESSION, undefined, additionalParams);
+      const updateItemFnCall = updateItemFnStub.getCall(0);
+      expect(updateItemFnCall.args[0]).toEqual({
+        item: {
+          id: "itm1234567890",
+          data: 'fred'
+        },
+        folderId: undefined,
+        authentication: MOCK_USER_SESSION,
+        params: {
+          text: "fred"
+        },
+      });
+    });
+
+    it("handles undefined itemInfo safely", async () => {
+      const updateItemFnStub = sinon.stub(arcGISRestJS, "restUpdateItem").resolves(utils.getSuccessResponse());
+
+      try {
+        await restHelpers.updateItem(undefined as any, MOCK_USER_SESSION);
+        fail("Expected updateItem to throw/reject when itemInfo is undefined");
+      } catch (err) {
+        expect(err).toBeDefined(); // or test the error type/message
+      }
+
+      updateItemFnStub.restore();
+    });
+
   });
 
   describe("updateGroup", () => {
@@ -3635,7 +3720,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(response.success).toBeTruthy();
       const options: any = fetchMock.lastOptions(url);
       const fetchBody = options.body;
-      expect(fetchBody).toEqual("f=json&id=itm1234567890&file=this%20is%20some%20text&token=fake-token");
+      expect(fetchBody).toEqual("f=json&id=itm1234567890&text=this%20is%20some%20text&token=fake-token");
     });
 
     it("should add application/json data", async () => {
@@ -3652,7 +3737,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const options: any = fetchMock.lastOptions(url);
       const fetchBody = options.body;
       expect(fetchBody).toEqual(
-        "f=json&id=itm1234567890&file=%7B%22a%22%3A%22a%22%2C%22b%22%3A1%2C%22c%22%3A%7B%22d%22%3A%22d%22%7D%7D&token=fake-token",
+        "f=json&id=itm1234567890&text=%7B%22a%22%3A%22a%22%2C%22b%22%3A1%2C%22c%22%3A%7B%22d%22%3A%22d%22%7D%7D&token=fake-token",
       );
     });
 
