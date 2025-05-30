@@ -1,8 +1,10 @@
 rem Publishes the repo to npm as the next version
 rem Syntax publish-next-auto.bat <root version>
-rem e.g, publish-next-auto.bat 6.2.0
+rem e.g, support\publish-next-auto.bat 6.2.0
+rem NOTE: This batch file must be run from the root of the repo.
 rem NOTE: This batch file does a hard reset of git changes!
 rem There will be no working directory or staged changes when it completes.
+rem NOTE: The system short-date format must be MM/dd/yyyy (04/06/2010).
 setlocal
 echo off
 
