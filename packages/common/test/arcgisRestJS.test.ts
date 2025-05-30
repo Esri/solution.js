@@ -20,6 +20,7 @@
 
 import * as arcgisRestJS from "../src/arcgisRestJS";
 import * as arcgisRestPortal from "@esri/arcgis-rest-portal";
+import * as arcgisFeatureService from "@esri/arcgis-rest-feature-service";
 //import * as arcgisRestRequest from "@esri/arcgis-rest-request";
 import * as sinon from "sinon";
 import * as utils from "./mocks/utils";
@@ -46,9 +47,15 @@ describe("Module arcgisRestJS", () => {
       relationshipId: 0,
       url: "https://www.arcgis.com",
     };
-    const queryRelatedSpy = sinon.stub(arcgisRestJS, "queryRelated").resolves();
+
+    const queryRelatedStub = sinon.stub(arcgisFeatureService, "queryRelated").resolves({ relatedRecords: [] });
+
     await arcgisRestJS.queryRelated(requestOptions);
-    expect(queryRelatedSpy.called);
+
+    sinon.assert.calledOnce(queryRelatedStub);
+    sinon.assert.calledWith(queryRelatedStub, requestOptions);
+
+    queryRelatedStub.restore();
   });
 
   it("tests binding function removeItemResource", async () => {
