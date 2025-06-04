@@ -201,8 +201,7 @@ export function _applySourceToCreateOptions(
       sourceInfo.id,
       sourceInfo.thumbnail,
       //in case it's a solution item, set to false so thumbnail is not treated like a group thumbnail.
-      (isGroup =
-        sourceInfo.type === "Solution" && sourceInfo.typeKeywords && sourceInfo.typeKeywords.includes("Template")
+      (sourceInfo.type === "Solution" && sourceInfo.typeKeywords && sourceInfo.typeKeywords.includes("Template")
           ? false
           : isGroup),
     );
