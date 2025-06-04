@@ -200,7 +200,11 @@ export function _applySourceToCreateOptions(
       srcAuthentication.portal,
       sourceInfo.id,
       sourceInfo.thumbnail,
-      isGroup,
+      //in case it's a solution item, set to false so thumbnail is not treated like a group thumbnail.
+      (isGroup =
+        sourceInfo.type === "Solution" && sourceInfo.typeKeywords && sourceInfo.typeKeywords.includes("Template")
+          ? false
+          : isGroup),
     );
     delete sourceInfo.thumbnail;
   }
