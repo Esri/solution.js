@@ -3351,7 +3351,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("handles update with data parameter", async () => {
       const itemInfo: IItemUpdate = {
         id: "itm1234567890",
-        data: "fred"
+        data: "fred",
       };
       const additionalParams: any = {};
       const updateItemFnStub = sinon.stub(arcGISRestJS, "restUpdateItem").resolves(utils.getSuccessResponse());
@@ -3361,12 +3361,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(updateItemFnCall.args[0]).toEqual({
         item: {
           id: "itm1234567890",
-          data: 'fred'
+          data: "fred",
         },
         folderId: undefined,
         authentication: MOCK_USER_SESSION,
         params: {
-          text: "fred"
+          text: "fred",
         },
       });
     });
@@ -3383,7 +3383,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       updateItemFnStub.restore();
     });
-
   });
 
   describe("updateGroup", () => {
