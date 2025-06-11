@@ -166,7 +166,11 @@ async function deleteListOfSolutions(solutionsToDelete: string[], checkBeforeEac
 
       } else {
         document.getElementById("doublecheck").style.display = "none";
-        document.getElementById("output").innerHTML += "<br>Solution " + solutionId + " is unchanged";
+        const outputElement = document.getElementById("output");
+        const lineBreak = document.createElement("br");
+        const message = document.createTextNode("Solution " + solutionId + " is unchanged");
+        outputElement.appendChild(lineBreak);
+        outputElement.appendChild(message);
       }
     }
   }
