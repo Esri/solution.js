@@ -34,7 +34,7 @@ import * as getDeletableSolutionInfo from "./getDeletableSolutionInfo";
  *
  * @param solutionItemId Id of a deployed Solution
  * @param authentication Credentials for the request
- * @param options Progress reporting options
+ * @param options Progress reporting and deletion permanence options
  * @returns Promise that will resolve with a list of two solution summaries: successful deletions
  * and failed deletions. Ignored items (e.g., already deleted) and items shared with more than
  * one Solution will not be in either list.
@@ -66,7 +66,7 @@ export function deleteSolution(
  * @param templates List of Solution's templates
  * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
  * @param authentication Credentials for the request
- * @param options Progress reporting options
+ * @param options Progress reporting and deletion permanence options
  * @returns Promise that will resolve with a list of two solution summaries: successful deletions
  * and failed deletions. Ignored items (e.g., already deleted) and items shared with more than
  * one Solution will not be in either list.

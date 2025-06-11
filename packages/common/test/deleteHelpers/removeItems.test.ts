@@ -21,6 +21,7 @@
 import * as arcGISRestJS from "../../src/arcgisRestJS";
 import { ISolutionPrecis } from "../../src/interfaces";
 import * as removeItems from "../../src/deleteHelpers/removeItems";
+import * as restHelpers from "../../src/restHelpers";
 import * as utils from "../mocks/utils";
 import * as workflowHelpers from "../../src/workflowHelpers";
 
@@ -33,7 +34,8 @@ beforeEach(() => {
 });
 
 describe("Module `removeItems`: removing items from AGO", () => {
-  it("handles defaulting all options", async () => {
+
+  it("handles defaulting all options for workflow deletion", async () => {
     const solutionSummary: ISolutionPrecis = {
       id: "sln1234567890",
       title: "Solution Title",
@@ -92,4 +94,136 @@ describe("Module `removeItems`: removing items from AGO", () => {
 
     expect(result).toEqual(expectedResult);
   });
+
+  it("handles defaulting all options", async () => {
+    const solutionSummary: ISolutionPrecis = {
+      id: "sln1234567890",
+      title: "Solution Title",
+      folder: "fld1234567890",
+      items: [
+        {
+          id: "itm1234567890",
+          type: "Web Mapping Application",
+          title: "Item Title",
+          modified: 1234567890,
+          owner: "fred",
+        },
+      ],
+      groups: [],
+    };
+
+    spyOn(arcGISRestJS, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
+    const removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo(utils.getSuccessResponse("itm1234567890"));
+
+    const expectedResult: ISolutionPrecis[] = [
+      {
+        // Successful deletions
+        id: "sln1234567890",
+        title: "Solution Title",
+        folder: "fld1234567890",
+        items: [
+          {
+            id: "itm1234567890",
+            type: "Web Mapping Application",
+            title: "Item Title",
+            modified: 1234567890,
+            owner: "fred",
+          },
+        ],
+        groups: [],
+      },
+      {
+        // Failed deletions
+        id: "sln1234567890",
+        title: "Solution Title",
+        folder: "fld1234567890",
+        items: [],
+        groups: [],
+      },
+    ];
+
+    const result: ISolutionPrecis[] = await removeItems.removeItems(
+      solutionSummary,
+      [], // hubSiteItemIds
+      MOCK_USER_SESSION,
+      50, // percentDone
+      10, // progressPercentStep
+      {}, // deleteOptions
+    );
+
+    expect(removeItemSpy).toHaveBeenCalledWith(
+      "itm1234567890",
+      MOCK_USER_SESSION,
+      true // delete permanently
+    );
+    expect(result).toEqual(expectedResult);
+  });
+
+
+  it("handles deleting WMA to recycling bin", async () => {
+    const solutionSummary: ISolutionPrecis = {
+      id: "sln1234567890",
+      title: "Solution Title",
+      folder: "fld1234567890",
+      items: [
+        {
+          id: "itm1234567890",
+          type: "Web Mapping Application",
+          title: "Item Title",
+          modified: 1234567890,
+          owner: "fred",
+        },
+      ],
+      groups: [],
+    };
+
+    spyOn(arcGISRestJS, "unprotectItem").and.resolveTo(utils.getSuccessResponse());
+    const removeItemSpy = spyOn(restHelpers, "removeItem").and.resolveTo(utils.getSuccessResponse("itm1234567890"));
+
+    const expectedResult: ISolutionPrecis[] = [
+      {
+        // Successful deletions
+        id: "sln1234567890",
+        title: "Solution Title",
+        folder: "fld1234567890",
+        items: [
+          {
+            id: "itm1234567890",
+            type: "Web Mapping Application",
+            title: "Item Title",
+            modified: 1234567890,
+            owner: "fred",
+          },
+        ],
+        groups: [],
+      },
+      {
+        // Failed deletions
+        id: "sln1234567890",
+        title: "Solution Title",
+        folder: "fld1234567890",
+        items: [],
+        groups: [],
+      },
+    ];
+
+    const result: ISolutionPrecis[] = await removeItems.removeItems(
+      solutionSummary,
+      [], // hubSiteItemIds
+      MOCK_USER_SESSION,
+      50, // percentDone
+      10, // progressPercentStep
+      {
+        sendToRecycling: true, // This option indicates that the item should be sent to the recycling bin
+      }, // deleteOptions
+    );
+
+    expect(removeItemSpy).toHaveBeenCalledWith(
+      "itm1234567890",
+      MOCK_USER_SESSION,
+      false, // do not delete permanently
+    );
+    expect(result).toEqual(expectedResult);
+  });
+
 });

@@ -37,7 +37,7 @@ import * as reportProgress from "./reportProgress";
  * @param solutionItemId Id of a deployed Solution
  * @param solutionSummary List of items in the solution that would be deleted
  * @param authentication Credentials for the request
- * @param options Progress reporting options
+ * @param options Progress reporting and deletion permanence options
  * @returns Promise that will resolve with a list of two solution summaries: successful deletions
  * and failed deletions. Ignored items (e.g., already deleted) and items shared with more than
  * one Solution will not be in either list.
