@@ -1623,7 +1623,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           ],
         })
         .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Bradley%20%26%20Taggart%20Lakes.png",
           utils.getSampleImageAsBlob(),
           { sendAsJson: false },
         )
@@ -1680,7 +1680,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           };
         })
         .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources/Bradley%20%26%20Taggart%20Lakes.png",
           utils.getSampleImageAsBlob(),
           { sendAsJson: false },
         )
