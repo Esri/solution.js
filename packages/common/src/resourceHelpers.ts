@@ -327,9 +327,10 @@ export function generateSourceResourceUrl(
   itemId: string,
   sourceResourceFilename: string,
 ): string {
-  return (
-    checkUrlPathTermination(sourcePortalSharingUrl) + "content/items/" + itemId + "/resources/" + sourceResourceFilename
-  );
+  // Escape resource name, but not "/" because AGO needs the path separator
+  const resourceName = encodeURIComponent(sourceResourceFilename).replace(/%2F/gi, "/");
+
+  return checkUrlPathTermination(sourcePortalSharingUrl) + "content/items/" + itemId + "/resources/" + resourceName;
 }
 
 /**

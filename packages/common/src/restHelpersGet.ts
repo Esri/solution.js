@@ -904,7 +904,10 @@ export function _getItemResourcesTranche(
       if (contents.num > 0) {
         // Extract the list of resource filenames from the JSON returned
         contents.resources.forEach((resource: any) => {
-          const itemResourceUrl = `${portalSharingUrl}/content/items/${itemId}/resources/${resource.resource}`;
+          // Escape resource name, but not "/" because AGO needs the path separator
+          const resourceName = encodeURIComponent(resource.resource).replace(/%2F/gi, "/");
+
+          const itemResourceUrl = `${portalSharingUrl}/content/items/${itemId}/resources/${resourceName}`;
           itemResourcesDef.push(getBlobAsFile(itemResourceUrl, resource.resource, authentication));
         });
 
