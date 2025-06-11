@@ -88,7 +88,7 @@ export function copyFilesAsResources(
       // Wait until the Resource zip file(s) are prepared
       void Promise.all(awaitAllItems).then((results: IAssociatedFileCopyResults[]) => {
         // We have three types of results:
-        // | fetchedFromSource | copiedToDestination |             interpretation            |        |
+        // | fetchedFromSource | copiedToDestination |             interpretation                     |
         // +-------------------+---------------------+------------------------------------------------+
         // |       false       |          *          | could not fetch file from source               |
         // |       true        |        true         | file has been fetched and sent to AGO          |
