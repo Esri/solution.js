@@ -62,6 +62,7 @@ function getDeployedSolutions() {
         document.getElementById("toggleBtn").style.display = "inline-block";
         document.getElementById("solutionSelection").style.display = "block";
       } else {
+        document.getElementById("solutionSelection").style.display = "none";
         document.getElementById("output").innerHTML = "No deployed Solution templates found";
       }
     },
@@ -93,10 +94,11 @@ function toggleSelectAll() {
  * @param checkBeforeEachDelete Switch indicating if a display of what's about to be deleted appears
  * before each solution is deleted, which provides an opportunity to cancel deleting that solution
  */
-function launchDeleteSolutions(checkBeforeEachDelete: boolean) {
+async function launchDeleteSolutions(checkBeforeEachDelete: boolean) {
   document.getElementById("toggleBtn").style.display = "none";
   document.getElementById("deleteInteractiveBtn").style.display = "none";
   document.getElementById("deleteBlastBtn").style.display = "none";
+  document.getElementById("deletePermanentlyDiv").style.display = "none";
 
   // Get list of solutions to delete
   const solutionsToDelete = [];
@@ -111,8 +113,13 @@ function launchDeleteSolutions(checkBeforeEachDelete: boolean) {
     alert("Warning: every checked Solution will be deleted! Refresh page to cancel.");
   }
 
+  const deletePermanently = (document.getElementById("deletePermanently") as HTMLInputElement).checked;
+
   // Run the deletes
-  deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete);
+  await deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete, deletePermanently);
+
+  // Refresh the list of solutions
+  setTimeout(getDeployedSolutions, 3000);
 }
 
 /**
@@ -122,47 +129,50 @@ function launchDeleteSolutions(checkBeforeEachDelete: boolean) {
  * @param checkBeforeEachDelete Switch indicating if a display of what's about to be deleted appears
  * before each solution is deleted, which provides an opportunity to cancel deleting that solution
  */
-function deleteListOfSolutions(solutionsToDelete: string[], checkBeforeEachDelete: boolean) {
+async function deleteListOfSolutions(solutionsToDelete: string[], checkBeforeEachDelete: boolean, deletePermanently: boolean) {
   console.log(solutionsToDelete);
   document.getElementById("checkOutput").innerHTML = "";
   document.getElementById("continue").style.display = "none";
+
   if (solutionsToDelete.length > 0) {
     const solutionId = solutionsToDelete.shift();
 
     if (!checkBeforeEachDelete) {
-      deleteSolution(solutionId)
-      .then(() => {
-        // Continue with list of solutions
-        deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete);
-      });
-    } else {
+      // Delete a solution
+      await deleteSolution(solutionId, deletePermanently)
 
-      (new Promise((resolve) => {
+      // Continue with remaining solutions to delete
+      await deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete, deletePermanently);
+
+    } else {
+      const okToDelete = await (new Promise((resolve) => {
         confirmDeletionFcn = (okToDelete: boolean) => resolve(okToDelete);
         doublecheck(solutionId);
-      })).then(okToDelete => {
-        let deletePromise = Promise.resolve();
-        if (okToDelete) {
-          deletePromise = deleteSolution(solutionId);
-        } else {
-          document.getElementById("doublecheck").style.display = "none";
-          document.getElementById("output").innerHTML += "<br>Solution " + solutionId + " is unchanged";
-        }
-        deletePromise.then(() => {
-          (new Promise((resolve) => {
-            continueFcn = () => resolve(null);
-            document.getElementById("continue").style.display = "block";
-          })).then(() => {
-            document.getElementById("output").innerHTML = "";
+      }));
 
-            // Continue with list of solutions
-            deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete);
-          });
-        });
-      });
+      if (okToDelete) {
+        // Delete a solution
+        await deleteSolution(solutionId, deletePermanently);
+
+        // Continue?
+        await (new Promise((resolve) => {
+          continueFcn = () => resolve(null);
+          document.getElementById("continue").style.display = "block";
+        }));
+        document.getElementById("output").innerHTML = "";
+
+        // Continue with remaining solutions to delete
+        await deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete, deletePermanently);
+
+      } else {
+        document.getElementById("doublecheck").style.display = "none";
+        const outputElement = document.getElementById("output");
+        const lineBreak = document.createElement("br");
+        const message = document.createTextNode("Solution " + solutionId + " is unchanged");
+        outputElement.appendChild(lineBreak);
+        outputElement.appendChild(message);
+      }
     }
-  } else {
-    getDeployedSolutions();
   }
 }
 
@@ -202,7 +212,7 @@ function doublecheck(solutionId: string) {
  *
  * @param solutionId Id of solution to delete
  */
-function deleteSolution(solutionId: string) {
+function deleteSolution(solutionId: string, deletePermanently: boolean) {
   document.getElementById("doublecheck").style.display = "none";
   var startTime = Date.now();
 
@@ -211,7 +221,8 @@ function deleteSolution(solutionId: string) {
     authentication,
     percentDone => {
       document.getElementById("output").innerHTML = "Deleting " + solutionId + "..." + percentDone.toFixed().toString() + "%";
-    }
+    },
+    deletePermanently
   ).then(
     html => {
       reportElapsedTime(startTime);
@@ -254,9 +265,11 @@ function updateDeleteBtn() {
   if (numSelected > 0) {
     document.getElementById("deleteInteractiveBtn").style.display = "inline-block";
     document.getElementById("deleteBlastBtn").style.display = "inline-block";
+    document.getElementById("deletePermanentlyDiv").style.display = "inline-block";
   } else {
     document.getElementById("deleteInteractiveBtn").style.display = "none";
     document.getElementById("deleteBlastBtn").style.display = "none";
+    document.getElementById("deletePermanentlyDiv").style.display = "none";
   }
 }
 

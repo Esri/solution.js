@@ -81,7 +81,8 @@ export function checkDeleteSolution(
 export function deleteSolution(
   solutionItemId: string,
   authentication: common.UserSession,
-  progressCallback: common.ISolutionProgressCallback
+  progressCallback: common.ISolutionProgressCallback,
+  deletePermanently: boolean
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!solutionItemId) {
@@ -92,7 +93,8 @@ export function deleteSolution(
     // Delete the solution
     const options: common.IDeleteSolutionOptions = {
       progressCallback: progressCallback,
-      consoleProgress: true
+      consoleProgress: true,
+      sendToRecycling: !deletePermanently
     };
     common.deleteSolution(solutionItemId.trim(), authentication, options).then(
       (deleteResults: common.ISolutionPrecis[]) => {

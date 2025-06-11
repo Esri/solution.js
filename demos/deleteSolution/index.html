@@ -50,9 +50,14 @@
     <div id="solutionSelection" style="display:none">
       <div class="section-title">Select deployed Solutions to delete:</div>
       <div id="sourceSolutionsDiv"></div>
+      <br/>
       <button id="toggleBtn" class="toggleBtn" onclick="toggleSelectAllFcn()">Select all</button>
       <button id="deleteInteractiveBtn" class="deleteBtn danger" onclick="launchDeleteSolutionsFcn(true)">Delete Solution(s) one-by-one</button>
       <button id="deleteBlastBtn" class="deleteBtn danger" onclick="launchDeleteSolutionsFcn(false)">Delete Solution(s) en masse</button>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <div id="deletePermanentlyDiv">
+        <input type="checkbox" id="deletePermanently" checked="checked">&nbsp;<label for="deletePermanently" style="font-weight:unset">Delete permanently</label>
+      </div>
     </div>
     <br/><br/>
 

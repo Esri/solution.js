@@ -38,7 +38,7 @@ import { createHubRequestOptions } from "../create-hub-request-options";
  * @param progressPercentStep Amount that percentDone changes for each item deleted
  * @param solutionDeletedSummary Solution summary containing items successfully deleted
  * @param solutionFailureSummary Solution summary containing items that could not be deleted
- * @param deleteOptions Reporting options
+ * @param deleteOptions Progress reporting and deletion permanence options
  * @returns Promise that will resolve with a list of two solution summaries: successful deletions
  * and failed deletions. Ignored items (e.g., already deleted) will not be in either list.
  */
@@ -77,7 +77,8 @@ export function removeItems(
           const workflowBaseUrl = await workflowHelpers.getWorkflowBaseURL(authentication);
           return workflowHelpers.deleteWorkflowItem(itemToDelete.id, workflowBaseUrl, authentication);
         } else {
-          return removeItem(itemToDelete.id, authentication);
+          const permanentDelete = !deleteOptions.sendToRecycling;
+          return removeItem(itemToDelete.id, authentication, permanentDelete);
         }
       })
       .then(() => {

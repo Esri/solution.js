@@ -562,6 +562,12 @@ export interface IDeleteSolutionOptions {
    * Should progress be echoed to the debugging console? default: false
    */
   consoleProgress?: boolean;
+
+  /**
+   * Should the item being deleted be sent to the recycling bin? The default for deletion in this library is to
+   * delete the item permanently; this flag overrides that behavior.
+   */
+  sendToRecycling?: boolean;
 }
 
 /**
