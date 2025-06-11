@@ -34,7 +34,6 @@ beforeEach(() => {
 });
 
 describe("Module `removeItems`: removing items from AGO", () => {
-
   it("handles defaulting all options for workflow deletion", async () => {
     const solutionSummary: ISolutionPrecis = {
       id: "sln1234567890",
@@ -154,11 +153,10 @@ describe("Module `removeItems`: removing items from AGO", () => {
     expect(removeItemSpy).toHaveBeenCalledWith(
       "itm1234567890",
       MOCK_USER_SESSION,
-      true // delete permanently
+      true, // delete permanently
     );
     expect(result).toEqual(expectedResult);
   });
-
 
   it("handles deleting WMA to recycling bin", async () => {
     const solutionSummary: ISolutionPrecis = {
@@ -225,5 +223,4 @@ describe("Module `removeItems`: removing items from AGO", () => {
     );
     expect(result).toEqual(expectedResult);
   });
-
 });
