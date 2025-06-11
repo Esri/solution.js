@@ -94,7 +94,7 @@ function toggleSelectAll() {
  * @param checkBeforeEachDelete Switch indicating if a display of what's about to be deleted appears
  * before each solution is deleted, which provides an opportunity to cancel deleting that solution
  */
-function launchDeleteSolutions(checkBeforeEachDelete: boolean) {
+async function launchDeleteSolutions(checkBeforeEachDelete: boolean) {
   document.getElementById("toggleBtn").style.display = "none";
   document.getElementById("deleteInteractiveBtn").style.display = "none";
   document.getElementById("deleteBlastBtn").style.display = "none";
@@ -116,7 +116,10 @@ function launchDeleteSolutions(checkBeforeEachDelete: boolean) {
   const deletePermanently = (document.getElementById("deletePermanently") as HTMLInputElement).checked;
 
   // Run the deletes
-  deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete, deletePermanently);
+  await deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete, deletePermanently);
+
+  // Refresh the list of solutions
+  setTimeout(getDeployedSolutions, 3000);
 }
 
 /**
@@ -126,47 +129,46 @@ function launchDeleteSolutions(checkBeforeEachDelete: boolean) {
  * @param checkBeforeEachDelete Switch indicating if a display of what's about to be deleted appears
  * before each solution is deleted, which provides an opportunity to cancel deleting that solution
  */
-function deleteListOfSolutions(solutionsToDelete: string[], checkBeforeEachDelete: boolean, deletePermanently: boolean) {
+async function deleteListOfSolutions(solutionsToDelete: string[], checkBeforeEachDelete: boolean, deletePermanently: boolean) {
   console.log(solutionsToDelete);
   document.getElementById("checkOutput").innerHTML = "";
   document.getElementById("continue").style.display = "none";
+
   if (solutionsToDelete.length > 0) {
     const solutionId = solutionsToDelete.shift();
 
     if (!checkBeforeEachDelete) {
-      deleteSolution(solutionId, deletePermanently)
-      .then(() => {
-        // Continue with list of solutions
-        deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete, deletePermanently);
-      });
-    } else {
+      // Delete a solution
+      await deleteSolution(solutionId, deletePermanently)
 
-      (new Promise((resolve) => {
+      // Continue with remaining solutions to delete
+      await deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete, deletePermanently);
+
+    } else {
+      const okToDelete = await (new Promise((resolve) => {
         confirmDeletionFcn = (okToDelete: boolean) => resolve(okToDelete);
         doublecheck(solutionId);
-      })).then(okToDelete => {
-        let deletePromise = Promise.resolve();
-        if (okToDelete) {
-          deletePromise = deleteSolution(solutionId, deletePermanently);
-        } else {
-          document.getElementById("doublecheck").style.display = "none";
-          document.getElementById("output").innerHTML += "<br>Solution " + solutionId + " is unchanged";
-        }
-        deletePromise.then(() => {
-          (new Promise((resolve) => {
-            continueFcn = () => resolve(null);
-            document.getElementById("continue").style.display = "block";
-          })).then(() => {
-            document.getElementById("output").innerHTML = "";
+      }));
 
-            // Continue with list of solutions
-            deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete, deletePermanently);
-          });
-        });
-      });
+      if (okToDelete) {
+        // Delete a solution
+        await deleteSolution(solutionId, deletePermanently);
+
+        // Continue?
+        await (new Promise((resolve) => {
+          continueFcn = () => resolve(null);
+          document.getElementById("continue").style.display = "block";
+        }));
+        document.getElementById("output").innerHTML = "";
+
+        // Continue with remaining solutions to delete
+        await deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete, deletePermanently);
+
+      } else {
+        document.getElementById("doublecheck").style.display = "none";
+        document.getElementById("output").innerHTML += "<br>Solution " + solutionId + " is unchanged";
+      }
     }
-  } else {
-    getDeployedSolutions();
   }
 }
 
