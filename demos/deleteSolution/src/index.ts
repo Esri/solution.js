@@ -62,6 +62,7 @@ function getDeployedSolutions() {
         document.getElementById("toggleBtn").style.display = "inline-block";
         document.getElementById("solutionSelection").style.display = "block";
       } else {
+        document.getElementById("solutionSelection").style.display = "none";
         document.getElementById("output").innerHTML = "No deployed Solution templates found";
       }
     },
@@ -97,6 +98,7 @@ function launchDeleteSolutions(checkBeforeEachDelete: boolean) {
   document.getElementById("toggleBtn").style.display = "none";
   document.getElementById("deleteInteractiveBtn").style.display = "none";
   document.getElementById("deleteBlastBtn").style.display = "none";
+  document.getElementById("deletePermanentlyDiv").style.display = "none";
 
   // Get list of solutions to delete
   const solutionsToDelete = [];
@@ -111,8 +113,10 @@ function launchDeleteSolutions(checkBeforeEachDelete: boolean) {
     alert("Warning: every checked Solution will be deleted! Refresh page to cancel.");
   }
 
+  const deletePermanently = (document.getElementById("deletePermanently") as HTMLInputElement).checked;
+
   // Run the deletes
-  deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete);
+  deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete, deletePermanently);
 }
 
 /**
@@ -122,7 +126,7 @@ function launchDeleteSolutions(checkBeforeEachDelete: boolean) {
  * @param checkBeforeEachDelete Switch indicating if a display of what's about to be deleted appears
  * before each solution is deleted, which provides an opportunity to cancel deleting that solution
  */
-function deleteListOfSolutions(solutionsToDelete: string[], checkBeforeEachDelete: boolean) {
+function deleteListOfSolutions(solutionsToDelete: string[], checkBeforeEachDelete: boolean, deletePermanently: boolean) {
   console.log(solutionsToDelete);
   document.getElementById("checkOutput").innerHTML = "";
   document.getElementById("continue").style.display = "none";
@@ -130,10 +134,10 @@ function deleteListOfSolutions(solutionsToDelete: string[], checkBeforeEachDelet
     const solutionId = solutionsToDelete.shift();
 
     if (!checkBeforeEachDelete) {
-      deleteSolution(solutionId)
+      deleteSolution(solutionId, deletePermanently)
       .then(() => {
         // Continue with list of solutions
-        deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete);
+        deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete, deletePermanently);
       });
     } else {
 
@@ -143,7 +147,7 @@ function deleteListOfSolutions(solutionsToDelete: string[], checkBeforeEachDelet
       })).then(okToDelete => {
         let deletePromise = Promise.resolve();
         if (okToDelete) {
-          deletePromise = deleteSolution(solutionId);
+          deletePromise = deleteSolution(solutionId, deletePermanently);
         } else {
           document.getElementById("doublecheck").style.display = "none";
           document.getElementById("output").innerHTML += "<br>Solution " + solutionId + " is unchanged";
@@ -156,7 +160,7 @@ function deleteListOfSolutions(solutionsToDelete: string[], checkBeforeEachDelet
             document.getElementById("output").innerHTML = "";
 
             // Continue with list of solutions
-            deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete);
+            deleteListOfSolutions(solutionsToDelete, checkBeforeEachDelete, deletePermanently);
           });
         });
       });
@@ -202,7 +206,7 @@ function doublecheck(solutionId: string) {
  *
  * @param solutionId Id of solution to delete
  */
-function deleteSolution(solutionId: string) {
+function deleteSolution(solutionId: string, deletePermanently: boolean) {
   document.getElementById("doublecheck").style.display = "none";
   var startTime = Date.now();
 
@@ -211,7 +215,8 @@ function deleteSolution(solutionId: string) {
     authentication,
     percentDone => {
       document.getElementById("output").innerHTML = "Deleting " + solutionId + "..." + percentDone.toFixed().toString() + "%";
-    }
+    },
+    deletePermanently
   ).then(
     html => {
       reportElapsedTime(startTime);
@@ -254,9 +259,11 @@ function updateDeleteBtn() {
   if (numSelected > 0) {
     document.getElementById("deleteInteractiveBtn").style.display = "inline-block";
     document.getElementById("deleteBlastBtn").style.display = "inline-block";
+    document.getElementById("deletePermanentlyDiv").style.display = "inline-block";
   } else {
     document.getElementById("deleteInteractiveBtn").style.display = "none";
     document.getElementById("deleteBlastBtn").style.display = "none";
+    document.getElementById("deletePermanentlyDiv").style.display = "none";
   }
 }
 
