@@ -39,7 +39,7 @@ import { removeItem } from "../restHelpers";
 export function deleteSolutionItem(
   solutionItemId: string,
   authentication: UserSession,
-  permanentDelete: boolean,
+  permanentDelete?: boolean,
 ): Promise<IStatusResponse> {
   const protectOptions: IUserItemOptions = {
     id: solutionItemId,
