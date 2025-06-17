@@ -24,6 +24,7 @@ exit /b
 :publish
 rem Remove existing "next" version tags
 git tag -l *next* >temp.txt
+for /f %%a in (temp.txt) do git push --delete origin %%a
 for /f %%a in (temp.txt) do git tag -d %%a
 del/q temp.txt
 
