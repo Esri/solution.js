@@ -324,6 +324,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       const response: interfaces.ISolutionPrecis[] = await deleteSolution.deleteSolution(
         "sol1234567890",
         MOCK_USER_SESSION,
+        { sendToRecycling: true }, // skip permanent delete
       );
       expect(response).toEqual([mockItems.getSolutionPrecis(), mockItems.getSolutionPrecis()]);
       expect(unprotectItemSpy.calls.count()).withContext("should unprotect Solution item").toBe(1);

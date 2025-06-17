@@ -118,7 +118,8 @@ export function deleteSolutionContents(
         if (solutionItemId) {
           // If there were no failed deletes, it's OK to delete Solution item
           if (solutionFailureSummary.items.length === 0) {
-            return deleteSolutionItem.deleteSolutionItem(solutionItemId, authentication, deleteOptions);
+            const permanentDelete = !deleteOptions.sendToRecycling;
+            return deleteSolutionItem.deleteSolutionItem(solutionItemId, authentication, permanentDelete);
           } else {
             // Not all items were deleted, so don't delete solution
             return Promise.resolve({ success: false, itemId: solutionItemId });

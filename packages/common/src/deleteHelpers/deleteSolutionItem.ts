@@ -20,7 +20,7 @@
  * @module deleteSolutionItem
  */
 
-import { IDeleteSolutionOptions, IStatusResponse } from "../interfaces";
+import { IStatusResponse } from "../interfaces";
 import { unprotectItem, IUserItemOptions, UserSession } from "../arcgisRestJS";
 import { removeItem } from "../restHelpers";
 
@@ -32,13 +32,14 @@ import { removeItem } from "../restHelpers";
  *
  * @param solutionItemId Id of a deployed Solution
  * @param authentication Credentials for the request
- * @param options Progress reporting and deletion permanence options
+ * @param permanentDelete If true (the default), the item is permanently deleted; if false and the item type
+ * supports the recycle bin, the item will be put into the recycle bin
  * @returns Promise that will resolve with the status of deleting the item
  */
 export function deleteSolutionItem(
   solutionItemId: string,
   authentication: UserSession,
-  options?: IDeleteSolutionOptions,
+  permanentDelete: boolean,
 ): Promise<IStatusResponse> {
   const protectOptions: IUserItemOptions = {
     id: solutionItemId,
@@ -47,8 +48,6 @@ export function deleteSolutionItem(
   return unprotectItem(protectOptions)
     .then((result) => {
       if (result.success) {
-        const deleteOptions: IDeleteSolutionOptions = options || {};
-        const permanentDelete = !deleteOptions.sendToRecycling;
         return removeItem(solutionItemId, authentication, permanentDelete);
       } else {
         return Promise.resolve(result);
