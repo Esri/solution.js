@@ -32,9 +32,15 @@ import { removeItem } from "../restHelpers";
  *
  * @param solutionItemId Id of a deployed Solution
  * @param authentication Credentials for the request
+ * @param permanentDelete If true (the default), the item is permanently deleted; if false and the item type
+ * supports the recycle bin, the item will be put into the recycle bin
  * @returns Promise that will resolve with the status of deleting the item
  */
-export function deleteSolutionItem(solutionItemId: string, authentication: UserSession): Promise<IStatusResponse> {
+export function deleteSolutionItem(
+  solutionItemId: string,
+  authentication: UserSession,
+  permanentDelete?: boolean,
+): Promise<IStatusResponse> {
   const protectOptions: IUserItemOptions = {
     id: solutionItemId,
     authentication,
@@ -42,7 +48,7 @@ export function deleteSolutionItem(solutionItemId: string, authentication: UserS
   return unprotectItem(protectOptions)
     .then((result) => {
       if (result.success) {
-        return removeItem(solutionItemId, authentication);
+        return removeItem(solutionItemId, authentication, permanentDelete);
       } else {
         return Promise.resolve(result);
       }
