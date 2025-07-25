@@ -23,5 +23,5 @@ jobs:
       - name: Lint
         shell: bash
         run: |
-          npx eslint . --ext .ts
+          npm run lint
 
