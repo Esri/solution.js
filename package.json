@@ -18,8 +18,8 @@
     "build:cjs": "ultra --no-pretty --silent --rebuild -r --filter \"packages/*\" build:cjs",
     "clean:dist": "support\\clean-dist.bat",
     "clean:node": "support\\clean-node.bat",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix",
+    "lint": "eslint --c eslint.config.mjs",
+    "lint:fix": "eslint --c eslint.config.mjs --fix",
     "lint:staged": "npx lint-staged",
     "prettify": "prettier --write \"packages/**/+(src|test)/**/*.ts\"",
     "getupdates": "npm-check-updates --upgrade",
@@ -99,6 +99,7 @@
     "ts-node": "^10.9.2",
     "typedoc": "^0.25.13",
     "typescript": "~5.2.2",
+    "typescript-eslint": "^8.38.0",
     "ultra-runner": "^3.10.5"
   },
   "lint-staged": {

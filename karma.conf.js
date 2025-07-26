@@ -39,7 +39,7 @@ module.exports = function(config) {
         },
         "html": "coverage"
       },
-      tsconfig: "./tsconfig.json",
+      tsconfig: "./tsconfigCoverage.json",
       compilerOptions: {
         lib: ["dom", "es2017"],
         module: "commonjs", // ES not supported until experimental node12/nodenext moduleResolution
@@ -69,6 +69,8 @@ module.exports = function(config) {
         stopOnFailure: true
       }
     },
+
+    mime: { 'text/x-typescript': ['ts', 'tsx'] },
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
