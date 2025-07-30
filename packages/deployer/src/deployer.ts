@@ -26,6 +26,8 @@ import { deploySolutionFromTemplate } from "./deploySolutionFromTemplate";
 import { getSolutionTemplateItem, isSolutionTemplateItem, updateDeployOptions } from "./deployerUtils";
 import { IModel } from "@esri/hub-common";
 
+let abortSignal: boolean = false;
+
 /**
  * Deploy a Solution
  *
@@ -46,6 +48,13 @@ export async function deploySolution(
   if (!maybeModel) {
     return Promise.reject(common.fail("The Solution Template id is missing"));
   }
+
+  function checkCancelled(content?: any) {
+    if (abortSignal) {
+      return Promise.reject(content);
+    }
+  }
+
   let deployOptions: common.IDeploySolutionOptions = options || {};
 
   /* istanbul ignore else */
@@ -58,9 +67,11 @@ export async function deploySolution(
     ? deployOptions.storageAuthentication
     : authentication;
 
+  checkCancelled();
   // deal with maybe getting an item or an id
   return getSolutionTemplateItem(maybeModel, storageAuthentication)
     .then((model) => {
+      checkCancelled(model);
       if (!isSolutionTemplateItem(model.item)) {
         return Promise.reject(common.fail(`${model.item.id} is not a Solution Template`));
       } else {
@@ -69,6 +80,7 @@ export async function deploySolution(
       }
     })
     .then((responses) => {
+      checkCancelled(responses);
       // extract responses
       const [itemBase, itemData] = responses;
       // sanitize all the things
@@ -83,6 +95,7 @@ export async function deploySolution(
       // Clone before mutating? This was messing me up in some testing...
       common.deleteItemProps(item);
 
+      checkCancelled(responses);
       return deploySolutionFromTemplate(itemId, item, data, authentication, deployOptions);
     })
     .then(
