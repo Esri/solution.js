@@ -24,6 +24,7 @@ declare var fetchFoldersFcn: any;
 declare var goFcn: any;
 declare var updateDestAuthFcn: any;
 
+let abortController: AbortController;
 //--------------------------------------------------------------------------------------------------------------------//
 
 function fetchFolders(
@@ -67,20 +68,49 @@ function deploySolution(
   dontCreateSolutionItem: boolean,
   customParams: any
 ): void {
+  abortController = new AbortController();
   const startTime = Date.now();
   const createdItems = [] as any[];
 
   let deployPromise = Promise.resolve("<i>No Solution(s) provided</i>");
   const progressFcn =
-    function (percentDone, jobId, progressEvent) {
-      if (progressEvent) {
-        createdItems.push(progressEvent.data);
+  function (percentDone, jobId, progressEvent) {
+    if (progressEvent) {
+      createdItems.push(progressEvent.data);
+    }
+
+    // Create base progress HTML
+    const html = "Deploying " + jobId + "..." + percentDone.toFixed().toString() + "%" + "<br>";
+
+    // Get the output container
+    const outputEl = document.getElementById("output");
+    if (outputEl) {
+      // Set HTML status part
+      outputEl.innerHTML = html;
+
+      // Only add the cancel button if it doesn't already exist
+      if (!document.getElementById("cancelButton")) {
+        const cancelButton = document.createElement("button");
+        cancelButton.id = "cancelButton";
+        cancelButton.textContent = "Cancel";
+        cancelButton.onclick = cancelDeploy;
+        cancelButton.style.marginTop = "10px";
+
+        outputEl.appendChild(cancelButton);
       }
-      let html = "Deploying " + jobId + "..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
-      createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
-      html += "</ol>";
-      document.getElementById("output").innerHTML = html;
-    } as common.ISolutionProgressCallback;
+
+      let htmlResultList = "<br><br>Finished items:<ol>";
+      createdItems.forEach(function (item) {
+        htmlResultList += "<li>" + item + "</li>";
+      });
+      htmlResultList += "</ol>";
+
+      outputEl.innerHTML = outputEl.innerHTML + htmlResultList;
+
+    }
+  } as common.ISolutionProgressCallback;
+
+
   if (solutionId.length > 0) {
     deployPromise = main.deployAndDisplaySolution(
       solutionId,
@@ -89,7 +119,8 @@ function deploySolution(
       progressFcn,
       useExisting,
       dontCreateSolutionItem,
-      customParams
+      customParams,
+      abortController
     );
   } else if (folderId.length > 0) {
     deployPromise = main.deploySolutionsInFolder(
@@ -113,6 +144,10 @@ function deploySolution(
       document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
     }
   );
+}
+
+function cancelDeploy() {
+  abortController.abort();
 }
 
 /**

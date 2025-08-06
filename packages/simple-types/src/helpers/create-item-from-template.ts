@@ -24,8 +24,24 @@ export function createItemFromTemplate(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   itemProgressCallback: common.IItemProgressCallback,
+  abortController?: AbortController,
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  return new Promise<common.ICreateItemFromTemplateResponse>((resolve) => {
+  return new Promise<common.ICreateItemFromTemplateResponse>((resolve, reject) => {
+    /**
+     * function to abort the current process. Will delete solution and reject the promise
+     *
+     * @return a reject on the parent promise.
+     */
+    function checkCancelled() {
+      if (abortController) {
+        if (abortController.signal.aborted) {
+          reject(new Error(`Operation was cancelled`));
+        }
+      }
+    }
+
+    checkCancelled();
+
     // Interrupt process if progress callback returns `false`
     if (!itemProgressCallback(template.itemId, common.EItemProgressStatus.Started, 0)) {
       itemProgressCallback(template.itemId, common.EItemProgressStatus.Ignored, 0);
@@ -66,6 +82,7 @@ export function createItemFromTemplate(
         )
         .then(
           (createResponse) => {
+            checkCancelled();
             // Interrupt process if progress callback returns `false`
             if (
               !itemProgressCallback(
@@ -100,6 +117,8 @@ export function createItemFromTemplate(
               const originalURL = newItemTemplate.item.url;
               newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
 
+              checkCancelled();
+
               // Update relationships
               let relationshipsDef = Promise.resolve([] as common.IStatusResponse[]);
               if (newItemTemplate.relatedItems) {
@@ -117,6 +136,7 @@ export function createItemFromTemplate(
                 );
               }
 
+              checkCancelled();
               // Check for extra processing for web mapping application et al.
               let customProcDef: Promise<void>;
               if (
@@ -162,6 +182,7 @@ export function createItemFromTemplate(
                   destinationAuthentication,
                 );
               } else if (originalURL !== newItemTemplate.item.url) {
+                checkCancelled();
                 // For web mapping applications that are not Web AppBuilder apps
                 customProcDef = new Promise<void>((resolve2, reject2) => {
                   common
@@ -172,6 +193,7 @@ export function createItemFromTemplate(
                 customProcDef = Promise.resolve(null);
               }
 
+              checkCancelled();
               Promise.all([relationshipsDef, customProcDef]).then(
                 () => {
                   // Interrupt process if progress callback returns `false`

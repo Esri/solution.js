@@ -25,7 +25,6 @@ export interface ISolutionInfoCard {
   version: string;
 }
 
-
 export function deploySolutionsInFolder (
   folderId: string,
   srcAuthentication: common.UserSession,
@@ -33,7 +32,7 @@ export function deploySolutionsInFolder (
   progressCallback: common.ISolutionProgressCallback,
   enableItemReuse: boolean,
   dontCreateSolutionItem: boolean,
-  customParams: any
+  customParams: any,
 ): Promise<string> {
   const query = new common.SearchQueryBuilder()
     .match(folderId).in("ownerfolder").and()
@@ -145,7 +144,8 @@ export function deployAndDisplaySolution (
   progressCallback: common.ISolutionProgressCallback,
   enableItemReuse: boolean,
   dontCreateSolutionItem: boolean,
-  customParams: any
+  customParams: any,
+  abortController?: AbortController
 ): Promise<string> {
   // Deploy a solution described by the supplied id
   // only pass custom params to the templateDictionary
@@ -158,7 +158,8 @@ export function deployAndDisplaySolution (
     templateDictionary: isJsonStr(customParams) ? {
       params: JSON.parse(customParams)
     } : {},
-    dontCreateSolutionItem
+    dontCreateSolutionItem,
+    abortController
   };
 
   return deployer.deploySolution(templateSolutionId, destAuthentication, options)

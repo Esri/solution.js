@@ -1440,6 +1440,83 @@ describe("Module `deployer`", () => {
         () => Promise.resolve(),
       );
     });
+    it("can handle abort by user", async () => {
+      // get templates
+      const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
+
+      const abortController = new AbortController();
+      abortController.abort();
+
+      const options: common.IDeploySolutionOptions = {
+        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK,
+        abortController,
+      };
+      try {
+        // Act
+        await deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options);
+
+        // If no error thrown, fail the test
+        fail("Expected deploySolution to throw an error due to user abort");
+      } catch (ex) {
+        // Assert
+        expect(ex instanceof Error).toBeTrue();
+        //expect(ex.message).toBe("Operation was cancelled");
+      }
+    });
+    it("Error should catch and throw EX", async () => {
+      // get templates
+      const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
+
+      const options: common.IDeploySolutionOptions = {
+        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK,
+      };
+
+      spyOn(deployUtils, "getSolutionTemplateItem").and.callFake(() =>
+        Promise.reject("57a059ec717c4b1282705132fd4720a0"),
+      );
+
+      try {
+        // Act
+        await deployer.deploySolution("57a059ec717c4b1282705132fd4720a0", MOCK_USER_SESSION, options);
+
+        // If no error thrown, fail the test
+        fail("Expected deploySolution to throw an error");
+      } catch (ex) {
+        expect(ex).toBe("57a059ec717c4b1282705132fd4720a0");
+      }
+    });
+    it("Error should be handle in catch and update output dom", async () => {
+      // get templates
+      const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
+
+      const outputElement = document.createElement("div");
+      outputElement.id = "output";
+      document.body.appendChild(outputElement);
+
+      // Spy on getElementById to return our mock
+      spyOn(document, "getElementById").and.returnValue(outputElement);
+
+      // Spy on deleteSolution to intercept and trigger callback
+      const deleteSolutionSpy = spyOn(common, "deleteSolution").and.callFake(
+        (
+          solutionItemId: string,
+          authentication: common.UserSession,
+          options?: common.IDeleteSolutionOptions,
+        ): Promise<common.ISolutionPrecis[]> => {
+          if (options?.progressCallback) {
+            options.progressCallback(0);
+          }
+
+          const fakeResult: common.ISolutionPrecis[] = [];
+          return Promise.resolve(fakeResult);
+        },
+      );
+
+      deployer.deployCatchHandler(itemInfo.item.id, MOCK_USER_SESSION);
+      expect(document.getElementById).toHaveBeenCalledWith("output");
+      expect(outputElement.innerHTML).toBe("Deleting from Deployer");
+      expect(deleteSolutionSpy).toHaveBeenCalled();
+    });
   });
   describe("_replaceParamVariables", () => {
     it("should update custom sr prop", () => {

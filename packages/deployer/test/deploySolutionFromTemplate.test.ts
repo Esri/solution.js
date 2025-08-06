@@ -331,6 +331,31 @@ describe("Module `deploySolutionFromTemplate`", () => {
       expect(deployFnCall.args[6].portal).toEqual(MOCK_USER_SESSION.portal); // destinationAuthentication
     });
 
+    it("deploySolutionFromTemplate should error on user abort", async () => {
+      const abortController = new AbortController();
+      abortController.abort();
+      const templates: common.IItemTemplate[] = [mockTemplates.getItemTemplate("Web Map")];
+      const solution: common.ISolutionItem = mockTemplates.getSolutionTemplateItem(templates);
+      const templateSolutionId: string = "sln1234567890";
+      const solutionTemplateBase: any = solution.item;
+      const solutionTemplateData: any = solution.data;
+      const authentication: common.UserSession = MOCK_USER_SESSION;
+      const options: common.IDeploySolutionOptions = {
+        abortController,
+      };
+
+      return deploySolutionFromTemplate(
+        templateSolutionId,
+        solutionTemplateBase,
+        solutionTemplateData,
+        authentication,
+        options,
+      ).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
+    });
+
     it("allows distinct authentication to the solution template", async () => {
       const SERVER_INFO = {
         currentVersion: 10.1,

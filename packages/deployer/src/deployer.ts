@@ -26,8 +26,6 @@ import { deploySolutionFromTemplate } from "./deploySolutionFromTemplate";
 import { getSolutionTemplateItem, isSolutionTemplateItem, updateDeployOptions } from "./deployerUtils";
 import { IModel } from "@esri/hub-common";
 
-let abortSignal: boolean = false;
-
 /**
  * Deploy a Solution
  *
@@ -49,9 +47,16 @@ export async function deploySolution(
     return Promise.reject(common.fail("The Solution Template id is missing"));
   }
 
-  function checkCancelled(content?: any) {
-    if (abortSignal) {
-      return Promise.reject(content);
+  /**
+   * function to abort the current process. Will delete solution and reject the promise
+   *
+   * @return a reject on the parent promise.
+   */
+  function checkCancelled() {
+    if (options && options.abortController) {
+      if (options.abortController.signal.aborted) {
+        throw new Error("Operation was cancelled");
+      }
     }
   }
 
@@ -67,11 +72,11 @@ export async function deploySolution(
     ? deployOptions.storageAuthentication
     : authentication;
 
-  checkCancelled();
+  void checkCancelled();
   // deal with maybe getting an item or an id
   return getSolutionTemplateItem(maybeModel, storageAuthentication)
     .then((model) => {
-      checkCancelled(model);
+      void checkCancelled();
       if (!isSolutionTemplateItem(model.item)) {
         return Promise.reject(common.fail(`${model.item.id} is not a Solution Template`));
       } else {
@@ -80,7 +85,6 @@ export async function deploySolution(
       }
     })
     .then((responses) => {
-      checkCancelled(responses);
       // extract responses
       const [itemBase, itemData] = responses;
       // sanitize all the things
@@ -95,7 +99,7 @@ export async function deploySolution(
       // Clone before mutating? This was messing me up in some testing...
       common.deleteItemProps(item);
 
-      checkCancelled(responses);
+      checkCancelled();
       return deploySolutionFromTemplate(itemId, item, data, authentication, deployOptions);
     })
     .then(
@@ -116,6 +120,28 @@ export async function deploySolution(
       },
     )
     .catch((ex) => {
+      deployCatchHandler(ex, authentication);
       throw ex;
     });
+}
+
+export function deployCatchHandler(ex: any, authentication: common.UserSession) {
+  const progressFcn = function () {
+    // Create base progress HTML
+    const html = "Deleting from Deployer";
+
+    // Get the output container
+    const outputEl = document.getElementById("output");
+    if (outputEl) {
+      // Set HTML status part
+      outputEl.innerHTML = html;
+    }
+  } as common.ISolutionProgressCallback;
+
+  const options: common.IDeleteSolutionOptions = {
+    progressCallback: progressFcn,
+    consoleProgress: true,
+    sendToRecycling: false,
+  };
+  void common.deleteSolution(ex.trim(), authentication, options);
 }
