@@ -1440,6 +1440,50 @@ describe("Module `deployer`", () => {
         () => Promise.resolve(),
       );
     });
+    it("can handle abort by user", async () => {
+      // get templates
+      const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
+
+      const abortController = new AbortController();
+      abortController.abort();
+
+      const options: common.IDeploySolutionOptions = {
+        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK,
+        abortController,
+      };
+      try {
+        // Act
+        await deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options);
+
+        // If no error thrown, fail the test
+        fail("Expected deploySolution to throw an error due to user abort");
+      } catch (ex) {
+        // Assert
+        expect(ex instanceof Error).toBeTrue();
+      }
+    });
+    it("Error should catch and throw EX", async () => {
+      // get templates
+      const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
+
+      const options: common.IDeploySolutionOptions = {
+        progressCallback: testUtils.SOLUTION_PROGRESS_CALLBACK,
+      };
+
+      spyOn(deployUtils, "getSolutionTemplateItem").and.callFake(() =>
+        Promise.reject("57a059ec717c4b1282705132fd4720a0"),
+      );
+
+      try {
+        // Act
+        await deployer.deploySolution("57a059ec717c4b1282705132fd4720a0", MOCK_USER_SESSION, options);
+
+        // If no error thrown, fail the test
+        fail("Expected deploySolution to throw an error");
+      } catch (ex) {
+        expect(ex).toBe("57a059ec717c4b1282705132fd4720a0");
+      }
+    });
   });
   describe("_replaceParamVariables", () => {
     it("should update custom sr prop", () => {

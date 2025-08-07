@@ -68,7 +68,17 @@ export function createItemFromTemplate(
   templateDictionary: any,
   destinationAuthentication: UserSession,
   itemProgressCallback: IItemProgressCallback,
+  abortController?: AbortController,
 ): Promise<ICreateItemFromTemplateResponse> {
+  if (abortController) {
+    return simpleTypeHelpers.createItemFromTemplate(
+      template,
+      templateDictionary,
+      destinationAuthentication,
+      itemProgressCallback,
+      abortController,
+    );
+  }
   return simpleTypeHelpers.createItemFromTemplate(
     template,
     templateDictionary,

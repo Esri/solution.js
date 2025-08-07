@@ -51,6 +51,19 @@ export function deploySolutionItems(
   options: common.IDeploySolutionOptions,
 ): Promise<common.ICreateItemFromTemplateResponse[]> {
   return new Promise((resolve, reject) => {
+    /**
+     * function to abort the current process. Will delete solution and reject the promise
+     *
+     * @return a reject on the parent promise.
+     */
+    function checkCancelled() {
+      if (options && options.abortController) {
+        if (options.abortController.signal.aborted) {
+          reject(new Error(`Operation was cancelled`));
+        }
+      }
+    }
+
     // Prepare feedback mechanism
     const totalEstimatedCost = _estimateDeploymentCost(templates) + 1; // solution items, plus avoid divide by 0
     let percentDone: number = 10; // allow for previous deployment work
@@ -59,6 +72,8 @@ export function deploySolutionItems(
     const failedTemplateItemIds: string[] = [];
     const deployedItemIds: string[] = [];
     let statusOK = true;
+
+    checkCancelled();
 
     // TODO: move to separate fn
     const itemProgressCallback: common.IItemProgressCallback = (
@@ -122,6 +137,8 @@ export function deploySolutionItems(
     //   * add created item's id into the template dictionary
     const awaitAllItems = [] as Array<Promise<common.ICreateItemFromTemplateResponse>>;
 
+    checkCancelled();
+
     const reuseItemsDef: Promise<any> = _reuseDeployedItems(
       templates,
       options.enableItemReuse ?? false,
@@ -131,6 +148,7 @@ export function deploySolutionItems(
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     reuseItemsDef.then(
       () => {
+        checkCancelled();
         const useExistingItemsDef: Promise<any> = _useExistingItems(
           templates,
           common.getProp(templateDictionary, "params.useExisting"),
@@ -139,6 +157,8 @@ export function deploySolutionItems(
         );
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         useExistingItemsDef.then(() => {
+          checkCancelled();
+
           templates = common.setNamesAndTitles(templates);
 
           buildOrder.forEach((id: string) => {
@@ -168,6 +188,7 @@ export function deploySolutionItems(
                 templateDictionary,
                 destinationAuthentication,
                 itemProgressCallback,
+                options.abortController,
               ),
             );
           });
@@ -175,6 +196,8 @@ export function deploySolutionItems(
           // Wait until all items have been created
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           Promise.all(awaitAllItems).then((clonedSolutionItems: common.ICreateItemFromTemplateResponse[]) => {
+            checkCancelled();
+
             if (failedTemplateItemIds.length === 0) {
               // Do we have any items to be patched (i.e., they refer to dependencies using the template id rather
               // than the cloned id because the item had to be created before the dependency)? Flag these items
@@ -907,7 +930,21 @@ export function _createItemFromTemplateWhenReady(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   itemProgressCallback: common.IItemProgressCallback,
+  abortController?: AbortController,
 ): Promise<common.ICreateItemFromTemplateResponse> {
+  /**
+   * function to abort the current process. Will delete solution and reject the promise
+   *
+   * @return a reject on the parent promise.
+   */
+  function checkCancelled() {
+    if (abortController) {
+      if (abortController.signal.aborted) {
+        throw new Error(`Operation was cancelled`);
+      }
+    }
+  }
+
   const sourceItemId = template.itemId;
 
   // ensure this is present
@@ -918,6 +955,7 @@ export function _createItemFromTemplateWhenReady(
     !templateDictionary.hasOwnProperty(template.itemId) ||
     !common.getProp(templateDictionary[template.itemId], "def")
   ) {
+    checkCancelled();
     let createResponse: common.ICreateItemFromTemplateResponse;
     let statusCode: common.EItemProgressStatus = common.EItemProgressStatus.Unknown;
     let itemHandler: common.IItemTemplateConversions;
@@ -953,6 +991,7 @@ export function _createItemFromTemplateWhenReady(
 
       Promise.all(awaitDependencies)
         .then(() => {
+          checkCancelled();
           // Find the conversion handler for this item type
           const templateType = template.type;
           itemHandler = moduleMap[templateType];
@@ -973,6 +1012,7 @@ export function _createItemFromTemplateWhenReady(
           return common.getThumbnailFromStorageItem(storageAuthentication, resourceFilePaths);
         })
         .then((thumbnail) => {
+          checkCancelled();
           template.item.thumbnail = thumbnail;
 
           // Delegate the creation of the item to the handler
@@ -985,6 +1025,8 @@ export function _createItemFromTemplateWhenReady(
           );
         })
         .then(async (response: common.ICreateItemFromTemplateResponse) => {
+          checkCancelled();
+
           if (response.id === "") {
             statusCode = common.EItemProgressStatus.Failed;
             throw new Error("handled"); // fails to create item
@@ -1013,12 +1055,14 @@ export function _createItemFromTemplateWhenReady(
               });
 
               if (formZipFilePath) {
+                checkCancelled();
                 // Fetch the form's zip file and send it to the item
                 const zipObject = await common.fetchZipObject(formZipFilePath.url, storageAuthentication);
                 await common.updateItemWithZipObject(zipObject, destinationItemId, destinationAuthentication);
               }
             }
 
+            checkCancelled();
             // Copy resources, metadata
             return common.copyFilesFromStorageItem(
               storageAuthentication,

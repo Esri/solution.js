@@ -24,6 +24,7 @@ declare var fetchFoldersFcn: any;
 declare var goFcn: any;
 declare var updateDestAuthFcn: any;
 
+let abortController: AbortController;
 //--------------------------------------------------------------------------------------------------------------------//
 
 function fetchFolders(
@@ -67,20 +68,45 @@ function deploySolution(
   dontCreateSolutionItem: boolean,
   customParams: any
 ): void {
+  abortController = new AbortController();
   const startTime = Date.now();
   const createdItems = [] as any[];
 
   let deployPromise = Promise.resolve("<i>No Solution(s) provided</i>");
   const progressFcn =
-    function (percentDone, jobId, progressEvent) {
-      if (progressEvent) {
-        createdItems.push(progressEvent.data);
+  function (percentDone, jobId, progressEvent) {
+    if (progressEvent) {
+      createdItems.push(progressEvent.data);
+    }
+
+    // Get the output container
+    const outputEl = document.getElementById("output");
+    if (outputEl) {
+      outputEl.innerHTML = '';
+
+      // Set HTML status part
+      const header = document.createElement("div");
+      header.innerHTML = "Deploying " + jobId + "..." + percentDone.toFixed().toString() + "%" + "<br>";
+      outputEl.appendChild(header);
+
+      // Only add the cancel button if it doesn't already exist
+      if (!document.getElementById("cancelButton")) {
+        const cancelButton = document.createElement("button");
+        cancelButton.id = "cancelButton";
+        cancelButton.textContent = "Cancel";
+        cancelButton.onclick = cancelDeploy;
+        cancelButton.style.marginTop = "10px";
+        outputEl.appendChild(cancelButton);
       }
-      let html = "Deploying " + jobId + "..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
-      createdItems.forEach(function (item) { return html += "<li>" + item + "</li>" });
-      html += "</ol>";
-      document.getElementById("output").innerHTML = html;
-    } as common.ISolutionProgressCallback;
+
+      const list = document.createElement("div");
+      list.innerHTML = "<br><br>Finished items:<ol>" + createdItems.map(item => `<li>${item}</li>`).join('') + "</ol>";
+      outputEl.appendChild(list);
+
+    }
+  } as common.ISolutionProgressCallback;
+
+
   if (solutionId.length > 0) {
     deployPromise = main.deployAndDisplaySolution(
       solutionId,
@@ -89,7 +115,8 @@ function deploySolution(
       progressFcn,
       useExisting,
       dontCreateSolutionItem,
-      customParams
+      customParams,
+      abortController
     );
   } else if (folderId.length > 0) {
     deployPromise = main.deploySolutionsInFolder(
@@ -113,6 +140,11 @@ function deploySolution(
       document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
     }
   );
+}
+
+function cancelDeploy() {
+  abortController.abort();
+  console.log(abortController.signal.aborted);
 }
 
 /**

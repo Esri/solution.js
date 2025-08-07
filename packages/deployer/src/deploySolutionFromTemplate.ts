@@ -29,6 +29,21 @@ export async function deploySolutionFromTemplate(
   authentication: common.UserSession,
   options: common.IDeploySolutionOptions,
 ): Promise<string> {
+  /**
+   * function to abort the current process. Will delete solution and reject the promise
+   *
+   * @return a reject on the parent promise.
+   */
+  function checkCancelled() {
+    if (options && options.abortController) {
+      if (options.abortController.signal.aborted) {
+        throw new Error("Operation was cancelled");
+      }
+    }
+  }
+
+  checkCancelled();
+
   options.storageVersion = common.extractSolutionVersion(solutionTemplateData);
 
   // It is possible to provide a separate authentication for the source
@@ -100,6 +115,8 @@ export async function deploySolutionFromTemplate(
     (group: common.IGroup) => group.owner === templateDictionary.user.username,
   );
 
+  checkCancelled();
+
   // Add information needed for workflow manager
   const user = await common.getUser(authentication);
   templateDictionary.workflowBaseUrl = await common.getWorkflowBaseURL(authentication, portalResponse, user.orgId);
@@ -125,6 +142,7 @@ export async function deploySolutionFromTemplate(
     authentication,
   );
 
+  checkCancelled();
   // Await completion of async actions: folder creation & extents conversion
   const folderExtentsResponses = await Promise.all([folderPromise, extentsPromise, trackingOwnerPromise]);
   const [folderResponse, wgs84Extent, trackingOwnerResponse] = folderExtentsResponses;
@@ -159,6 +177,7 @@ export async function deploySolutionFromTemplate(
       createSolutionItemBase.typeKeywords = ["Solution"].concat(options.additionalTypeKeywords);
     }
 
+    checkCancelled();
     // Create deployed solution item
     createSolutionItemBase.thumbnail = options.thumbnail;
     const createSolutionResponse = await common.createItemWithData(
@@ -170,6 +189,7 @@ export async function deploySolutionFromTemplate(
 
     deployedSolutionId = createSolutionResponse.id;
 
+    checkCancelled();
     // Protect the solution item
     const protectOptions: common.IUserItemOptions = {
       id: deployedSolutionId,
@@ -188,6 +208,8 @@ export async function deploySolutionFromTemplate(
     solutionTemplateBase.url = _checkedReplaceAll(solutionTemplateBase.url, templateSolutionId, deployedSolutionId);
   }
 
+  checkCancelled();
+
   // Handle the contained item templates
   const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = await deployItems.deploySolutionItems(
     storageAuthentication.portal,
@@ -201,6 +223,7 @@ export async function deploySolutionFromTemplate(
   );
 
   solutionTemplateData.templates = solutionTemplateData.templates.map((itemTemplate: common.IItemTemplate) => {
+    checkCancelled();
     // Update ids present in template dictionary
     itemTemplate.itemId = common.getProp(templateDictionary, `${itemTemplate.itemId}.itemId`);
 
@@ -216,6 +239,8 @@ export async function deploySolutionFromTemplate(
     solutionTemplateData.templates,
     clonedSolutionsResponse.map((response) => response.id),
   );
+
+  checkCancelled();
 
   // Wrap up with post-processing, in which we deal with groups and cycle remnants
   await postProcess(
@@ -257,6 +282,8 @@ export async function deploySolutionFromTemplate(
     if (templateDictionary.params) {
       solutionTemplateBase.data.params = templateDictionary.params;
     }
+
+    checkCancelled();
 
     await common.updateItem(solutionTemplateBase, authentication, deployedFolderId);
   }

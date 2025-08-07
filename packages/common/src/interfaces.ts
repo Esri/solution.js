@@ -683,6 +683,10 @@ export interface IDeploySolutionOptions {
    * Determines if the solution item should be created during deployment; default: false
    */
   dontCreateSolutionItem?: boolean;
+  /**
+   * Flag to signal that the process has been aborted or cancelled
+   */
+  abortController?: AbortController;
 }
 
 /**

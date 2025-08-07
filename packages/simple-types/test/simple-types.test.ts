@@ -436,6 +436,31 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       );
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
     });
+
+    it("should handle cancellation by user aborting", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Web Map");
+      const templateDictionary: any = {};
+
+      const abortController = new AbortController();
+      abortController.abort();
+
+      try {
+        await simpleTypes.createItemFromTemplate(
+          itemTemplate,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK,
+          abortController,
+        );
+        fail("Expected error was not thrown");
+      } catch (error) {
+        if (error instanceof Error) {
+          expect(error.message).toEqual("Operation was cancelled");
+        } else {
+          fail(`Caught non-Error type: ${JSON.stringify(error)}`);
+        }
+      }
+    });
   });
 
   describe("postProcessFieldReferences", () => {

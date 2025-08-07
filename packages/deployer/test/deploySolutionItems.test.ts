@@ -842,6 +842,22 @@ describe("Module `deploySolutionItems`", () => {
         );
     });
 
+    it("can handle error on abort by user", async () => {
+      const abortController = new AbortController();
+      abortController.abort();
+
+      return deploySolution
+        .deploySolutionItems(utils.PORTAL_URL, "sln1234567890", [], MOCK_USER_SESSION, {}, "", MOCK_USER_SESSION, {
+          enableItemReuse: true,
+          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK,
+          abortController,
+        })
+        .then(
+          () => fail(),
+          () => Promise.resolve(),
+        );
+    });
+
     it("handles failure to delete all items when unwinding after failure to deploy", async () => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const newItemID: string = "ba4a6047326243b290f625e80ebe6531";
@@ -1220,6 +1236,35 @@ describe("Module `deploySolutionItems`", () => {
         utils.ITEM_PROGRESS_CALLBACK,
       );
       expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+    });
+
+    it("Error on user aborted", async () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate("Geoprocessing Service");
+      itemTemplate.item.thumbnail = null;
+      const resourceFilePaths: common.IDeployFileCopyPath[] = [];
+      const templateDictionary: any = {};
+
+      const abortController = new AbortController();
+      abortController.abort();
+
+      try {
+        await deploySolution._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK,
+          abortController,
+        );
+        fail("Expected error was not thrown");
+      } catch (error) {
+        if (error instanceof Error) {
+          expect(error.message).toEqual("Operation was cancelled");
+        } else {
+          fail(`Caught non-Error type: ${JSON.stringify(error)}`);
+        }
+      }
     });
 
     it("skips Geoprocessing Service that is not a Web Tool", async () => {

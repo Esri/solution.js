@@ -46,6 +46,20 @@ export async function deploySolution(
   if (!maybeModel) {
     return Promise.reject(common.fail("The Solution Template id is missing"));
   }
+
+  /**
+   * function to abort the current process. Will delete solution and reject the promise
+   *
+   * @return a reject on the parent promise.
+   */
+  function checkCancelled() {
+    if (options && options.abortController) {
+      if (options.abortController.signal.aborted) {
+        throw new Error("Operation was cancelled");
+      }
+    }
+  }
+
   let deployOptions: common.IDeploySolutionOptions = options || {};
 
   /* istanbul ignore else */
@@ -58,9 +72,11 @@ export async function deploySolution(
     ? deployOptions.storageAuthentication
     : authentication;
 
+  void checkCancelled();
   // deal with maybe getting an item or an id
   return getSolutionTemplateItem(maybeModel, storageAuthentication)
     .then((model) => {
+      void checkCancelled();
       if (!isSolutionTemplateItem(model.item)) {
         return Promise.reject(common.fail(`${model.item.id} is not a Solution Template`));
       } else {
@@ -83,6 +99,7 @@ export async function deploySolution(
       // Clone before mutating? This was messing me up in some testing...
       common.deleteItemProps(item);
 
+      checkCancelled();
       return deploySolutionFromTemplate(itemId, item, data, authentication, deployOptions);
     })
     .then(
@@ -103,6 +120,15 @@ export async function deploySolution(
       },
     )
     .catch((ex) => {
+      deployCatchHandler(ex, authentication);
       throw ex;
     });
+}
+
+export function deployCatchHandler(ex: any, authentication: common.UserSession) {
+  const options: common.IDeleteSolutionOptions = {
+    consoleProgress: true,
+    sendToRecycling: false,
+  };
+  void common.deleteSolution(ex.trim(), authentication, options);
 }
