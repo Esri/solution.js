@@ -847,20 +847,11 @@ describe("Module `deploySolutionItems`", () => {
       abortController.abort();
 
       return deploySolution
-        .deploySolutionItems(
-          utils.PORTAL_URL,
-          "sln1234567890",
-          [],
-          MOCK_USER_SESSION,
-          {},
-          "",
-          MOCK_USER_SESSION,
-          {
-            enableItemReuse: true,
-            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK,
-            abortController,
-          },
-        )
+        .deploySolutionItems(utils.PORTAL_URL, "sln1234567890", [], MOCK_USER_SESSION, {}, "", MOCK_USER_SESSION, {
+          enableItemReuse: true,
+          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK,
+          abortController,
+        })
         .then(
           () => fail(),
           () => Promise.resolve(),

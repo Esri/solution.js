@@ -126,20 +126,7 @@ export async function deploySolution(
 }
 
 export function deployCatchHandler(ex: any, authentication: common.UserSession) {
-  const progressFcn = function () {
-    // Create base progress HTML
-    const html = "Deleting from Deployer";
-
-    // Get the output container
-    const outputEl = document.getElementById("output");
-    if (outputEl) {
-      // Set HTML status part
-      outputEl.innerHTML = html;
-    }
-  } as common.ISolutionProgressCallback;
-
   const options: common.IDeleteSolutionOptions = {
-    progressCallback: progressFcn,
     consoleProgress: true,
     sendToRecycling: false,
   };

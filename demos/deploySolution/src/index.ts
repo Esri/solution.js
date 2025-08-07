@@ -79,14 +79,15 @@ function deploySolution(
       createdItems.push(progressEvent.data);
     }
 
-    // Create base progress HTML
-    const html = "Deploying " + jobId + "..." + percentDone.toFixed().toString() + "%" + "<br>";
-
     // Get the output container
     const outputEl = document.getElementById("output");
     if (outputEl) {
+      outputEl.innerHTML = '';
+
       // Set HTML status part
-      outputEl.innerHTML = html;
+      const header = document.createElement("div");
+      header.innerHTML = "Deploying " + jobId + "..." + percentDone.toFixed().toString() + "%" + "<br>";
+      outputEl.appendChild(header);
 
       // Only add the cancel button if it doesn't already exist
       if (!document.getElementById("cancelButton")) {
@@ -95,17 +96,12 @@ function deploySolution(
         cancelButton.textContent = "Cancel";
         cancelButton.onclick = cancelDeploy;
         cancelButton.style.marginTop = "10px";
-
         outputEl.appendChild(cancelButton);
       }
 
-      let htmlResultList = "<br><br>Finished items:<ol>";
-      createdItems.forEach(function (item) {
-        htmlResultList += "<li>" + item + "</li>";
-      });
-      htmlResultList += "</ol>";
-
-      outputEl.innerHTML = outputEl.innerHTML + htmlResultList;
+      const list = document.createElement("div");
+      list.innerHTML = "<br><br>Finished items:<ol>" + createdItems.map(item => `<li>${item}</li>`).join('') + "</ol>";
+      outputEl.appendChild(list);
 
     }
   } as common.ISolutionProgressCallback;
@@ -148,6 +144,7 @@ function deploySolution(
 
 function cancelDeploy() {
   abortController.abort();
+  console.log(abortController.signal.aborted);
 }
 
 /**
