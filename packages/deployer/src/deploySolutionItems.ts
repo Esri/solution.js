@@ -74,8 +74,6 @@ export function deploySolutionItems(
               progressOptions,
             )
             .then(() => reject(common.failWithIds(failedTemplateItemIds)));
-
-          reject(new Error(deployedSolutionId));
         }
       }
     }
