@@ -59,7 +59,21 @@ export function deploySolutionItems(
     function checkCancelled() {
       if (options && options.abortController) {
         if (options.abortController.signal.aborted) {
-          reject(new Error(`Operation was cancelled`));
+          // Delete created items
+          const progressOptions: common.IDeleteSolutionOptions = {
+            consoleProgress: true,
+          };
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          common
+            .deleteSolutionByComponents(
+              deployedSolutionId,
+              deployedItemIds,
+              templates,
+              templateDictionary,
+              destinationAuthentication,
+              progressOptions,
+            )
+            .then(() => reject(common.failWithIds(failedTemplateItemIds)));
         }
       }
     }
