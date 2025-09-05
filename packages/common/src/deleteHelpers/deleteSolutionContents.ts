@@ -118,7 +118,6 @@ export function deleteSolutionContents(
         if (solutionItemId) {
           // 9-5-25: Change in logic to delete solution item regardless if there were any failed deleted items.
           const permanentDelete = !deleteOptions.sendToRecycling;
-          console.log("delete solution item");
           return deleteSolutionItem.deleteSolutionItem(solutionItemId, authentication, permanentDelete);
         } else {
           return Promise.resolve({ success: true, itemId: "" });
