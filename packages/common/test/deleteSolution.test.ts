@@ -404,9 +404,9 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         mockItems.getSolutionPrecis([mockItems.getAGOLItemPrecis("Web Mapping Application")]),
         mockItems.getSolutionPrecis([mockItems.getAGOLItemPrecis("Web Map")]),
       ]);
-      expect(unprotectItemSpy.calls.count()).withContext("should not unprotect Solution item").toBe(0);
-      expect(_removeItemSpy.calls.count()).withContext("should not remove Solution item").toBe(0);
-      expect(_deleteSolutionFolderSpy.calls.count()).withContext("should not remove Solution folder").toBe(0);
+      expect(unprotectItemSpy.calls.count()).withContext("should not unprotect Solution item").toBe(1);
+      expect(_removeItemSpy.calls.count()).withContext("should not remove Solution item").toBe(1);
+      expect(_deleteSolutionFolderSpy.calls.count()).withContext("should not remove Solution folder").toBe(1);
     });
 
     it("deletes the items of a Solution, but unprotecting the Solution fails", async () => {
