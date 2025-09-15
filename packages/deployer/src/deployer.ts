@@ -126,6 +126,10 @@ export async function deploySolution(
 }
 
 export function deployCatchHandler(ex: any, authentication: common.UserSession) {
+  if (typeof ex !== "string") {
+    return;
+  }
+
   const options: common.IDeleteSolutionOptions = {
     consoleProgress: true,
     sendToRecycling: false,
