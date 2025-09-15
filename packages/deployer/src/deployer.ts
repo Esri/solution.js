@@ -120,12 +120,14 @@ export async function deploySolution(
       },
     )
     .catch((ex) => {
-      deployCatchHandler(ex, authentication);
+      if (typeof ex === "string") {
+        deployCatchHandler(ex, authentication);
+      }
       throw ex;
     });
 }
 
-export function deployCatchHandler(ex: any, authentication: common.UserSession) {
+export function deployCatchHandler(ex: string, authentication: common.UserSession) {
   const options: common.IDeleteSolutionOptions = {
     consoleProgress: true,
     sendToRecycling: false,
