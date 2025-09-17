@@ -1,5 +1,5 @@
 {
   "packages": ["packages/**", "demos/**"],
-  "version": "6.3.1",
+  "version": "6.4.0-next.20250916",
   "$schema": "node_modules/lerna/schemas/lerna-schema.json"
 }
