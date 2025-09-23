@@ -28,12 +28,16 @@ import {
   IItemProgressCallback,
   IItemTemplate,
   IItemUpdate,
+  IRequestOptions,
   TPossibleSourceFile,
   ISolutionItemData,
   ISourceFile,
   isWorkforceProject,
+  generateSourceResourceUrl,
+  jsonToFile,
   removeTemplate,
   replaceInTemplate,
+  request,
   SItemProgressStatus,
   copyFilesToStorageItem,
   postProcessWebToolReferences,
@@ -200,6 +204,13 @@ export function addContentToSolution(
           // Coalesce the resource file paths from the created templates
           resourceItemFiles = resourceItemFiles.filter((file) => templateIds.includes(file.itemId));
 
+          resourceItemFiles = await _postProcessTaskResource(
+            solutionTemplates,
+            resourceItemFiles,
+            templateDictionary,
+            srcAuthentication,
+          );
+
           // Send the accumulated resources to the solution item
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           copyFilesToStorageItem(resourceItemFiles, solutionItemId, destAuthentication).then(() => {
@@ -339,6 +350,129 @@ export function _getSolutionItemUrls(templates: IItemTemplate[]): string[][] {
 export function _getTemplateVariables(text: string): string[] {
   return (text.match(/{{[a-z0-9.]*}}/gi) || []) // find variable
     .map((variable) => variable.substring(2, variable.length - 2)); // remove "{{" & "}}"
+}
+
+/**
+ * Update the tasks-configuration resource file if it exists
+ *
+ * @param templates List of Solution's templates
+ * @param resourceItemFiles Resources for the item; these resources are modified as needed
+ * @param templateDictionary templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @param srcAuthentication Credentials for requests to source items
+ *
+ * @returns A promise that resolves with the resource files
+ * @internal
+ */
+export async function _postProcessTaskResource(
+  templates: IItemTemplate[],
+  resourceItemFiles: ISourceFile[],
+  templateDictionary: any,
+  srcAuthentication: UserSession,
+): Promise<ISourceFile[]> {
+  let taskResource;
+  resourceItemFiles.some((file) => {
+    if (file.filename === "tasks-configuration.json") {
+      taskResource = file;
+      return true;
+    } else {
+      return false;
+    }
+  });
+
+  if (!taskResource) {
+    return resourceItemFiles;
+  }
+
+  const itemIds = templates.reduce((prev, cur) => {
+    // key is the source id and the value is the variable
+    // example { "31980e6ad7xxxc60b756e712b69d1344": "{{31980e6ad7xxxc60b756e712b69d1344.itemId}}" }
+    prev[cur.itemId] = cur.item.id;
+    return prev;
+  }, {});
+
+  const featureServiceWithLayerUrls = [];
+  const featureServerUrls = [];
+  const otherUrls = [];
+
+  // we want to first process feature service urls that conain a layer number, then general feature service urls then all other urls, finally the portal base url
+  let arrayToUse;
+  const urls = Object.keys(templateDictionary).reduce((prev, cur) => {
+    if (cur.indexOf("http://") > -1 || cur.indexOf("https://") > -1) {
+      // key is the source url and the value is the variable
+      // example { "http://example": "{{31980e6ad7xxxc60b756e712b69d1344.url}}" }
+      const encoded = encodeURIComponent(cur);
+      prev[cur] = templateDictionary[cur];
+      prev[encoded] = templateDictionary[cur];
+
+      arrayToUse = /FeatureServer\/\d+/g.test(cur)
+        ? featureServiceWithLayerUrls
+        : cur.endsWith("FeatureServer")
+          ? featureServerUrls
+          : otherUrls;
+
+      // sorted
+      arrayToUse.push(cur);
+      arrayToUse.push(encoded);
+    }
+    return prev;
+  }, {});
+
+  // Add the portal base urls at the end so we will search for them last
+  // and not accidentially replace part of a service url
+  const portalBaseUrl = templateDictionary.portalBaseUrl;
+  const encodedPortalBaseUrl = encodeURIComponent(portalBaseUrl);
+  urls[portalBaseUrl] = "{{portalBaseUrl}}";
+  urls[encodedPortalBaseUrl] = "{{portalBaseUrl}}";
+
+  const sortedUrls = [...featureServiceWithLayerUrls, ...featureServerUrls, ...otherUrls];
+  sortedUrls.push(portalBaseUrl);
+  sortedUrls.push(encodedPortalBaseUrl);
+
+  console.log("sortedUrls");
+  console.log(sortedUrls);
+
+  const url = generateSourceResourceUrl(
+    `${templateDictionary.portalBaseUrl}/sharing/rest`,
+    taskResource.itemId,
+    taskResource.filename,
+  );
+  const requestOptions = {
+    httpMethod: "GET",
+    authentication: srcAuthentication,
+    params: {
+      f: "json",
+    },
+    headers: {
+      "Accept": "application/json",
+      "Authorization": `Bearer ${srcAuthentication.token}`,
+      "Content-Type": "application/json",
+      "X-Esri-Authorization": `Bearer ${srcAuthentication.token}`,
+    },
+  } as IRequestOptions;
+
+  await request(url, requestOptions).then(async (r) => {
+    let resourceString = JSON.stringify(r);
+
+    Object.keys(urls).forEach((k) => {
+      resourceString = resourceString.replaceAll(k, urls[k]);
+    });
+
+    const prefix = "{{";
+
+    Object.keys(itemIds).forEach((k) => {
+      let pattern = new RegExp(`(?<!${prefix})\\b${k}\\b`, "g");
+      // replace item ids that don't start with {{
+      resourceString = resourceString.replace(pattern, itemIds[k]);
+    });
+
+    resourceItemFiles = resourceItemFiles.map((file) => {
+      if (file.filename === "tasks-configuration.json") {
+        file.file = jsonToFile(JSON.parse(resourceString), file.filename);
+      }
+      return file;
+    });
+  });
+  return resourceItemFiles;
 }
 
 /**

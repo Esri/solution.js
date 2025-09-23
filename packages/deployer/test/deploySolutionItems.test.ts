@@ -852,14 +852,17 @@ describe("Module `deploySolutionItems`", () => {
           progressCallback: utils.SOLUTION_PROGRESS_CALLBACK,
           abortController,
         })
-        .then(() => {
-          // The promise resolves even when aborted → since it cleaning deletes
-          // and it's the delete that will raise the rejection
-          expect(true).toBeTrue();
-        }, () => {
-          // If it rejects, that's actually a failure with current code
-          fail("Promise should not reject when abort is signaled");
-        });
+        .then(
+          () => {
+            // The promise resolves even when aborted → since it cleaning deletes
+            // and it's the delete that will raise the rejection
+            expect(true).toBeTrue();
+          },
+          () => {
+            // If it rejects, that's actually a failure with current code
+            fail("Promise should not reject when abort is signaled");
+          },
+        );
     });
 
     it("handles failure to delete all items when unwinding after failure to deploy", async () => {
