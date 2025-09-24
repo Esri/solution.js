@@ -166,19 +166,22 @@ export async function postProcess(
       } as IRequestOptions;
 
       await request(url, requestOptions).then(async (r) => {
-        let resourceString = JSON.stringify(r);
-        resourceString = replaceInTemplate(resourceString, templateDictionary);
+        const resourceString = JSON.stringify(r);
+        const resourceStringUpdated = replaceInTemplate(resourceString, templateDictionary);
 
-        const updatedFileJson = JSON.parse(resourceString);
+        // only update if something has changed
+        if (resourceString !== resourceStringUpdated) {
+          const updatedFileJson = JSON.parse(resourceString);
 
-        const requestOptions: IItemResourceOptions = {
-          id: itemId,
-          resource: jsonToFile(updatedFileJson, TASK_CONFIG),
-          name: TASK_CONFIG,
-          authentication: authentication,
-          params: {},
-        };
-        await updateItemResource(requestOptions);
+          const requestOptions: IItemResourceOptions = {
+            id: itemId,
+            resource: jsonToFile(updatedFileJson, TASK_CONFIG),
+            name: TASK_CONFIG,
+            authentication: authentication,
+            params: {},
+          };
+          await updateItemResource(requestOptions);
+        }
       });
     }
   }
