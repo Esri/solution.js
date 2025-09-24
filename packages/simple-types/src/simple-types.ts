@@ -23,6 +23,15 @@
 import * as dashboard from "./dashboard";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
+import {
+  generateSourceResourceUrl,
+  IItemResourceOptions,
+  IRequestOptions,
+  jsonToFile,
+  request,
+  replaceInTemplate,
+  updateItemResource,
+} from "@esri/solution-common";
 
 import {
   ICreateItemFromTemplateResponse,
@@ -30,6 +39,7 @@ import {
   IItemProgressCallback,
   IItemTemplate,
   IUpdateItemResponse,
+  TASK_CONFIG,
   updateItemTemplateFromDictionary,
   UserSession,
 } from "@esri/solution-common";
@@ -125,7 +135,7 @@ export function postProcessFieldReferences(
  * @param {UserSession} authentication The destination session info
  * @returns Promise resolving to successfulness of update
  */
-export function postProcess(
+export async function postProcess(
   itemId: string,
   type: string,
   itemInfos: any[],
@@ -134,5 +144,43 @@ export function postProcess(
   templateDictionary: any,
   authentication: UserSession,
 ): Promise<IUpdateItemResponse> {
+  if (type === "Web Map") {
+    if (template.resources.some((r) => r.indexOf(TASK_CONFIG) > -1)) {
+      const url = generateSourceResourceUrl(
+        `${templateDictionary.portalBaseUrl}/sharing/rest`,
+        template.itemId,
+        TASK_CONFIG,
+      );
+      const requestOptions = {
+        httpMethod: "GET",
+        authentication: authentication,
+        params: {
+          f: "json",
+        },
+        headers: {
+          "Accept": "application/json",
+          "Authorization": `Bearer ${authentication.token}`,
+          "Content-Type": "application/json",
+          "X-Esri-Authorization": `Bearer ${authentication.token}`,
+        },
+      } as IRequestOptions;
+
+      await request(url, requestOptions).then(async (r) => {
+        let resourceString = JSON.stringify(r);
+        resourceString = replaceInTemplate(resourceString, templateDictionary);
+
+        const updatedFileJson = JSON.parse(resourceString);
+
+        const requestOptions: IItemResourceOptions = {
+          id: itemId,
+          resource: jsonToFile(updatedFileJson, TASK_CONFIG),
+          name: TASK_CONFIG,
+          authentication: authentication,
+          params: {},
+        };
+        await updateItemResource(requestOptions);
+      });
+    }
+  }
   return updateItemTemplateFromDictionary(itemId, templateDictionary, authentication);
 }

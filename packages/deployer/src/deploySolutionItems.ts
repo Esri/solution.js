@@ -187,6 +187,10 @@ export function deploySolutionItems(
               template.resources = template.resources.filter(
                 (filename: string) => !filename.endsWith("qc.project.json"),
               );
+            } else if (template.type === "Web Map") {
+              if (template.resources.some((r) => r.indexOf(common.TASK_CONFIG) > -1)) {
+                itemsToBePatched[id] = [];
+              }
             }
 
             awaitAllItems.push(
