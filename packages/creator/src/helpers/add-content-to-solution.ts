@@ -42,6 +42,7 @@ import {
   copyFilesToStorageItem,
   postProcessWebToolReferences,
   postProcessWorkforceTemplates,
+  uniqueStringList,
   UNREACHABLE,
   updateItem,
   UserSession,
@@ -369,18 +370,18 @@ export async function _postProcessTaskResource(
   templateDictionary: any,
   srcAuthentication: UserSession,
 ): Promise<ISourceFile[]> {
-  let taskResource;
-  resourceItemFiles.some((file) => {
-    if (file.filename === "tasks-configuration.json") {
-      taskResource = file;
-      return true;
-    } else {
-      return false;
-    }
-  });
+  const taskConfigName = "tasks-configuration.json";
 
-  if (!taskResource) {
-    return resourceItemFiles;
+  const taskResources = resourceItemFiles.reduce((prev, cur) => {
+    if (cur.filename === taskConfigName) {
+      prev[cur.itemId] = cur;
+    }
+    return prev;
+  }, {});
+
+  const taskKeys = Object.keys(taskResources);
+  if (taskKeys.length < 1) {
+    return Promise.resolve(resourceItemFiles);
   }
 
   const itemIds = templates.reduce((prev, cur) => {
@@ -396,7 +397,7 @@ export async function _postProcessTaskResource(
 
   // we want to first process feature service urls that conain a layer number, then general feature service urls then all other urls, finally the portal base url
   let arrayToUse;
-  const urls = Object.keys(templateDictionary).reduce((prev, cur) => {
+  const urlVarHash = Object.keys(templateDictionary).reduce((prev, cur) => {
     if (cur.indexOf("http://") > -1 || cur.indexOf("https://") > -1) {
       // key is the source url and the value is the variable
       // example { "http://example": "{{31980e6ad7xxxc60b756e712b69d1344.url}}" }
@@ -421,21 +422,13 @@ export async function _postProcessTaskResource(
   // and not accidentially replace part of a service url
   const portalBaseUrl = templateDictionary.portalBaseUrl;
   const encodedPortalBaseUrl = encodeURIComponent(portalBaseUrl);
-  urls[portalBaseUrl] = "{{portalBaseUrl}}";
-  urls[encodedPortalBaseUrl] = "{{portalBaseUrl}}";
+  urlVarHash[portalBaseUrl] = "{{portalBaseUrl}}";
+  urlVarHash[encodedPortalBaseUrl] = "{{portalBaseUrl}}";
 
-  const sortedUrls = [...featureServiceWithLayerUrls, ...featureServerUrls, ...otherUrls];
-  sortedUrls.push(portalBaseUrl);
-  sortedUrls.push(encodedPortalBaseUrl);
+  const orderedUrls = [...featureServiceWithLayerUrls, ...featureServerUrls, ...otherUrls];
+  orderedUrls.push(portalBaseUrl);
+  orderedUrls.push(encodedPortalBaseUrl);
 
-  console.log("sortedUrls");
-  console.log(sortedUrls);
-
-  const url = generateSourceResourceUrl(
-    `${templateDictionary.portalBaseUrl}/sharing/rest`,
-    taskResource.itemId,
-    taskResource.filename,
-  );
   const requestOptions = {
     httpMethod: "GET",
     authentication: srcAuthentication,
@@ -450,29 +443,50 @@ export async function _postProcessTaskResource(
     },
   } as IRequestOptions;
 
-  await request(url, requestOptions).then(async (r) => {
+  const resourcePromises = taskKeys.map((k) => {
+    return request(
+      generateSourceResourceUrl(
+        `${templateDictionary.portalBaseUrl}/sharing/rest`,
+        taskResources[k].itemId,
+        taskResources[k].filename,
+      ),
+      requestOptions,
+    );
+  });
+
+  await Promise.all(resourcePromises).then(async (r) => {
     let resourceString = JSON.stringify(r);
 
-    Object.keys(urls).forEach((k) => {
-      resourceString = resourceString.replaceAll(k, urls[k]);
+    // replace urls first
+    orderedUrls.forEach((url) => {
+      resourceString = resourceString.replaceAll(url, urlVarHash[url]);
     });
 
-    const prefix = "{{";
-
+    // replace any item ids that aren't already variables
     Object.keys(itemIds).forEach((k) => {
-      let pattern = new RegExp(`(?<!${prefix})\\b${k}\\b`, "g");
-      // replace item ids that don't start with {{
-      resourceString = resourceString.replace(pattern, itemIds[k]);
+      let pattern = new RegExp(`(?<!\\{\\{)${k}`, "g");
+      resourceString = resourceString.replaceAll(pattern, itemIds[k]);
     });
+
+    // all urls and item ids should now be replaced with variables that contain the item ids
+    // we need to add any ids that are not currently marked as dependencies to the webmap dependencies and update the resource
+    const ids: string[] = uniqueStringList(resourceString.match(getAgoIdRegEx()));
 
     resourceItemFiles = resourceItemFiles.map((file) => {
-      if (file.filename === "tasks-configuration.json") {
+      if (file.filename === taskConfigName) {
         file.file = jsonToFile(JSON.parse(resourceString), file.filename);
+        // add any ids that we found to the source webmap
+        templates.some((t) => {
+          if (t.itemId === file.itemId) {
+            t.dependencies = [...new Set([...t.dependencies, ...ids])];
+            return true;
+          }
+        });
       }
       return file;
     });
   });
-  return resourceItemFiles;
+  return Promise.resolve(resourceItemFiles);
 }
 
 /**
