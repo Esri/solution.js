@@ -26,6 +26,7 @@ import {
   ISourceFile,
   IZipCopyResults,
   IZipInfo,
+  TASK_CONFIG,
 } from "../interfaces";
 import { chunkArray } from "@esri/hub-common";
 import { copyDataIntoItem } from "./copyDataIntoItem";
@@ -33,8 +34,9 @@ import { copyMetadataIntoItem } from "./copyMetadataIntoItem";
 import { copyResourceIntoZip, copyResourceIntoZipFromInfo } from "./copyResourceIntoZip";
 import { copyZipIntoItem } from "./copyZipIntoItem";
 import { createCopyResults } from "./createCopyResults";
-import { blobToJson, jsonToFile } from "../generalHelpers";
+import { blobToJson, cloneObject, jsonToFile } from "../generalHelpers";
 import { getBlobAsFile } from "../restHelpersGet";
+import { replaceInTemplate } from "../templatization";
 import JSZip from "jszip";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -380,6 +382,35 @@ export function _detemplatizeResources(
           });
         }),
       );
+    });
+  } else if (itemTemplate.type === "Web Map") {
+    fileInfos.forEach((fileResource) => {
+      if (fileResource.filename === TASK_CONFIG) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        synchronizePromises.push(
+          new Promise((resolve) => {
+            // Fetch the file
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            getBlobAsFile(fileResource.url, fileResource.filename, sourceAuthentication).then((file: any) => {
+              // Read the file
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              blobToJson(file).then((fileJson) => {
+                // DeTemplatize by turning JSON into string, replacing paths with new value, and re-JSONing
+                let fileString = JSON.stringify(fileJson);
+                fileString = replaceInTemplate(fileString, templateDictionary);
+
+                const updatedFileJson = JSON.parse(fileString);
+
+                // Write the changes back into the file
+                fileResource.file = jsonToFile(updatedFileJson, fileResource.filename);
+                fileResource.url = "";
+
+                resolve(null);
+              });
+            });
+          }),
+        );
+      }
     });
   }
 

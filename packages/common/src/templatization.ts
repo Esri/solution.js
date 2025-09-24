@@ -69,6 +69,9 @@ export const TRANSFORMS: any = {
     // this fallback is needed when we detemplatize living atlas layers as a part of the create process
     return val ? val[0].url : `{{${GEOCODE_SERVER_NAME}}}`;
   },
+  encode(key: string, val: any, settings: any) {
+    return encodeURIComponent(val);
+  },
 };
 
 /**

@@ -42,6 +42,7 @@ import {
   copyFilesToStorageItem,
   postProcessWebToolReferences,
   postProcessWorkforceTemplates,
+  TASK_CONFIG,
   uniqueStringList,
   UNREACHABLE,
   updateItem,
@@ -370,7 +371,7 @@ export async function _postProcessTaskResource(
   templateDictionary: any,
   srcAuthentication: UserSession,
 ): Promise<ISourceFile[]> {
-  const taskConfigName = "tasks-configuration.json";
+  const taskConfigName = TASK_CONFIG;
 
   const taskResources = resourceItemFiles.reduce((prev, cur) => {
     if (cur.filename === taskConfigName) {
@@ -403,7 +404,7 @@ export async function _postProcessTaskResource(
       // example { "http://example": "{{31980e6ad7xxxc60b756e712b69d1344.url}}" }
       const encoded = encodeURIComponent(cur);
       prev[cur] = templateDictionary[cur];
-      prev[encoded] = templateDictionary[cur];
+      prev[encoded] = templateDictionary[cur].replace("}}", ":encode}}");
 
       arrayToUse = /FeatureServer\/\d+/g.test(cur)
         ? featureServiceWithLayerUrls
@@ -423,7 +424,7 @@ export async function _postProcessTaskResource(
   const portalBaseUrl = templateDictionary.portalBaseUrl;
   const encodedPortalBaseUrl = encodeURIComponent(portalBaseUrl);
   urlVarHash[portalBaseUrl] = "{{portalBaseUrl}}";
-  urlVarHash[encodedPortalBaseUrl] = "{{portalBaseUrl}}";
+  urlVarHash[encodedPortalBaseUrl] = "{{portalBaseUrl:encode}}";
 
   const orderedUrls = [...featureServiceWithLayerUrls, ...featureServerUrls, ...otherUrls];
   orderedUrls.push(portalBaseUrl);
