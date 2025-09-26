@@ -29,6 +29,7 @@ import * as common from "@esri/solution-common";
 import * as restHelpers from "../../common/src/restHelpers";
 import * as interfaces from "../../common/src/interfaces";
 import * as resourceHelpers from "../../common/src/arcgisRestJS";
+import * as generalHelpers from "../../common/src/generalHelpers";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
@@ -684,6 +685,24 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       spyOn(resourceHelpers, "updateItemResource").and.resolveTo(
         mockItems.get200Success("abce728169b348909b5060d60f2e4829"),
       );
+
+      spyOn(common, "jsonToFile").and.callFake((json) => {
+        const expected = {
+          itemId: "a900343fb6704fdfbd760e7c5897381a",
+          itemIdInUrl: "https://arcgis.com/apps/instant/manager/index.html?appid=a6f872dec0bb4cbfa410e023d03bac18",
+          featureServer: "https://myorg.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TaskTest/FeatureServer",
+          featureServerEncoded:
+            "https%3A%2F%2Fmyorg.arcgis.com%2FpiPfTFmrV9d1DIvN%2Farcgis%2Frest%2Fservices%2FTaskTest%2FFeatureServer",
+          featureServerLayer:
+            "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/survey123_ed6fa2a491924dff92721de3245ee84b_results/FeatureServer/1",
+          featureServerLayerEncoded:
+            "https%3A%2F%2Ffake.arcgis.com%2FpiPfTFmrV9d1DIvN%2Farcgis%2Frest%2Fservices%2Fsurvey123_ed6fa2a491924dff92721de3245ee84b_results%2FFeatureServer%2F1",
+          portalBase: "https://myorg.maps.arcgis.com",
+        };
+        expect(json).toEqual(expected);
+        // don't care about the actual return...just need to make sure its passed the correct value
+        return {} as File;
+      });
 
       const result = await simpleTypes.postProcess(
         "5900343fb6704fdfbd760e7c5897381a",

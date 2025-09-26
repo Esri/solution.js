@@ -881,7 +881,9 @@ describe("_detemplatizeResources", () => {
 
     const sampleTaskConfigurationDetemplatizedJson = {
       itemId: templateDictionary["5900343fb6704fdfbd760e7c5897381a"].itemId,
-      itemIdInUrl: "https://arcgis.com/apps/instant/manager/index.html?appid=" + templateDictionary["f6f872dec0bb4cbfa410e023d03bac18"].itemId,
+      itemIdInUrl:
+        "https://arcgis.com/apps/instant/manager/index.html?appid=" +
+        templateDictionary["f6f872dec0bb4cbfa410e023d03bac18"].itemId,
       featureServer: "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TaskTest/FeatureServer",
       featureServerEncoded:
         "https%3A%2F%2Ffake.arcgis.com%2FpiPfTFmrV9d1DIvN%2Farcgis%2Frest%2Fservices%2FTaskTest%2FFeatureServer",
@@ -895,7 +897,9 @@ describe("_detemplatizeResources", () => {
     await _detemplatizeResources(
       MOCK_USER_SESSION,
       "gs1234567890",
-      templates.getDeployedItemTemplate("5900343fb6704fdfbd760e7c5897381a", "Web Map", ["aaa637ded3a74a7f9c2325a043f59fb6"]),
+      templates.getDeployedItemTemplate("5900343fb6704fdfbd760e7c5897381a", "Web Map", [
+        "aaa637ded3a74a7f9c2325a043f59fb6",
+      ]),
       fileInfos,
       MOCK_USER_SESSION,
       templateDictionary,
