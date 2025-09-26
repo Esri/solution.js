@@ -37,6 +37,7 @@ import JSZip from "jszip";
 export const SolutionTemplateFormatVersion = 1;
 export const DeployedSolutionFormatVersion = 1;
 export const UNREACHABLE = "unreachable";
+export const TASK_CONFIG = "tasks-configuration.json";
 
 //#region Enums ------------------------------------------------------------------------------------------------------//
 

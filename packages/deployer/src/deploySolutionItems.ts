@@ -22,6 +22,7 @@
 
 import * as common from "@esri/solution-common";
 import { moduleMap } from "./module-map";
+import { IItemTemplate } from "@esri/hub-common";
 
 const UNSUPPORTED: common.moduleHandler = null;
 
@@ -187,6 +188,8 @@ export function deploySolutionItems(
               template.resources = template.resources.filter(
                 (filename: string) => !filename.endsWith("qc.project.json"),
               );
+            } else if (template.type === "Web Map") {
+              _evaluateWebMapResources(itemsToBePatched, template);
             }
 
             awaitAllItems.push(
@@ -245,6 +248,20 @@ export function deploySolutionItems(
       },
     );
   });
+}
+
+/**
+ * Test web map resources for task configuration file
+ *
+ * @param itemsToBePatched List of items that need to have their dependencies patched
+ * @param template AGO item templates
+ * @param id the id of the template to be patched
+ * @private
+ */
+export function _evaluateWebMapResources(itemsToBePatched: common.IKeyedListsOfStrings, template: IItemTemplate): void {
+  if (template.resources.some((r) => r.indexOf(common.TASK_CONFIG) > -1)) {
+    itemsToBePatched[template.itemId] = [];
+  }
 }
 
 /**

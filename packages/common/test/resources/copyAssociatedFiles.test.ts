@@ -37,6 +37,7 @@ import {
 } from "../../src/interfaces";
 import * as restHelpers from "../../src/restHelpers";
 import * as restHelpersGet from "../../src/restHelpersGet";
+
 import {
   copyFilesAsResources,
   copyAssociatedFilesByType,
@@ -838,6 +839,72 @@ describe("_detemplatizeResources", () => {
       templateDictionary,
     );
     expect(getBlobAsFileSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("should create IAssociatedFileCopyResults object for Web Map", async () => {
+    const fileInfos: IAssociatedFileInfo[] = templates.getItemTemplateResourcesAsTemplatizedFiles("Web Map");
+
+    const getBlobAsFileSpy = spyOn(restHelpersGet, "getBlobAsFile").and.callFake(
+      (
+        url: string,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _filename: string,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _auth: arcGISRestJS.UserSession,
+      ): Promise<File> => {
+        switch (url) {
+          case "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/tasks-configuration.json":
+            return Promise.resolve(
+              generalHelpers.jsonToFile(templates.sampleTaskConfigurationTemplatizedJson, "tasks-configuration.json"),
+            );
+        }
+      },
+    );
+
+    const templateDictionary = {
+      "portalBaseUrl": "https://fake.maps.arcgis.com",
+      "5900343fb6704fdfbd760e7c5897381a": {
+        itemId: "a900343fb6704fdfbd760e7c5897381a",
+      },
+      "f6f872dec0bb4cbfa410e023d03bac18": {
+        itemId: "a6f872dec0bb4cbfa410e023d03bac18",
+      },
+      "31980e6ad7bd4c60b756e712b69d1344": {
+        url: "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TaskTest/FeatureServer",
+      },
+      "a05c1a3a46944465a115dacd162463dd": {
+        layer1: {
+          url: "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/survey123_ed6fa2a491924dff92721de3245ee84b_results/FeatureServer/1",
+        },
+      },
+    };
+
+    const sampleTaskConfigurationDetemplatizedJson = {
+      itemId: templateDictionary["5900343fb6704fdfbd760e7c5897381a"].itemId,
+      itemIdInUrl: "https://arcgis.com/apps/instant/manager/index.html?appid=" + templateDictionary["f6f872dec0bb4cbfa410e023d03bac18"].itemId,
+      featureServer: "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TaskTest/FeatureServer",
+      featureServerEncoded:
+        "https%3A%2F%2Ffake.arcgis.com%2FpiPfTFmrV9d1DIvN%2Farcgis%2Frest%2Fservices%2FTaskTest%2FFeatureServer",
+      featureServerLayer:
+        "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/survey123_ed6fa2a491924dff92721de3245ee84b_results/FeatureServer/1",
+      featureServerLayerEncoded:
+        "https%3A%2F%2Ffake.arcgis.com%2FpiPfTFmrV9d1DIvN%2Farcgis%2Frest%2Fservices%2Fsurvey123_ed6fa2a491924dff92721de3245ee84b_results%2FFeatureServer%2F1",
+      portalBase: "https://fake.maps.arcgis.com",
+    };
+
+    await _detemplatizeResources(
+      MOCK_USER_SESSION,
+      "gs1234567890",
+      templates.getDeployedItemTemplate("5900343fb6704fdfbd760e7c5897381a", "Web Map", ["aaa637ded3a74a7f9c2325a043f59fb6"]),
+      fileInfos,
+      MOCK_USER_SESSION,
+      templateDictionary,
+    );
+    expect(getBlobAsFileSpy).toHaveBeenCalledTimes(1);
+
+    const detemplatizedFile = await generalHelpers.blobToJson(fileInfos[0].file);
+
+    expect(detemplatizedFile).toEqual(sampleTaskConfigurationDetemplatizedJson);
   });
 });
 

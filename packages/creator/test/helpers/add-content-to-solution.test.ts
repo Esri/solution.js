@@ -24,6 +24,7 @@ import {
   _postProcessGroupDependencies,
   _postProcessIgnoredItems,
   _templatizeSolutionIds,
+  _postProcessTaskResource,
   _replaceDictionaryItemsInObject,
   _replaceRemainingIdsInObject,
   _replaceRemainingIdsInString,
@@ -532,6 +533,88 @@ describe("_postProcessIgnoredItems", () => {
     expect(actual).toHaveSize(2);
     expect(actual[0].data.operationalLayers.layer0).toEqual(expectedLayer0);
     expect(actual[1].data.other.itemId).toEqual(expectedItemId);
+  });
+});
+
+describe("_postProcessTaskResource", () => {
+  it("handles tasks-configuration.json", async () => {
+    const resourceItemFiles = templateMocks.getItemTemplateResourcesAsSourceFiles(
+      "Web Map",
+      "5900343fb6704fdfbd760e7c5897381a",
+    );
+
+    const fs = templateMocks.getItemTemplateSkeleton() as any;
+    fs.itemId = "31980e6ad7bd4c60b756e712b69d1344";
+    fs.type = "Feature Service";
+    fs.item = {
+      id: "{{31980e6ad7bd4c60b756e712b69d1344.itemId}}",
+    };
+
+    const webMap = templateMocks.getItemTemplateSkeleton() as any;
+    webMap.itemId = "5900343fb6704fdfbd760e7c5897381a";
+    webMap.type = "Web Map";
+    webMap.item = {
+      id: "{{5900343fb6704fdfbd760e7c5897381a.itemId}}",
+    };
+
+    const form = templateMocks.getItemTemplateSkeleton() as any;
+    form.itemId = "ed6fa2a491924dff92721de3245ee84b";
+    form.type = "Form";
+    form.item = {
+      id: "{{ed6fa2a491924dff92721de3245ee84b.itemId}}",
+    };
+
+    const fs2 = templateMocks.getItemTemplateSkeleton() as any;
+    fs2.itemId = "8ca52002d1274abd914fadeb4811debc";
+    fs2.type = "Feature Service";
+    fs2.item = {
+      id: "{{8ca52002d1274abd914fadeb4811debc.itemId}}",
+    };
+
+    const app = templateMocks.getItemTemplateSkeleton() as any;
+    app.itemId = "f6f872dec0bb4cbfa410e023d03bac18";
+    app.type = "Web Mapping Application";
+    app.item = {
+      id: "{{f6f872dec0bb4cbfa410e023d03bac18.itemId}}",
+    };
+
+    const _templates = [fs, webMap, form, fs2, app];
+
+    const templateDictionary = {
+      "portalBaseUrl": "https://fake.maps.arcgis.com",
+      "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/survey123_ed6fa2a491924dff92721de3245ee84b_results/FeatureServer/0":
+        "{{a05c1a3a46944465a115dacd162463dd.layer0.url}}",
+      "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/survey123_ed6fa2a491924dff92721de3245ee84b_results/FeatureServer/1":
+        "{{a05c1a3a46944465a115dacd162463dd.layer1.url}}",
+      "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/survey123_ed6fa2a491924dff92721de3245ee84b_form/FeatureServer/0":
+        "{{8ca52002d1274abd914fadeb4811debc.layer0.url}}",
+      "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/survey123_ed6fa2a491924dff92721de3245ee84b_form/FeatureServer/1":
+        "{{8ca52002d1274abd914fadeb4811debc.layer1.url}}",
+      "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TaskTest/FeatureServer/0":
+        "{{31980e6ad7bd4c60b756e712b69d1344.layer0.url}}",
+      "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TaskTest/FeatureServer/1":
+        "{{31980e6ad7bd4c60b756e712b69d1344.layer1.url}}",
+      "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TaskTest/FeatureServer":
+        "{{31980e6ad7bd4c60b756e712b69d1344.url}}",
+      "https://fake.arcgis.com/piPfTFmrV9d1DIvN/test": "{{f6f872dec0bb4cbfa410e023d03bac18.itemId}}",
+    };
+
+    fetchMock
+      .get(
+        "https://fake.maps.arcgis.com/sharing/rest/content/items/5900343fb6704fdfbd760e7c5897381a/resources/tasks-configuration.json?f=json&token=fake-token",
+        templateMocks.sampleTaskConfigurationJson,
+      )
+      .post("https://myorg.maps.arcgis.com/sharing/rest/generateToken", mockItems.get200Success());
+
+    // will need to get this from the
+    const expected = templateMocks.sampleTaskConfigurationTemplatizedJson;
+
+    const actual = await _postProcessTaskResource(_templates, resourceItemFiles, templateDictionary, MOCK_USER_SESSION);
+
+    const file = await common.blobToJson(actual[0].file);
+
+    expect(JSON.stringify(file)).toEqual(JSON.stringify([expected]));
+    expect(_templates[1].dependencies.length).toEqual(4);
   });
 });
 

@@ -28,16 +28,22 @@ import {
   IItemProgressCallback,
   IItemTemplate,
   IItemUpdate,
+  IRequestOptions,
   TPossibleSourceFile,
   ISolutionItemData,
   ISourceFile,
   isWorkforceProject,
+  generateSourceResourceUrl,
+  jsonToFile,
   removeTemplate,
   replaceInTemplate,
+  request,
   SItemProgressStatus,
   copyFilesToStorageItem,
   postProcessWebToolReferences,
   postProcessWorkforceTemplates,
+  TASK_CONFIG,
+  uniqueStringList,
   UNREACHABLE,
   updateItem,
   UserSession,
@@ -200,6 +206,13 @@ export function addContentToSolution(
           // Coalesce the resource file paths from the created templates
           resourceItemFiles = resourceItemFiles.filter((file) => templateIds.includes(file.itemId));
 
+          resourceItemFiles = await _postProcessTaskResource(
+            solutionTemplates,
+            resourceItemFiles,
+            templateDictionary,
+            srcAuthentication,
+          );
+
           // Send the accumulated resources to the solution item
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           copyFilesToStorageItem(resourceItemFiles, solutionItemId, destAuthentication).then(() => {
@@ -339,6 +352,144 @@ export function _getSolutionItemUrls(templates: IItemTemplate[]): string[][] {
 export function _getTemplateVariables(text: string): string[] {
   return (text.match(/{{[a-z0-9.]*}}/gi) || []) // find variable
     .map((variable) => variable.substring(2, variable.length - 2)); // remove "{{" & "}}"
+}
+
+/**
+ * Update the tasks-configuration resource file if it exists
+ *
+ * @param templates List of Solution's templates
+ * @param resourceItemFiles Resources for the item; these resources are modified as needed
+ * @param templateDictionary templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @param srcAuthentication Credentials for requests to source items
+ *
+ * @returns A promise that resolves with the resource files
+ * @internal
+ */
+export async function _postProcessTaskResource(
+  templates: IItemTemplate[],
+  resourceItemFiles: ISourceFile[],
+  templateDictionary: any,
+  srcAuthentication: UserSession,
+): Promise<ISourceFile[]> {
+  const taskConfigName = TASK_CONFIG;
+
+  const taskResources = resourceItemFiles.reduce((prev, cur) => {
+    if (cur.filename === taskConfigName) {
+      prev[cur.itemId] = cur;
+    }
+    return prev;
+  }, {});
+
+  const taskKeys = Object.keys(taskResources);
+  if (taskKeys.length < 1) {
+    return Promise.resolve(resourceItemFiles);
+  }
+
+  const itemIds = templates.reduce((prev, cur) => {
+    // key is the source id and the value is the variable
+    // example { "31980e6ad7xxxc60b756e712b69d1344": "{{31980e6ad7xxxc60b756e712b69d1344.itemId}}" }
+    prev[cur.itemId] = cur.item.id;
+    return prev;
+  }, {});
+
+  const featureServiceWithLayerUrls = [];
+  const featureServerUrls = [];
+  const otherUrls = [];
+
+  // we want to first process feature service urls that conain a layer number, then general feature service urls then all other urls, finally the portal base url
+  let arrayToUse;
+  const urlVarHash = Object.keys(templateDictionary).reduce((prev, cur) => {
+    if (cur.indexOf("http://") > -1 || cur.indexOf("https://") > -1) {
+      // key is the source url and the value is the variable
+      // example { "http://example": "{{31980e6ad7xxxc60b756e712b69d1344.url}}" }
+      const encoded = encodeURIComponent(cur);
+      prev[cur] = templateDictionary[cur];
+      prev[encoded] = templateDictionary[cur].replace("}}", ":encode}}");
+
+      arrayToUse = /FeatureServer\/\d+/g.test(cur)
+        ? featureServiceWithLayerUrls
+        : cur.endsWith("FeatureServer")
+          ? featureServerUrls
+          : otherUrls;
+
+      // sorted
+      arrayToUse.push(cur);
+      arrayToUse.push(encoded);
+    }
+    return prev;
+  }, {});
+
+  // Add the portal base urls at the end so we will search for them last
+  // and not accidentially replace part of a service url
+  const portalBaseUrl = templateDictionary.portalBaseUrl;
+  const encodedPortalBaseUrl = encodeURIComponent(portalBaseUrl);
+  urlVarHash[portalBaseUrl] = "{{portalBaseUrl}}";
+  urlVarHash[encodedPortalBaseUrl] = "{{portalBaseUrl:encode}}";
+
+  const orderedUrls = [...featureServiceWithLayerUrls, ...featureServerUrls, ...otherUrls];
+  orderedUrls.push(portalBaseUrl);
+  orderedUrls.push(encodedPortalBaseUrl);
+
+  const requestOptions = {
+    httpMethod: "GET",
+    authentication: srcAuthentication,
+    params: {
+      f: "json",
+    },
+    headers: {
+      "Accept": "application/json",
+      "Authorization": `Bearer ${srcAuthentication.token}`,
+      "Content-Type": "application/json",
+      "X-Esri-Authorization": `Bearer ${srcAuthentication.token}`,
+    },
+  } as IRequestOptions;
+
+  const resourcePromises = taskKeys.map((k) => {
+    return request(
+      generateSourceResourceUrl(
+        `${templateDictionary.portalBaseUrl}/sharing/rest`,
+        taskResources[k].itemId,
+        taskResources[k].filename,
+      ),
+      requestOptions,
+    );
+  });
+
+  await Promise.all(resourcePromises).then(async (r) => {
+    let resourceString = JSON.stringify(r);
+
+    // replace urls first
+    orderedUrls.forEach((url) => {
+      // TypeScript for es2015 doesn't have a definition for `replaceAll`
+      resourceString = (resourceString as any).replaceAll(url, urlVarHash[url]);
+    });
+
+    // replace any item ids that aren't already variables
+    Object.keys(itemIds).forEach((k) => {
+      let pattern = new RegExp(`(?<!\\{\\{)${k}`, "g");
+      // TypeScript for es2015 doesn't have a definition for `replaceAll`
+      resourceString = (resourceString as any).replaceAll(pattern, itemIds[k]);
+    });
+
+    // all urls and item ids should now be replaced with variables that contain the item ids
+    // we need to add any ids that are not currently marked as dependencies to the webmap dependencies and update the resource
+    const ids: string[] = uniqueStringList(resourceString.match(getAgoIdRegEx()));
+
+    resourceItemFiles = resourceItemFiles.map((file) => {
+      if (file.filename === taskConfigName) {
+        file.file = jsonToFile(JSON.parse(resourceString), file.filename);
+        // add any ids that we found to the source webmap
+        templates.some((t) => {
+          if (t.itemId === file.itemId) {
+            t.dependencies = [...new Set([...t.dependencies, ...ids])];
+            return true;
+          }
+        });
+      }
+      return file;
+    });
+  });
+  return Promise.resolve(resourceItemFiles);
 }
 
 /**
