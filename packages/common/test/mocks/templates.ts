@@ -1309,6 +1309,26 @@ export function getItemTemplateResourcesAsSourceFiles(type: string, itemId: stri
         },
       ];
       break;
+    case "Web Map":
+      resources = [
+        {
+          file: generalHelpers.jsonToFile(
+            {
+              lastModified: 1758819754121,
+              lastModifiedDate: "Thu Sep 25 2025 11:02:34 GMT-0600 (Mountain Daylight Time)",
+              name: "tasks-configuration.json",
+              size: 7856,
+              type: "application/json",
+              webkitRelativePath: "",
+            },
+            "tasks-configuration.json",
+          ),
+          filename: "tasks-configuration.json",
+          folder: itemId,
+          itemId,
+        },
+      ];
+      break;
   }
 
   return resources;
@@ -1344,6 +1364,15 @@ export function getItemTemplateResourcesAsTemplatizedFiles(type: string): IAssoc
           filename: "webtoolDefinition.json",
           folder: "info",
           url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/gs1234567890/info/webtoolDefinition.json",
+        },
+      ];
+      break;
+    case "Web Map":
+      resources = [
+        {
+          filename: "tasks-configuration.json",
+          folder: "info",
+          url: "https://www.arcgis.com/sharing/rest/content/items/sln1234567890/resources/tasks-configuration.json",
         },
       ];
       break;
@@ -1533,4 +1562,27 @@ export const sampleWebToolServiceTemplatizedJson = {
   serviceUrl:
     "https://notebookswebtoolsdev.arcgis.com/arcgis/rest/services/{{aaaeefbeb43245ccbe00a948e87ccdfa.itemId}}/GPServer",
   timeoutInMinutes: 100,
+};
+
+export const sampleTaskConfigurationJson = {
+  itemId: "5900343fb6704fdfbd760e7c5897381a",
+  itemIdInUrl: "https://arcgis.com/apps/instant/manager/index.html?appid=f6f872dec0bb4cbfa410e023d03bac18",
+  featureServer: "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TaskTest/FeatureServer",
+  featureServerEncoded:
+    "https%3A%2F%2Ffake.arcgis.com%2FpiPfTFmrV9d1DIvN%2Farcgis%2Frest%2Fservices%2FTaskTest%2FFeatureServer",
+  featureServerLayer:
+    "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/survey123_ed6fa2a491924dff92721de3245ee84b_results/FeatureServer/1",
+  featureServerLayerEncoded:
+    "https%3A%2F%2Ffake.arcgis.com%2FpiPfTFmrV9d1DIvN%2Farcgis%2Frest%2Fservices%2Fsurvey123_ed6fa2a491924dff92721de3245ee84b_results%2FFeatureServer%2F1",
+  portalBase: "https://fake.maps.arcgis.com",
+};
+
+export const sampleTaskConfigurationTemplatizedJson = {
+  itemId: "{{5900343fb6704fdfbd760e7c5897381a.itemId}}",
+  itemIdInUrl: "https://arcgis.com/apps/instant/manager/index.html?appid={{f6f872dec0bb4cbfa410e023d03bac18.itemId}}",
+  featureServer: "{{31980e6ad7bd4c60b756e712b69d1344.url}}",
+  featureServerEncoded: "{{31980e6ad7bd4c60b756e712b69d1344.url:encode}}",
+  featureServerLayer: "{{a05c1a3a46944465a115dacd162463dd.layer1.url}}",
+  featureServerLayerEncoded: "{{a05c1a3a46944465a115dacd162463dd.layer1.url:encode}}",
+  portalBase: "{{portalBaseUrl}}",
 };

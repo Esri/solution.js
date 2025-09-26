@@ -460,13 +460,15 @@ export async function _postProcessTaskResource(
 
     // replace urls first
     orderedUrls.forEach((url) => {
-      resourceString = resourceString.replaceAll(url, urlVarHash[url]);
+      // TypeScript for es2015 doesn't have a definition for `replaceAll`
+      resourceString = (resourceString as any).replaceAll(url, urlVarHash[url]);
     });
 
     // replace any item ids that aren't already variables
     Object.keys(itemIds).forEach((k) => {
       let pattern = new RegExp(`(?<!\\{\\{)${k}`, "g");
-      resourceString = resourceString.replaceAll(pattern, itemIds[k]);
+      // TypeScript for es2015 doesn't have a definition for `replaceAll`
+      resourceString = (resourceString as any).replaceAll(pattern, itemIds[k]);
     });
 
     // all urls and item ids should now be replaced with variables that contain the item ids

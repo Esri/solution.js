@@ -34,7 +34,7 @@ import { copyMetadataIntoItem } from "./copyMetadataIntoItem";
 import { copyResourceIntoZip, copyResourceIntoZipFromInfo } from "./copyResourceIntoZip";
 import { copyZipIntoItem } from "./copyZipIntoItem";
 import { createCopyResults } from "./createCopyResults";
-import { blobToJson, cloneObject, jsonToFile } from "../generalHelpers";
+import { blobToJson, jsonToFile } from "../generalHelpers";
 import { getBlobAsFile } from "../restHelpersGet";
 import { replaceInTemplate } from "../templatization";
 import JSZip from "jszip";

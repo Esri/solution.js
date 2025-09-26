@@ -26,6 +26,9 @@ const fetchMock = require("fetch-mock");
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
+import * as restHelpers from "../../common/src/restHelpers";
+import * as interfaces from "../../common/src/interfaces";
+import * as resourceHelpers from "../../common/src/arcgisRestJS";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
@@ -619,6 +622,79 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       const result = await simpleTypes.postProcess("3ef", "Web Map", [], template, [template], td, MOCK_USER_SESSION);
       expect(result).toEqual(utils.getSuccessResponse({ id: template.item.id }));
+    });
+
+    it("shouldhandle task resource", async () => {
+      const templateDictionary = {
+        "portalBaseUrl": "https://myorg.maps.arcgis.com",
+        "5900343fb6704fdfbd760e7c5897381a": {
+          itemId: "a900343fb6704fdfbd760e7c5897381a",
+        },
+        "f6f872dec0bb4cbfa410e023d03bac18": {
+          itemId: "a6f872dec0bb4cbfa410e023d03bac18",
+        },
+        "31980e6ad7bd4c60b756e712b69d1344": {
+          url: "https://myorg.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TaskTest/FeatureServer",
+        },
+        "a05c1a3a46944465a115dacd162463dd": {
+          layer1: {
+            url: "https://fake.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/survey123_ed6fa2a491924dff92721de3245ee84b_results/FeatureServer/1",
+          },
+        },
+      };
+
+      const template = {
+        itemId: "5900343fb6704fdfbd760e7c5897381a",
+        item: {
+          id: "5900343fb6704fdfbd760e7c5897381a",
+        },
+        resources: ["5900343fb6704fdfbd760e7c5897381a/tasks-configuration.json"],
+      } as any;
+
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/5900343fb6704fdfbd760e7c5897381a/resources/tasks-configuration.json?f=json&token=fake-token",
+          templates.sampleTaskConfigurationTemplatizedJson,
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/5900343fb6704fdfbd760e7c5897381a?f=json&token=fake-token",
+          templates.sampleTaskConfigurationTemplatizedJson,
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/search?f=json&q=owner%3Acasey%20AND%20orgid%3A%20AND%20ownerfolder%3A&token=fake-token",
+          [],
+        )
+        .post("https://myorg.maps.arcgis.com/sharing/rest/content/items/5900343fb6704fdfbd760e7c5897381a/data", {})
+        .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/undefined/update", {
+          id: "abce728169b348909b5060d60f2e4829",
+          success: true,
+        })
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/5900343fb6704fdfbd760e7c5897381a/updateResources",
+          {
+            id: "abce728169b348909b5060d60f2e4829",
+            success: true,
+          },
+        );
+
+      spyOn(restHelpers, "updateItemTemplateFromDictionary").and.resolveTo(
+        mockItems.get200Success("abce728169b348909b5060d60f2e4829"),
+      );
+
+      spyOn(resourceHelpers, "updateItemResource").and.resolveTo(
+        mockItems.get200Success("abce728169b348909b5060d60f2e4829"),
+      );
+
+      const result = await simpleTypes.postProcess(
+        "5900343fb6704fdfbd760e7c5897381a",
+        "Web Map",
+        [],
+        template,
+        [template],
+        templateDictionary,
+        MOCK_USER_SESSION,
+      );
+      expect(result).toEqual(utils.getSuccessResponse({ id: "abce728169b348909b5060d60f2e4829" }));
     });
   });
 });

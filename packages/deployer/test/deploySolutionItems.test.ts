@@ -1803,6 +1803,21 @@ describe("Module `deploySolutionItems`", () => {
     });
   });
 
+  describe("_evaluateWebMapResources", () => {
+    it("will add maps that contain tasks-configuration.json", () => {
+      const itemsToBePatched = {};
+      const template = {
+        itemId: "f6f872dec0bb4cbfa410e023d03bac18",
+        resources: ["tasks-configuration.json"],
+      };
+      deploySolution._evaluateWebMapResources(itemsToBePatched, template);
+      const expected = {
+        f6f872dec0bb4cbfa410e023d03bac18: [],
+      };
+      expect(itemsToBePatched).toEqual(expected);
+    });
+  });
+
   describe("_flagPatchItemsForPostProcessing", () => {
     it("handles group items without user groups in template dictionary", () => {
       const itemsToBePatched: common.IKeyedListsOfStrings = {
