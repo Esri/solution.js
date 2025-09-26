@@ -171,7 +171,7 @@ export async function postProcess(
 
         // only update if something has changed
         if (resourceString !== resourceStringUpdated) {
-          const updatedFileJson = JSON.parse(resourceString);
+          const updatedFileJson = JSON.parse(resourceStringUpdated);
 
           const requestOptions: IItemResourceOptions = {
             id: itemId,
