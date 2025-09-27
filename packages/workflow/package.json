@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-workflow",
-  "version": "6.4.0-next.20250925",
+  "version": "6.4.0-next.20250926",
   "description": "Manages the creation and deployment of Workflow item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -22,7 +22,7 @@
     "npm-check-updates": "^17.1.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^6.4.0-next.20250925",
+    "@esri/solution-common": "^6.4.0-next.20250926",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -62,5 +62,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "0092f8c76afb3b4d94d2a89353313a3b42cf2d77"
+  "gitHead": "f8b6ad1803cd5c2f67b317b6ea7390dad77ada61"
 }
