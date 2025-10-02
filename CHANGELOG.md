@@ -1,6 +1,11 @@
 ## Version 6 marks the use of ArcGIS Rest JS 4x within Solution JS. Previous versions leveraged ArcGIS Rest JS 3x.
 
 ## RELEASES
+**v6.4.0 **
+ - cancel deployment mid deployment
+ - delete solution item if if their were dependencies
+ - add support for tasks
+
 **v6.3.0.next.***
  - Fix for supporting embedded groups in the "Create a Solution from a deployed solution" demo app.
  - Fix handling data as a file or plain text when adding item data.
