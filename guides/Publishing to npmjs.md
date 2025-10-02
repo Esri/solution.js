@@ -9,12 +9,12 @@
 * \[ \] Create a .npmrc file if you don't want to have to enter a one-time password during publishing
 * \[ \] Pick and run a publishing option:
   - Run `npm run publish` and pick new version number for the current AGO release
-  - Run `npm run publish:next` and pick new version number for the next AGO release
+  - Run `npm run publish:next` and pick new version number for the next AGO release (sample: versionroot"-next.yyyymmdd" such as 6.5.0-next.20251001)
   - Run `npm run publish patch` to automatically bump patch version number for the current AGO release
   - Run `npm run publish:next patch` to automatically bump patch version number for the next AGO release
   - (One can replace "patch" with "major" | "minor" | "premajor" | "preminor" | "prepatch" | "prerelease")
 * \[ \] Check that publishing to the current AGO release worked using `check_npm_package_versions.html` in a browser
-* \[ \] Create a release from the build's tag in GitHub
+* \[ \] Create a release from the build's tag in GitHub  (tags > release > draft a new release > type changes in this version)
 * \[ \] Update documentation via `npm run docs:build`
 * \[ \] Deploy documentation via `npm run docs:deploy`
 
