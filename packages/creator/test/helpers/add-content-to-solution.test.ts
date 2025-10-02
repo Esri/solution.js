@@ -613,7 +613,7 @@ describe("_postProcessTaskResource", () => {
 
     const file = await common.blobToJson(actual[0].file);
 
-    expect(JSON.stringify(file)).toEqual(JSON.stringify([expected]));
+    expect(JSON.stringify(file)).toEqual(JSON.stringify(expected));
     expect(_templates[1].dependencies.length).toEqual(4);
   });
 });

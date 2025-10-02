@@ -455,38 +455,40 @@ export async function _postProcessTaskResource(
     );
   });
 
-  await Promise.all(resourcePromises).then(async (r) => {
-    let resourceString = JSON.stringify(r);
+  await Promise.all(resourcePromises).then(async (resources) => {
+    resources.forEach((r) => {
+      let resourceString = JSON.stringify(r);
 
-    // replace urls first
-    orderedUrls.forEach((url) => {
-      // TypeScript for es2015 doesn't have a definition for `replaceAll`
-      resourceString = (resourceString as any).replaceAll(url, urlVarHash[url]);
-    });
+      // replace urls first
+      orderedUrls.forEach((url) => {
+        // TypeScript for es2015 doesn't have a definition for `replaceAll`
+        resourceString = (resourceString as any).replaceAll(url, urlVarHash[url]);
+      });
 
-    // replace any item ids that aren't already variables
-    Object.keys(itemIds).forEach((k) => {
-      let pattern = new RegExp(`(?<!\\{\\{)${k}`, "g");
-      // TypeScript for es2015 doesn't have a definition for `replaceAll`
-      resourceString = (resourceString as any).replaceAll(pattern, itemIds[k]);
-    });
+      // replace any item ids that aren't already variables
+      Object.keys(itemIds).forEach((k) => {
+        let pattern = new RegExp(`(?<!\\{\\{)${k}`, "g");
+        // TypeScript for es2015 doesn't have a definition for `replaceAll`
+        resourceString = (resourceString as any).replaceAll(pattern, itemIds[k]);
+      });
 
-    // all urls and item ids should now be replaced with variables that contain the item ids
-    // we need to add any ids that are not currently marked as dependencies to the webmap dependencies and update the resource
-    const ids: string[] = uniqueStringList(resourceString.match(getAgoIdRegEx()));
+      // all urls and item ids should now be replaced with variables that contain the item ids
+      // we need to add any ids that are not currently marked as dependencies to the webmap dependencies and update the resource
+      const ids: string[] = uniqueStringList(resourceString.match(getAgoIdRegEx()));
 
-    resourceItemFiles = resourceItemFiles.map((file) => {
-      if (file.filename === taskConfigName) {
-        file.file = jsonToFile(JSON.parse(resourceString), file.filename);
-        // add any ids that we found to the source webmap
-        templates.some((t) => {
-          if (t.itemId === file.itemId) {
-            t.dependencies = [...new Set([...t.dependencies, ...ids])];
-            return true;
-          }
-        });
-      }
-      return file;
+      resourceItemFiles = resourceItemFiles.map((file) => {
+        if (file.filename === taskConfigName) {
+          file.file = jsonToFile(JSON.parse(resourceString), file.filename);
+          // add any ids that we found to the source webmap
+          templates.some((t) => {
+            if (t.itemId === file.itemId) {
+              t.dependencies = [...new Set([...t.dependencies, ...ids])];
+              return true;
+            }
+          });
+        }
+        return file;
+      });
     });
   });
   return Promise.resolve(resourceItemFiles);
