@@ -35,7 +35,7 @@ del/q temp.txt
 
 rem Create a version number from a root value suffixed with "-next.<today's date>"
 rem MM/dd/yyyy (04/06/2010) --> 20100406
-set timestamp=%date:~6,5%%date:~0,2%%date:~3,2%
+set timestamp=%date:~6,4%%date:~0,2%%date:~3,2%
 set nextVersion=%versionRoot%-next.%timestamp%
 echo Publishing %nextVersion%
 
