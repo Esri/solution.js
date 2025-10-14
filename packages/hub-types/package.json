@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-hub-types",
-  "version": "6.5.0-next.20251012",
+  "version": "6.5.0-next.20251013",
   "description": "Manages the creation and deployment of Hub Site and Hub Page item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -26,7 +26,7 @@
     "@esri/hub-initiatives": "^17.0.1",
     "@esri/hub-sites": "^18.0.1",
     "@esri/hub-teams": "^17.0.1",
-    "@esri/solution-common": "^6.5.0-next.20251012",
+    "@esri/solution-common": "^6.5.0-next.20251013",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -81,5 +81,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "b200073be987bfeca5c2d3b149b248a3d0b197f3"
+  "gitHead": "ac20949ba1184f5584f897a72d1c23c484823ea4"
 }
