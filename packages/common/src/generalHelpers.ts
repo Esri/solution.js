@@ -910,7 +910,7 @@ export function regExTest(v: any, ex: RegExp): any[] {
  * @returns List of unique strings
  */
 export function uniqueStringList(list: string[]): string[] {
-  return list.filter(unique);
+  return list?.filter(unique) || [];
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
