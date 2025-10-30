@@ -1881,4 +1881,10 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       expect(generalHelpers._padPositiveNum(123, 10)).toEqual("0000000123");
     });
   });
+
+  describe("uniqueStringList", () => {
+    it("handles a null list", () => {
+      expect(generalHelpers.uniqueStringList(undefined)).toEqual([]);
+    });
+  });
 });
