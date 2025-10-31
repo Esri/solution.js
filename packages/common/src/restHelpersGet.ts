@@ -687,6 +687,32 @@ export function getJson(url: string, authentication?: UserSession): Promise<any>
     });
 }
 
+/** Gets the organization's setting to check for beta app and AI assistant enablement
+ * @param authentication is the signed in user's credentials
+ */
+export function getOrganizationSettings(authentication: UserSession): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    const requestOptions: IRequestOptions = {
+      httpMethod: "GET",
+      authentication,
+      rawResponse: false,
+      params: {
+        returnOrgSettings: true,
+      },
+    };
+
+    const sharingURL = getPortalSharingUrlFromAuth(authentication);
+    const orgSettingURL = `${sharingURL}/community/self`;
+
+    request(orgSettingURL, requestOptions).then(
+      (response) => {
+        resolve(response && response.orgSettings ? response.orgSettings : {});
+      },
+      (e) => reject(e),
+    );
+  });
+}
+
 /**
  * Extracts the portal sharing url from a supplied authentication.
  *

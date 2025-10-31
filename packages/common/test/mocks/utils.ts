@@ -377,6 +377,14 @@ export function getShareResponse(id: string) {
   };
 }
 
+export function getOrgSettingsResponse() {
+  return {
+    aiAssistantsEnabled: true,
+    blockBetaApps: false,
+    colocateCompute: false,
+  };
+}
+
 export function checkForArcgisRestSuccessRequestError(error: any): boolean {
   return (
     (error &&
