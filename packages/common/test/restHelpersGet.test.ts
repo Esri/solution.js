@@ -1112,7 +1112,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   describe("getOrganizationSettings", () => {
     it("can handle an exception on get organization", async () => {
       // Use regex to match URL with dynamic query params
-      const escapedUrl = utils.PORTAL_SUBSET.restUrl.replace(/\./g, '\\.');
+      const escapedUrl = utils.PORTAL_SUBSET.restUrl.replace(/\\/g, '\\\\').replace(/\./g, '\\.');
       fetchMock.get(new RegExp(`${escapedUrl}/community/self.*`), mockItems.get500Failure());
 
       return restHelpersGet.getOrganizationSettings(MOCK_USER_SESSION).then(
@@ -1123,7 +1123,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
     it("can get the organization's settings", async () => {
       const response = { orgSettings: utils.getOrgSettingsResponse() };
-      const escapedUrl = utils.PORTAL_SUBSET.restUrl.replace(/\./g, '\\.');
+      const escapedUrl = utils.PORTAL_SUBSET.restUrl.replace(/\\/g, '\\\\').replace(/\./g, '\\.');
       fetchMock.get(new RegExp(`${escapedUrl}/community/self.*`), response);
 
       const expectedSettings = {
@@ -1138,7 +1138,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
     it("returns empty object when orgSettings is missing", async () => {
       const responseWithoutOrgSettings = { someOtherProp: true };
-      const escapedUrl = utils.PORTAL_SUBSET.restUrl.replace(/\./g, '\\.');
+      const escapedUrl = utils.PORTAL_SUBSET.restUrl.replace(/\\/g, '\\\\').replace(/\./g, '\\.');
       fetchMock.get(new RegExp(`${escapedUrl}/community/self.*`), responseWithoutOrgSettings);
 
       const actual = await restHelpersGet.getOrganizationSettings(MOCK_USER_SESSION);
