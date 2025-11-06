@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-group",
-  "version": "6.5.0-next.20251104",
+  "version": "6.5.0-next.20251105",
   "description": "Manages the creation and deployment of group item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -22,7 +22,7 @@
     "npm-check-updates": "^17.1.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^6.5.0-next.20251104",
+    "@esri/solution-common": "^6.5.0-next.20251105",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -77,5 +77,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "5eca83bb20708adcffd7151842ca053a0a76084d"
+  "gitHead": "e9c0b581b1d3c33e05a9c71a0a7ee2a058359be6"
 }
