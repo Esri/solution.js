@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-simple-types",
-  "version": "6.5.0-next.20251108",
+  "version": "6.5.0-next.20251109",
   "description": "Manages the creation and deployment of simple item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -22,7 +22,7 @@
     "npm-check-updates": "^17.1.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^6.5.0-next.20251108",
+    "@esri/solution-common": "^6.5.0-next.20251109",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -77,5 +77,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "2ddfe4b64a3271966c65cec4b2ebe653da731bb7"
+  "gitHead": "95165c5a1088f0c7b6970763420525a42fa9b1d9"
 }
