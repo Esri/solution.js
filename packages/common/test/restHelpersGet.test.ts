@@ -1109,6 +1109,42 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
+  describe("getOrganizationSettings", () => {
+    const escapedUrl = "https://myorg\\.maps\\.arcgis\\.com/sharing/rest";
+
+    it("can handle an exception on get organization", async () => {
+      // Use regex to match URL with dynamic query params
+      fetchMock.get(new RegExp(`${escapedUrl}/community/self.*`), mockItems.get500Failure());
+
+      return restHelpersGet.getOrganizationSettings(MOCK_USER_SESSION).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
+    });
+
+    it("can get the organization's settings", async () => {
+      const response = { orgSettings: utils.getOrgSettingsResponse() };
+      fetchMock.get(new RegExp(`${escapedUrl}/community/self.*`), response);
+
+      const expectedSettings = {
+        aiAssistantsEnabled: true,
+        blockBetaApps: false,
+        colocateCompute: false,
+      };
+
+      const actual = await restHelpersGet.getOrganizationSettings(MOCK_USER_SESSION);
+      expect(actual).toEqual(expectedSettings);
+    });
+
+    it("returns empty object when orgSettings is missing", async () => {
+      const responseWithoutOrgSettings = { someOtherProp: true };
+      fetchMock.get(new RegExp(`${escapedUrl}/community/self.*`), responseWithoutOrgSettings);
+
+      const actual = await restHelpersGet.getOrganizationSettings(MOCK_USER_SESSION);
+      expect(actual).toEqual({});
+    });
+  });
+
   describe("getPortalSharingUrlFromAuth", () => {
     it("gets a default portal sharing url when there's no authentication", () => {
       expect(restHelpersGet.getPortalSharingUrlFromAuth(undefined)).toEqual("https://www.arcgis.com/sharing/rest");
