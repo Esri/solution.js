@@ -1110,7 +1110,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getOrganizationSettings", () => {
-    const escapedUrl = utils.PORTAL_SUBSET.restUrl.replace(/\\/g, '\\\\').replace(/\./g, '\\.');
+    const escapedUrl = 'https://myorg.maps.arcgis.com/sharing/rest';
 
     it("can handle an exception on get organization", async () => {
       // Use regex to match URL with dynamic query params
