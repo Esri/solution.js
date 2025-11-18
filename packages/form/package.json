@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-form",
-  "version": "6.5.0-next.20251116",
+  "version": "6.5.0-next.20251117",
   "description": "Manages the creation and deployment of form item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -22,8 +22,8 @@
     "npm-check-updates": "^17.1.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^6.5.0-next.20251116",
-    "@esri/solution-simple-types": "^6.5.0-next.20251116",
+    "@esri/solution-common": "^6.5.0-next.20251117",
+    "@esri/solution-simple-types": "^6.5.0-next.20251117",
     "jszip": "3.10.1",
     "tslib": "1.14.1"
   },
@@ -64,5 +64,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "aa191a219ce70cd4a9bc3b5dbce69950e463123f"
+  "gitHead": "7e9ee2e9294a8085d5063306becc494154a6ecee"
 }
