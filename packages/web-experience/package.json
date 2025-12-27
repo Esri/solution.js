@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-web-experience",
-  "version": "6.5.0-next.20251225",
+  "version": "6.5.0-next.20251226",
   "description": "Manages the creation and deployment of Web Experience item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@esri/hub-common": "^17.0.2",
-    "@esri/solution-common": "^6.5.0-next.20251225",
+    "@esri/solution-common": "^6.5.0-next.20251226",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -62,5 +62,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "5c079a59a293da155b7d1b7c3b5e8a6542933ae2"
+  "gitHead": "b4bea87defc9eea4cdc63a98176e2fb28c1363c4"
 }
