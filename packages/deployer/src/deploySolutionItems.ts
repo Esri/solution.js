@@ -52,6 +52,7 @@ export function deploySolutionItems(
   options: common.IDeploySolutionOptions,
 ): Promise<common.ICreateItemFromTemplateResponse[]> {
   return new Promise((resolve, reject) => {
+    const timeStamp = Date.now();
     /**
      * function to abort the current process. Will delete solution and reject the promise
      *
@@ -60,21 +61,35 @@ export function deploySolutionItems(
     function checkCancelled() {
       if (options && options.abortController) {
         if (options.abortController.signal.aborted) {
-          // Delete created items
+          const deployedItemIdsList = _getItemIdsFromTemplateDictionary(templates, templateDictionary);
+          const existingItems = _findExistingItemByKeyword(templates, templateDictionary, destinationAuthentication);
           const progressOptions: common.IDeleteSolutionOptions = {
             consoleProgress: true,
           };
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          common
-            .deleteSolutionByComponents(
-              deployedSolutionId,
-              deployedItemIds,
-              templates,
-              templateDictionary,
-              destinationAuthentication,
-              progressOptions,
-            )
-            .then(() => reject(common.failWithIds(failedTemplateItemIds)));
+
+          Promise.all(existingItems.existingItemsDefs).then((defs) => {
+            const FilteredListToDelete = _findExistingItemsCreatedPrevious(timeStamp, defs, deployedItemIdsList).filter(
+              (item) => item !== undefined,
+            );
+            common
+              .deleteSolutionByComponents(
+                deployedSolutionId,
+                FilteredListToDelete,
+                templates,
+                templateDictionary,
+                destinationAuthentication,
+                progressOptions,
+              )
+              .then(() => {
+                //because of possible deletion lag and agol query, try to delete folder again if it was still around.
+                common.deleteSolutionFolder(
+                  FilteredListToDelete,
+                  templateDictionary.folderId,
+                  destinationAuthentication,
+                );
+                reject(common.failWithIds(failedTemplateItemIds));
+              });
+          });
         }
       }
     }
@@ -1158,4 +1173,43 @@ export function _getGroupUpdates(
       common.isTrackingViewTemplate(template) ? templateDictionary.locationTracking.owner : undefined,
     );
   });
+}
+
+/**
+ * Gets the deployed item ids from the template dictionary
+ *
+ * @param templates Templates to extract ids
+ * @param templateDictionary Hash of facts: using the templates id as a lookup into this hash
+ * @returns An array of strings that represent item ids
+ * @private
+ */
+export function _getItemIdsFromTemplateDictionary(
+  templates: common.IItemTemplate[],
+  templateDictionary: any,
+): Array<string> {
+  return templates
+    .map((template) => {
+      return template.itemId;
+    })
+    .map((template) => {
+      return templateDictionary[template].itemId;
+    });
+}
+
+export function _findExistingItemsCreatedPrevious(
+  checkTime: number,
+  resultSets: Array<any>,
+  controlList: Array<string>,
+): Array<string> {
+  const olderItems: Array<string> = [];
+  resultSets.filter((set) => {
+    set.results.forEach((result) => {
+      if (result.created < checkTime) {
+        olderItems.push(result.id);
+      }
+    });
+  });
+
+  const olderItemsSet = new Set(olderItems);
+  return controlList.filter((item) => !olderItemsSet.has(item));
 }

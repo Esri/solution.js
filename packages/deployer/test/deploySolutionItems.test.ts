@@ -2515,4 +2515,22 @@ describe("Module `deploySolutionItems`", () => {
       return deploySolution._setTypekeywordForExisting([], {}, MOCK_USER_SESSION);
     });
   });
+
+  describe("_getItemIdsFromTemplateDictionary", () => {
+    it("will get an array of item ids", () => {
+      const templates = [
+        { itemId: "t1", type: "Web Map", item: { title: "test title" } },
+        { itemId: "t2", type: "Web Map", item: { title: "test title 2" } },
+      ] as any[];
+
+      const templateDictionary: any = {
+        t1: { itemId: "d1" }, // deployed item id derived from t1
+        t2: { itemId: "d2" }, // deployed item id derived from t2
+      };
+
+      const itemlist = deploySolution._getItemIdsFromTemplateDictionary(templates, templateDictionary);
+
+      expect(itemlist).toEqual(["d1", "d2"]);
+    });
+  });
 });
