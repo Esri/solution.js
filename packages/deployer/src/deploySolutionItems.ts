@@ -68,9 +68,7 @@ export function deploySolutionItems(
           };
 
           Promise.all(existingItems.existingItemsDefs).then((defs) => {
-            const FilteredListToDelete = _findExistingItemsCreatedPrevious(timeStamp, defs, deployedItemIdsList).filter(
-              (item) => item !== undefined,
-            );
+            const FilteredListToDelete = _findExistingItemsCreatedPrevious(timeStamp, defs, deployedItemIdsList);
             common
               .deleteSolutionByComponents(
                 deployedSolutionId,
@@ -1211,5 +1209,6 @@ export function _findExistingItemsCreatedPrevious(
   });
 
   const olderItemsSet = new Set(olderItems);
-  return controlList.filter((item) => !olderItemsSet.has(item));
+  controlList = controlList.filter((item) => !olderItemsSet.has(item));
+  return controlList.filter((item) => item !== undefined);
 }
