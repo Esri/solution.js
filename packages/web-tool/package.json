@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-web-tool",
-  "version": "6.5.0-next.20260113",
+  "version": "6.5.0-next.20260114",
   "description": "Manages the creation and deployment of web tool geoprocessing service item type for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -21,8 +21,8 @@
     "npm-check-updates": "^17.1.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^6.5.0-next.20260113",
-    "@esri/solution-simple-types": "^6.5.0-next.20260113",
+    "@esri/solution-common": "^6.5.0-next.20260114",
+    "@esri/solution-simple-types": "^6.5.0-next.20260114",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -70,5 +70,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "1a78f56d9a60119992dc5654b392cf679cfe9bb4"
+  "gitHead": "0792dc5b6cc258d633bff30278ae8263a3c562ed"
 }
