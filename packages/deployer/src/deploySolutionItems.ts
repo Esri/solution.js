@@ -53,6 +53,7 @@ export function deploySolutionItems(
 ): Promise<common.ICreateItemFromTemplateResponse[]> {
   return new Promise((resolve, reject) => {
     const timeStamp = Date.now();
+    let cancelExecuting = false;
     /**
      * function to abort the current process. Will delete solution and reject the promise
      *
@@ -60,7 +61,8 @@ export function deploySolutionItems(
      */
     function checkCancelled() {
       if (options && options.abortController) {
-        if (options.abortController.signal.aborted) {
+        if (!cancelExecuting && options.abortController.signal.aborted) {
+          cancelExecuting = true;
           const deployedItemIdsList = _getItemIdsFromTemplateDictionary(templates, templateDictionary);
           const existingItems = _findExistingItemByKeyword(templates, templateDictionary, destinationAuthentication);
           const progressOptions: common.IDeleteSolutionOptions = {
@@ -78,13 +80,18 @@ export function deploySolutionItems(
                 destinationAuthentication,
                 progressOptions,
               )
-              .then(() => {
+              .then(async () => {
                 //because of possible deletion lag and agol query, try to delete folder again if it was still around.
-                common.deleteSolutionFolder(
-                  FilteredListToDelete,
-                  templateDictionary.folderId,
-                  destinationAuthentication,
-                );
+                try {
+                  await common.deleteSolutionFolder(
+                    FilteredListToDelete,
+                    templateDictionary.folderId,
+                    destinationAuthentication,
+                  );
+                } catch (err) {
+                  console.warn("deleteSolutionFolder failed (ignored during cleanup):", err);
+                }
+
                 reject(common.failWithIds(failedTemplateItemIds));
               });
           });
