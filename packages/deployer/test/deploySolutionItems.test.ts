@@ -2515,4 +2515,82 @@ describe("Module `deploySolutionItems`", () => {
       return deploySolution._setTypekeywordForExisting([], {}, MOCK_USER_SESSION);
     });
   });
+
+  describe("_getItemIdsFromTemplateDictionary", () => {
+    it("will get an array of item ids", () => {
+      const templates = [
+        { itemId: "t1", type: "Web Map", item: { title: "test title" } },
+        { itemId: "t2", type: "Web Map", item: { title: "test title 2" } },
+      ] as any[];
+
+      const templateDictionary: any = {
+        t1: { itemId: "d1" }, // deployed item id derived from t1
+        t2: { itemId: "d2" }, // deployed item id derived from t2
+      };
+
+      const itemlist = deploySolution._getItemIdsFromTemplateDictionary(templates, templateDictionary);
+
+      expect(itemlist).toEqual(["d1", "d2"]);
+    });
+  });
+
+  describe("_findExistingItemsCreatedPrevious", () => {
+    it("removes items older than checkTime, keeps boundary/newer, ignores results not in controlList, and strips undefined from controlList", () => {
+      const checkTime = 2000;
+      const resultSets = [
+        {
+          results: [
+            { id: "A", created: 1999 }, // older -> should be removed
+            { id: "B", created: 2000 }, // boundary (not older) -> keep
+            { id: "C", created: 2500 }, // newer -> keep
+          ],
+        },
+        {
+          results: [
+            { id: "A", created: 1500 }, // duplicate older -> still removed via Set
+            { id: "X", created: 1000 }, // older but NOT in controlList -> no effect
+          ],
+        },
+      ];
+
+      // Includes duplicates and undefined to exercise the new final filter
+      const controlList = ["A", undefined as unknown as string, "B", "C", "D", "A"];
+
+      const actual = deploySolution._findExistingItemsCreatedPrevious(checkTime, resultSets, controlList);
+
+      // Expect: all "A" entries removed (older), "B" kept (== checkTime), "C" kept (newer), "D" kept (never in results),
+      // and undefined removed by the final filter
+      expect(actual).toEqual(["B", "C", "D"]);
+    });
+
+    it("keeps all when nothing is older; also handles empty controlList, empty resultSets, and undefined removal", () => {
+      const checkTime = 1000;
+
+      // Case 1: non-empty controlList, resultSets with only boundary/newer -> no removals
+      const resultSets1 = [
+        {
+          results: [
+            { id: "M", created: 1000 },
+            { id: "N", created: 3000 },
+          ],
+        }, // boundary + newer
+      ];
+      const controlList1 = ["M", "N", "P", undefined as unknown as string];
+      const actual1 = deploySolution._findExistingItemsCreatedPrevious(checkTime, resultSets1, controlList1);
+      // Undefined should be stripped; others kept
+      expect(actual1).toEqual(["M", "N", "P"]);
+
+      // Case 2: empty controlList -> always returns empty
+      const resultSets2 = [{ results: [{ id: "Q", created: 0 }] }];
+      const controlList2: string[] = [];
+      const actual2 = deploySolution._findExistingItemsCreatedPrevious(checkTime, resultSets2, controlList2);
+      expect(actual2).toEqual([]);
+
+      // Case 3: empty resultSets -> no removals, only undefined stripped
+      const resultSets3: Array<any> = [];
+      const controlList3 = ["R", undefined as unknown as string, "S"];
+      const actual3 = deploySolution._findExistingItemsCreatedPrevious(checkTime, resultSets3, controlList3);
+      expect(actual3).toEqual(["R", "S"]);
+    });
+  });
 });
