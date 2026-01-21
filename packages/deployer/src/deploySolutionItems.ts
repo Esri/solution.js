@@ -1201,6 +1201,15 @@ export function _getItemIdsFromTemplateDictionary(
     });
 }
 
+/**
+ * Finds items older than timestamp that might signify item reuse
+ *
+ * @param checkTime Current time stamp
+ * @param resultSets Existing items in the org
+ * @param controlList List of items that the Solution will deploy
+ * @returns An array of items left than checkTime
+ * @private
+ */
 export function _findExistingItemsCreatedPrevious(
   checkTime: number,
   resultSets: Array<any>,
