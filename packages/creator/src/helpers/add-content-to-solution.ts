@@ -444,13 +444,12 @@ export async function _postProcessTaskResource(
     },
   } as IRequestOptions;
 
+  const sourcePortal = await srcAuthentication.getPortal();
+
   const resourcePromises = taskKeys.map((k) => {
+    const baseURL = _getSourceBaseOrTemplateBaseURL(sourcePortal, templateDictionary);
     return request(
-      generateSourceResourceUrl(
-        `${templateDictionary.portalBaseUrl}/sharing/rest`,
-        taskResources[k].itemId,
-        taskResources[k].filename,
-      ),
+      generateSourceResourceUrl(baseURL, taskResources[k].itemId, taskResources[k].filename),
       requestOptions,
     );
   });
@@ -798,4 +797,16 @@ export function _templatizeWorkflowConfig(templates: IItemTemplate[], templateDi
       template.properties.configuration = JSON.parse(configStr);
     }
   });
+}
+
+/**
+ * Determines to use the Auth source portal or the portal in template dictionary
+ *
+ * @param sourcePortal THe portal information of the source authentication
+ * @param templateDictionary Hash of key details used for variable replacement
+ */
+export function _getSourceBaseOrTemplateBaseURL(sourcePortal: any, templateDictionary: any): string {
+  return sourcePortal.portalHostname
+    ? `https://${sourcePortal.portalHostname}/sharing/rest`
+    : `${templateDictionary.portalBaseUrl}/sharing/rest`;
 }
