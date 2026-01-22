@@ -31,6 +31,7 @@ import {
   _restoreDataFilesToTemplates,
   _simplifyUrlsInItemDescriptions,
   _templatizeWorkflowConfig,
+  _getSourceBaseOrTemplateBaseURL,
 } from "../../src/helpers/add-content-to-solution";
 const fetchMock = require("fetch-mock");
 import * as createItemTemplateModule from "../../src/createItemTemplate";
@@ -1443,5 +1444,29 @@ describe("_templatizeWorkflowConfig", () => {
       templateMocks.getItemTemplate("Web Mapping Application"),
     ];
     expect(templateList).toEqual(expectedTemplateList);
+  });
+});
+
+describe("_getSourceBaseOrTemplateBaseURL", () => {
+  it("Should use source base url", () => {
+    const sourcePortal: any = {
+      portalHostname: "sourcePortal.maps.arcgis.com",
+    };
+    const templateDictionary: any = {
+      portalBaseUrl: "https://myorg.maps.arcgis.com",
+    };
+    const baseUrl = _getSourceBaseOrTemplateBaseURL(sourcePortal, templateDictionary);
+    expect(baseUrl).toEqual("https://sourcePortal.maps.arcgis.com/sharing/rest");
+  });
+
+  it("Should use template dictionary base url", () => {
+    const sourcePortal: any = {
+      portalHostname: undefined,
+    };
+    const templateDictionary: any = {
+      portalBaseUrl: "https://myorg.maps.arcgis.com",
+    };
+    const baseUrl = _getSourceBaseOrTemplateBaseURL(sourcePortal, templateDictionary);
+    expect(baseUrl).toEqual("https://myorg.maps.arcgis.com/sharing/rest");
   });
 });
