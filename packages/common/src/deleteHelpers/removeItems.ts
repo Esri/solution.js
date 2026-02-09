@@ -63,10 +63,18 @@ export function removeItems(
         [solutionDeletedSummary, solutionFailureSummary] = results;
 
         // Remove any delete protection on item
-        return unprotectItem({
-          id: itemToDelete.id,
-          authentication: authentication,
-        });
+        if (deleteOptions.solutionOwner) {
+          return unprotectItem({
+            id: itemToDelete.id,
+            authentication: authentication,
+            owner: deleteOptions.solutionOwner,
+          });
+        } else {
+          return unprotectItem({
+            id: itemToDelete.id,
+            authentication: authentication,
+          });
+        }
       })
       .then(async () => {
         // Delete the item
@@ -78,7 +86,11 @@ export function removeItems(
           return workflowHelpers.deleteWorkflowItem(itemToDelete.id, workflowBaseUrl, authentication);
         } else {
           const permanentDelete = !deleteOptions.sendToRecycling;
-          return removeItem(itemToDelete.id, authentication, permanentDelete);
+          if (deleteOptions.solutionOwner) {
+            return removeItem(itemToDelete.id, authentication, permanentDelete, deleteOptions.solutionOwner);
+          } else {
+            return removeItem(itemToDelete.id, authentication, permanentDelete);
+          }
         }
       })
       .then(() => {

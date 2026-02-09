@@ -1454,6 +1454,7 @@ export function removeItem(
   itemId: string,
   authentication: UserSession,
   permanentDelete = true,
+  solutionOwner?: string,
 ): Promise<IStatusResponse> {
   return new Promise<IStatusResponse>((resolve, reject) => {
     const requestOptions: IUserItemOptions = {
@@ -1463,6 +1464,9 @@ export function removeItem(
         permanentDelete,
       },
     };
+    if (solutionOwner) {
+      requestOptions.owner = solutionOwner;
+    }
     portalRemoveItem(requestOptions).then((result) => (result.success ? resolve(result) : reject(result)), reject);
   });
 }
@@ -1827,6 +1831,9 @@ export function updateItem(
         ...(additionalParams ?? {}),
       },
     };
+    if (additionalParams?.solutionOwner) {
+      updateOptions.owner = additionalParams.solutionOwner;
+    }
     if (itemInfo?.data instanceof File) {
       //updateOptions.file = itemInfo.data;
       updateOptions.params.file = itemInfo.data;
