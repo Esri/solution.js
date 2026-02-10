@@ -3363,7 +3363,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         id: "itm1234567890",
       };
       const additionalParams: any = {
-        solutionOwner: "pwong"
+        solutionOwner: "pwong",
       };
       const updateItemFnStub = sinon.stub(arcGISRestJS, "restUpdateItem").resolves(utils.getSuccessResponse());
 
@@ -3379,7 +3379,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           solutionOwner: "pwong",
           text: undefined,
         },
-        owner: "pwong"
+        owner: "pwong",
       });
     });
 

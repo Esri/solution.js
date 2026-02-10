@@ -40,15 +40,25 @@ export function deleteSolutionItem(
   solutionItemId: string,
   authentication: UserSession,
   permanentDelete?: boolean,
+  solutionOwner?: string,
 ): Promise<IStatusResponse> {
   const protectOptions: IUserItemOptions = {
     id: solutionItemId,
     authentication,
   };
+  if (solutionOwner) {
+    protectOptions.owner = solutionOwner;
+  }
+  console.log("*****");
   return unprotectItem(protectOptions)
     .then((result) => {
+      console.log("$$$$$");
       if (result.success) {
-        return removeItem(solutionItemId, authentication, permanentDelete);
+        if (solutionOwner) {
+          return removeItem(solutionItemId, authentication, permanentDelete, solutionOwner);
+        } else {
+          return removeItem(solutionItemId, authentication, permanentDelete);
+        }
       } else {
         return Promise.resolve(result);
       }

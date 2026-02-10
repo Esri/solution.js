@@ -278,18 +278,11 @@ describe("Module `removeItems`: removing items from AGO", () => {
       50, // percentDone
       10, // progressPercentStep
       {
-        solutionOwner: "pwong"
+        solutionOwner: "pwong",
       }, // deleteOptions
     );
 
-    expect(removeItemSpy).toHaveBeenCalledWith(
-      "itm1234567890",
-      MOCK_USER_SESSION,
-      true,
-      "pwong"
-    );
+    expect(removeItemSpy).toHaveBeenCalledWith("itm1234567890", MOCK_USER_SESSION, true, "pwong");
     expect(result).toEqual(expectedResult);
   });
-
-
 });

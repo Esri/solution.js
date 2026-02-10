@@ -42,6 +42,7 @@ export function deleteSolutionFolder(
   solutionIds: string[],
   folderId: string,
   authentication: UserSession,
+  solutionOwner?: string,
 ): Promise<boolean> {
   // See if the deployment folder is empty and can be deleted; first, we need info about user
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -77,7 +78,7 @@ export function deleteSolutionFolder(
         // OK to delete the folder
         return restRemoveFolder({
           folderId: folderId,
-          owner: authentication.username,
+          owner: solutionOwner ?? authentication.username,
           authentication,
         });
       } else {
