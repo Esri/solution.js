@@ -1897,6 +1897,7 @@ export function updateItemExtended(
   thumbnail?: File,
   access?: string | undefined,
   templateDictionary?: any,
+  solutionOwner?: string,
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const updateOptions: IUpdateItemOptions = {
@@ -1911,6 +1912,10 @@ export function updateItemExtended(
     }
     if (isTrackingViewTemplate(undefined, itemInfo) && templateDictionary) {
       updateOptions.owner = templateDictionary.locationTracking.owner;
+    } else {
+      if (solutionOwner) {
+        updateOptions.owner = solutionOwner;
+      }
     }
 
     portalUpdateItem(updateOptions).then(

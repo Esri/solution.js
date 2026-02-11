@@ -34,22 +34,19 @@ beforeEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `deleteSolutionItem`: functions for deleting a Solution item", () => {
-
   describe("deleteSolutionItem", () => {
     const itemId = "abc123";
     const owner = "someOwner";
 
     it("sets protectOptions.owner and calls removeItem with owner when solutionOwner is provided", async () => {
       // Arrange
-      const unprotectSpy = spyOn(arcGISRestJS, "unprotectItem").and.callFake(
-        (opts: arcGISRestJS.IUserItemOptions) => {
-          // Assert inside spy: owner should be set on protectOptions
-          expect(opts.id).toBe(itemId);
-          expect(opts.authentication).toBe(MOCK_USER_SESSION);
-          expect((opts as any).owner).toBe(owner);
-          return Promise.resolve({ success: true } as any);
-        },
-      );
+      const unprotectSpy = spyOn(arcGISRestJS, "unprotectItem").and.callFake((opts: arcGISRestJS.IUserItemOptions) => {
+        // Assert inside spy: owner should be set on protectOptions
+        expect(opts.id).toBe(itemId);
+        expect(opts.authentication).toBe(MOCK_USER_SESSION);
+        expect((opts as any).owner).toBe(owner);
+        return Promise.resolve({ success: true } as any);
+      });
 
       const removeSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: true,
@@ -73,15 +70,13 @@ describe("Module `deleteSolutionItem`: functions for deleting a Solution item", 
 
     it("does NOT set protectOptions.owner and calls removeItem WITHOUT owner when solutionOwner is not provided", async () => {
       // Arrange
-      const unprotectSpy = spyOn(arcGISRestJS, "unprotectItem").and.callFake(
-        (opts: arcGISRestJS.IUserItemOptions) => {
-          // owner should not exist
-          expect(opts.id).toBe(itemId);
-          expect(opts.authentication).toBe(MOCK_USER_SESSION);
-          expect((opts as any).owner).toBeUndefined();
-          return Promise.resolve({ success: true } as any);
-        },
-      );
+      const unprotectSpy = spyOn(arcGISRestJS, "unprotectItem").and.callFake((opts: arcGISRestJS.IUserItemOptions) => {
+        // owner should not exist
+        expect(opts.id).toBe(itemId);
+        expect(opts.authentication).toBe(MOCK_USER_SESSION);
+        expect((opts as any).owner).toBeUndefined();
+        return Promise.resolve({ success: true } as any);
+      });
 
       const removeSpy = spyOn(restHelpers, "removeItem").and.resolveTo({
         success: true,
@@ -125,6 +120,4 @@ describe("Module `deleteSolutionItem`: functions for deleting a Solution item", 
       expect(result).toEqual({ success: false, itemId });
     });
   });
-
-
 });

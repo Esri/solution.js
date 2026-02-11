@@ -836,7 +836,12 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       } as any);
 
       const result = await deleteSolutionFolder.deleteSolutionFolder([], "fld1234567890", MOCK_USER_SESSION);
-      const resultWithUser = await deleteSolutionFolder.deleteSolutionFolder([], "fld1234567890", MOCK_USER_SESSION, "pwong");
+      const resultWithUser = await deleteSolutionFolder.deleteSolutionFolder(
+        [],
+        "fld1234567890",
+        MOCK_USER_SESSION,
+        "pwong",
+      );
       expect(result).toBeTruthy();
       expect(resultWithUser).toBeTruthy();
       expect(removeFolderSpy.calls.count()).toEqual(2);
