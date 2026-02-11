@@ -1888,6 +1888,8 @@ export function updateGroup(
  * @param authentication Credentials for requests
  * @param thumbnail optional thumbnail to update
  * @param access "public" or "org"
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @param solutionOwner The owner of the solution for rest request
  * @return
  */
 export function updateItemExtended(
