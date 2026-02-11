@@ -1448,6 +1448,7 @@ export function removeGroup(groupId: string, authentication: UserSession): Promi
  * @param authentication Credentials for the request to AGO
  * @param permanentDelete If true (the default), the item is permanently deleted; if false and the item type
  * supports the recycle bin, the item will be put into the recycle bin
+ * @param solutionOwner Optional. The owner of the solution item if it is not the logged on user
  * @returns A promise that will resolve with the result of the request
  */
 export function removeItem(

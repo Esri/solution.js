@@ -118,12 +118,12 @@ export function deleteSolutionContents(
         if (solutionItemId) {
           // 9-5-25: Change in logic to delete solution item regardless if there were any failed deleted items.
           const permanentDelete = !deleteOptions.sendToRecycling;
-          if (deleteOptions?.solutionOwner) {
+          if (deleteOptions.solutionOwner) {
             return deleteSolutionItem.deleteSolutionItem(
               solutionItemId,
               authentication,
               permanentDelete,
-              deleteOptions?.solutionOwner,
+              deleteOptions.solutionOwner,
             );
           } else {
             return deleteSolutionItem.deleteSolutionItem(solutionItemId, authentication, permanentDelete);
@@ -138,12 +138,12 @@ export function deleteSolutionContents(
           reportProgress.reportProgress(99, deleteOptions, solutionItemId, EItemProgressStatus.Finished);
 
           // Can't delete if folder contains non-solution items
-          if (deleteOptions?.solutionOwner) {
+          if (deleteOptions.solutionOwner) {
             return deleteSolutionFolder.deleteSolutionFolder(
               solutionIds,
               solutionSummary.folder,
               authentication,
-              deleteOptions?.solutionOwner,
+              deleteOptions.solutionOwner,
             );
           } else {
             return deleteSolutionFolder.deleteSolutionFolder(solutionIds, solutionSummary.folder, authentication);
