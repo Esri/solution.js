@@ -52,7 +52,7 @@ export function deleteSolutionFolder(
     .then((user) => {
       // And then we need to be sure that the folder is empty
       const query = new SearchQueryBuilder()
-        .match(authentication.username)
+        .match(solutionOwner ?? authentication.username)
         .in("owner")
         .and()
         .match(user.orgId)
@@ -67,6 +67,8 @@ export function deleteSolutionFolder(
       });
     })
     .then((searchResult: ISearchResult<IItem>) => {
+      console.log("AAAA");
+      console.log(searchResult);
       // If the search results are all in the deletedItemIds list, then we're dealing with AGO lagging:
       // successfully reporting a deletion and yet still returning the item in search results.
       // Filter the Solution items out of the search results.
