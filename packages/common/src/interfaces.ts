@@ -569,6 +569,11 @@ export interface IDeleteSolutionOptions {
    * delete the item permanently; this flag overrides that behavior.
    */
   sendToRecycling?: boolean;
+
+  /**
+   * The owner of the solution to delete/unprotect/update if it is not logged on user.
+   */
+  solutionOwner?: string;
 }
 
 /**

@@ -24,6 +24,7 @@ import * as createHRO from "../src/create-hub-request-options";
 import * as deleteEmptyGroups from "../src/deleteHelpers/deleteEmptyGroups";
 import * as deleteGroupIfEmpty from "../src/deleteHelpers/deleteGroupIfEmpty";
 import * as deleteSolution from "../src/deleteSolution";
+import * as deleteSolutionItem from "../src/deleteHelpers/deleteSolutionItem";
 import * as deleteSolutionContents from "../src/deleteHelpers/deleteSolutionContents";
 import * as hubSites from "@esri/hub-sites";
 import * as interfaces from "../src/interfaces";
@@ -835,8 +836,15 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       } as any);
 
       const result = await deleteSolutionFolder.deleteSolutionFolder([], "fld1234567890", MOCK_USER_SESSION);
+      const resultWithUser = await deleteSolutionFolder.deleteSolutionFolder(
+        [],
+        "fld1234567890",
+        MOCK_USER_SESSION,
+        "pwong",
+      );
       expect(result).toBeTruthy();
-      expect(removeFolderSpy.calls.count()).toEqual(1);
+      expect(resultWithUser).toBeTruthy();
+      expect(removeFolderSpy.calls.count()).toEqual(2);
     });
 
     it("deletes a folder with only solution items remaining", async () => {
@@ -1264,6 +1272,89 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(consoleSpy.calls.argsFor(0)[2]).toBe("Ginger");
       expect(consoleSpy.calls.argsFor(0)[3]).toBe("3 Finished");
       expect(consoleSpy.calls.argsFor(0)[4]).toBe("50%");
+    });
+  });
+
+  describe("deleteSolutionContents", () => {
+    it("uses solutionOwner overloads for deleteSolutionItem and deleteSolutionFolder", async () => {
+      // Arrange
+      const solutionItemId = "sol1234567890";
+      const solutionOwner = "ownerUser";
+
+      // Create a solution summary with items so solutionIds get computed
+      const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis([
+        mockItems.getAGOLItemPrecis("Web Map"),
+        mockItems.getAGOLItemPrecis("Web Mapping Application"),
+      ]);
+
+      // Make sure we can predict expected solutionIds
+      const expectedSolutionIds = solutionSummary.items.map((i) => i.id).concat([solutionItemId]);
+
+      const deletedSummary: interfaces.ISolutionPrecis = {
+        id: solutionSummary.id,
+        title: solutionSummary.title,
+        folder: solutionSummary.folder,
+        items: [],
+        groups: [],
+      };
+
+      const failureSummary: interfaces.ISolutionPrecis = {
+        id: solutionSummary.id,
+        title: solutionSummary.title,
+        folder: solutionSummary.folder,
+        items: [],
+        groups: [],
+      };
+
+      const options: interfaces.IDeleteSolutionOptions = {
+        sendToRecycling: true,
+        solutionOwner,
+      };
+
+      spyOn(reportProgress, "reportProgress"); // not required but keeps noise down
+
+      spyOn(removeItems, "removeItems").and.resolveTo([deletedSummary, failureSummary]);
+
+      const emptyFolderResponse = await deleteEmptyGroups.deleteEmptyGroups([], MOCK_USER_SESSION);
+      expect(emptyFolderResponse).toEqual([]);
+
+      spyOn(deleteSolutionItem, "deleteSolutionItem").and.resolveTo({
+        success: true,
+        itemId: solutionItemId,
+      } as interfaces.IStatusResponse);
+
+      spyOn(deleteSolutionFolder, "deleteSolutionFolder").and.resolveTo(true as unknown as boolean);
+
+      const result = await deleteSolutionContents.deleteSolutionContents(
+        solutionItemId,
+        solutionSummary,
+        MOCK_USER_SESSION,
+        options,
+      );
+
+      const noOptionResult = await deleteSolutionContents.deleteSolutionContents(
+        solutionItemId,
+        solutionSummary,
+        MOCK_USER_SESSION,
+      );
+
+      expect(deleteSolutionItem.deleteSolutionItem).toHaveBeenCalledWith(
+        solutionItemId,
+        MOCK_USER_SESSION,
+        false,
+        solutionOwner,
+      );
+
+      expect(deleteSolutionFolder.deleteSolutionFolder).toHaveBeenCalledWith(
+        expectedSolutionIds,
+        solutionSummary.folder,
+        MOCK_USER_SESSION,
+        solutionOwner,
+      );
+
+      // Also assert it returns the same delete summaries returned by removeItems
+      expect(result).toEqual([deletedSummary, failureSummary]);
+      expect(noOptionResult).toEqual([deletedSummary, failureSummary]);
     });
   });
 });

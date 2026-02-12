@@ -2883,6 +2883,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(actual.success).toEqual(true);
     });
 
+    it("removes an item by solution owner", async () => {
+      const itemId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl + "/content/users/pwong/items/" + itemId + "/delete",
+        utils.getSuccessResponse({ itemId }),
+      );
+      const actual = await restHelpers.removeItem(itemId, MOCK_USER_SESSION, true, "pwong");
+      expect(actual.success).toEqual(true);
+    });
+
     it("fails to remove an item", async () => {
       const itemId: string = "ABC123";
       fetchMock.post(
@@ -3348,6 +3358,31 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       });
     });
 
+    it("handles update by solution owner", async () => {
+      const itemInfo: IItemUpdate = {
+        id: "itm1234567890",
+      };
+      const additionalParams: any = {
+        solutionOwner: "pwong",
+      };
+      const updateItemFnStub = sinon.stub(arcGISRestJS, "restUpdateItem").resolves(utils.getSuccessResponse());
+
+      await restHelpers.updateItem(itemInfo, MOCK_USER_SESSION, undefined, additionalParams);
+      const updateItemFnCall = updateItemFnStub.getCall(0);
+      expect(updateItemFnCall.args[0]).toEqual({
+        item: {
+          id: "itm1234567890",
+        },
+        folderId: undefined,
+        authentication: MOCK_USER_SESSION,
+        params: {
+          solutionOwner: "pwong",
+          text: undefined,
+        },
+        owner: "pwong",
+      });
+    });
+
     it("handles update with data parameter", async () => {
       const itemInfo: IItemUpdate = {
         id: "itm1234567890",
@@ -3489,6 +3524,23 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         undefined,
         "public",
         { locationTracking: { owner: "LocationTrackingServiceOwner" } },
+      );
+    });
+
+    it("with solution owner", async () => {
+      itemTemplate.item.id = "itm1234567890";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl + "/content/users/pwong/items/itm1234567890/update",
+        '{"success":true}',
+      );
+      return restHelpers.updateItemExtended(
+        itemTemplate.item,
+        itemTemplate.data,
+        MOCK_USER_SESSION,
+        undefined,
+        undefined,
+        null,
+        "pwong",
       );
     });
 

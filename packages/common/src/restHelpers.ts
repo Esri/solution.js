@@ -1448,12 +1448,14 @@ export function removeGroup(groupId: string, authentication: UserSession): Promi
  * @param authentication Credentials for the request to AGO
  * @param permanentDelete If true (the default), the item is permanently deleted; if false and the item type
  * supports the recycle bin, the item will be put into the recycle bin
+ * @param solutionOwner Optional. The owner of the solution item if it is not the logged on user
  * @returns A promise that will resolve with the result of the request
  */
 export function removeItem(
   itemId: string,
   authentication: UserSession,
   permanentDelete = true,
+  solutionOwner?: string,
 ): Promise<IStatusResponse> {
   return new Promise<IStatusResponse>((resolve, reject) => {
     const requestOptions: IUserItemOptions = {
@@ -1463,6 +1465,9 @@ export function removeItem(
         permanentDelete,
       },
     };
+    if (solutionOwner) {
+      requestOptions.owner = solutionOwner;
+    }
     portalRemoveItem(requestOptions).then((result) => (result.success ? resolve(result) : reject(result)), reject);
   });
 }
@@ -1827,6 +1832,9 @@ export function updateItem(
         ...(additionalParams ?? {}),
       },
     };
+    if (additionalParams?.solutionOwner) {
+      updateOptions.owner = additionalParams.solutionOwner;
+    }
     if (itemInfo?.data instanceof File) {
       //updateOptions.file = itemInfo.data;
       updateOptions.params.file = itemInfo.data;
@@ -1880,6 +1888,8 @@ export function updateGroup(
  * @param authentication Credentials for requests
  * @param thumbnail optional thumbnail to update
  * @param access "public" or "org"
+ * @param templateDictionary Hash of facts: folder id, org URL, adlib replacements
+ * @param solutionOwner The owner of the solution for rest request
  * @return
  */
 export function updateItemExtended(
@@ -1889,6 +1899,7 @@ export function updateItemExtended(
   thumbnail?: File,
   access?: string | undefined,
   templateDictionary?: any,
+  solutionOwner?: string,
 ): Promise<IUpdateItemResponse> {
   return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const updateOptions: IUpdateItemOptions = {
@@ -1903,6 +1914,10 @@ export function updateItemExtended(
     }
     if (isTrackingViewTemplate(undefined, itemInfo) && templateDictionary) {
       updateOptions.owner = templateDictionary.locationTracking.owner;
+    } else {
+      if (solutionOwner) {
+        updateOptions.owner = solutionOwner;
+      }
     }
 
     portalUpdateItem(updateOptions).then(
