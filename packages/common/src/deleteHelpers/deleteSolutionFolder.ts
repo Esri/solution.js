@@ -52,7 +52,7 @@ export function deleteSolutionFolder(
     .then((user) => {
       // And then we need to be sure that the folder is empty
       const query = new SearchQueryBuilder()
-        .match(authentication.username)
+        .match(solutionOwner ?? authentication.username)
         .in("owner")
         .and()
         .match(user.orgId)

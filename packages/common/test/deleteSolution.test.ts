@@ -73,6 +73,14 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(deleteGroupIfEmptySpy.calls.count()).toEqual(2);
     });
 
+    it("handles a solution owner", async () => {
+      const deleteGroupIfEmptySpy = spyOn(deleteGroupIfEmpty, "deleteGroupIfEmpty").and.resolveTo(true);
+
+      const result = await deleteEmptyGroups.deleteEmptyGroups(["grp1234567890"], MOCK_USER_SESSION, "pwong");
+      expect(result).toEqual(["grp1234567890"]);
+      expect(deleteGroupIfEmptySpy.calls.count()).toEqual(1);
+    });
+
     it("handles failure", async () => {
       const deleteGroupIfEmptySpy = spyOn(deleteGroupIfEmpty, "deleteGroupIfEmpty").and.returnValues(
         Promise.resolve(true),
@@ -147,7 +155,7 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
         success: true,
       });
 
-      const result = await deleteGroupIfEmpty.deleteGroupIfEmpty("grp1234567890", MOCK_USER_SESSION);
+      const result = await deleteGroupIfEmpty.deleteGroupIfEmpty("grp1234567890", MOCK_USER_SESSION, "pwong");
       expect(result).toBeFalsy();
       expect(getGroupSpy.calls.count()).withContext("getGroupSpy").toEqual(1);
       expect(getGroupContentSpy.calls.count()).withContext("getGroupContentSpy").toEqual(0);

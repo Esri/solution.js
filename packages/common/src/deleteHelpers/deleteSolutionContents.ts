@@ -109,9 +109,17 @@ export function deleteSolutionContents(
         // Attempt to delete groups; we won't be checking success
         return new Promise<ISolutionPrecis[]>((resolve2) => {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          deleteEmptyGroups.deleteEmptyGroups(solutionSummary.groups, authentication).then(() => {
-            resolve2(results);
-          });
+          if (deleteOptions.solutionOwner) {
+            deleteEmptyGroups
+              .deleteEmptyGroups(solutionSummary.groups, authentication, deleteOptions.solutionOwner)
+              .then(() => {
+                resolve2(results);
+              });
+          } else {
+            deleteEmptyGroups.deleteEmptyGroups(solutionSummary.groups, authentication).then(() => {
+              resolve2(results);
+            });
+          }
         });
       })
       .then(() => {

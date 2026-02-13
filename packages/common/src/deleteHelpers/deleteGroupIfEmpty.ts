@@ -36,24 +36,26 @@ import {
  *
  * @param groupId Id of the group to be deleted
  * @param authentication Credentials for the request
+ * @param solutionOwner Owner of solution if it's not authenticated user
  * @returns Promise indicating if group was deleted
  */
-export function deleteGroupIfEmpty(groupId: string, authentication: UserSession): Promise<boolean> {
-  let username: string;
+export function deleteGroupIfEmpty(
+  groupId: string,
+  authentication: UserSession,
+  solutionOwner?: string,
+): Promise<boolean> {
   let isGroupProtected: boolean;
 
   // Get the owner tied to the authentication
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   return authentication
     .getUsername()
-    .then((response) => {
-      username = response;
-
+    .then(() => {
       // We need to know the owner and protection status of the group
       return getGroup(groupId, { authentication });
     })
     .then((group: IGroup) => {
-      if (group.owner !== username) {
+      if (solutionOwner && group.owner !== solutionOwner) {
         return Promise.resolve(null); // don't delete a group we don't own
       }
       isGroupProtected = group.protected; // do we need to unprotect before deleting?
@@ -78,7 +80,7 @@ export function deleteGroupIfEmpty(groupId: string, authentication: UserSession)
       if (isGroupProtected) {
         const groupOptions: IUserGroupOptions = {
           id: groupId,
-          authentication,
+          authentication
         };
         return unprotectGroup(groupOptions);
       } else {
