@@ -2,7 +2,7 @@
 
 ## RELEASES
 **v6.5.0 **
- - Abort deployment - do a second path on folder deletion in case ArcGIS Online or Enterprise is still in process of deletion.
+ - Abort deployment - do a second pass on folder deletion in case ArcGIS Online or Enterprise is still in process of deletion.
  - Add optional solution owner parameter to delete and update functions to support custom user type delete/update privileges of non owned items.
 
 **v6.4.0 **
