@@ -1,6 +1,10 @@
 ## Version 6 marks the use of ArcGIS Rest JS 4x within Solution JS. Previous versions leveraged ArcGIS Rest JS 3x.
 
 ## RELEASES
+**v6.5.0 **
+ - Abort deployment - do a second pass on folder deletion in case ArcGIS Online or Enterprise is still in process of deletion.
+ - Add optional solution owner parameter to delete and update functions to support custom user type delete/update privileges of non owned items.
+
 **v6.4.0 **
  - cancel deployment mid deployment
  - delete solution item if if their were dependencies
