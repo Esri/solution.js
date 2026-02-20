@@ -44,3 +44,19 @@ Logged in as <npm username> on https://registry.npmjs.org/
 * support\deprecateVersion.bat deprecates a version in npmjs
 * support\setLatestVersion.bat sets the "latest" version tag in npmjs
 * support\setNextVersion.bat sets the "next" version tag in npmjs
+
+##### Lerna tag issue
+If you run publish and you selected a version and some error occurred, and lerna already used the tag.  Here is how to delete it.
+Check if it is used
+for local
+git tag -l v6.5.0
+
+if on remote
+git ls-remote --tags origin | findstr v6.5.0
+
+then delete
+Local
+git tag -d v6.5.0
+
+remote
+git push origin :refs/tags/v6.5.0
