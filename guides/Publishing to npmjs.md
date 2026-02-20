@@ -49,14 +49,14 @@ Logged in as <npm username> on https://registry.npmjs.org/
 If you run publish and you selected a version and some error occurred, and lerna already used the tag.  Here is how to delete it.
 Check if it is used
 for local
-git tag -l v6.5.0
+* git tag -l v6.5.0
 
 if on remote
-git ls-remote --tags origin | findstr v6.5.0
+* git ls-remote --tags origin | findstr v6.5.0
 
 then delete
 Local
-git tag -d v6.5.0
+* git tag -d v6.5.0
 
 remote
-git push origin :refs/tags/v6.5.0
+* git push origin :refs/tags/v6.5.0
