@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-feature-layer",
-  "version": "6.6.0-next.20260222",
+  "version": "6.6.0-next.20260223",
   "description": "Manages the creation and deployment of feature layers and services for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -22,7 +22,7 @@
     "npm-check-updates": "^17.1.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^6.6.0-next.20260222",
+    "@esri/solution-common": "^6.6.0-next.20260223",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -77,5 +77,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "2535ee012965875c3fb6cdd17f51ce969d0cb54c"
+  "gitHead": "51ed571e6691b4f369bc9bcd5e24b19a480b81b1"
 }
