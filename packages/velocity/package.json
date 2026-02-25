@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-velocity",
-  "version": "6.6.0",
+  "version": "6.6.0-next.20260224",
   "description": "Manages the creation and deployment of Velocity item types for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -22,7 +22,7 @@
     "npm-check-updates": "^17.1.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^6.6.0",
+    "@esri/solution-common": "^6.6.0-next.20260224",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -70,5 +70,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "8fd57339582b9ddf52207a6f90641021a518fdc2"
+  "gitHead": "f110d4c0977dd318c3e3af388db2e7c6e4bcd7d0"
 }
