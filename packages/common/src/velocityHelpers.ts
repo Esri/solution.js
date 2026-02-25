@@ -74,9 +74,9 @@ export function getVelocityInfo(authentication: UserSession): Promise<IVelocityI
     /* istanbul ignore else */
     if (Array.isArray(orgCapabilities)) {
       orgCapabilities.some((c) => {
-        hasVelocity = c.id === "velocity" ? true : hasVelocity;
+        hasVelocity = String(c.id).toLowerCase() === "velocity" ? true : hasVelocity;
         /* istanbul ignore else */
-        if (hasVelocity && c.status === "active" && c.velocityUrl) {
+        if (hasVelocity && String(c.status).toLowerCase() === "active" && c.velocityUrl) {
           velocityUrl = c.velocityUrl;
         }
         return velocityUrl;
