@@ -80,7 +80,7 @@ export function deleteGroupIfEmpty(
       if (isGroupProtected) {
         const groupOptions: IUserGroupOptions = {
           id: groupId,
-          authentication
+          authentication,
         };
         return unprotectGroup(groupOptions);
       } else {
