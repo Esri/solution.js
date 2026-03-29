@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-deployer",
-  "version": "6.6.0-next.20260327",
+  "version": "6.6.0-next.20260328",
   "description": "Manages the deployment of a Solution for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -24,18 +24,18 @@
   },
   "dependencies": {
     "@esri/hub-common": "^17.0.2",
-    "@esri/solution-common": "^6.6.0-next.20260327",
-    "@esri/solution-feature-layer": "^6.6.0-next.20260327",
-    "@esri/solution-file": "^6.6.0-next.20260327",
-    "@esri/solution-form": "^6.6.0-next.20260327",
-    "@esri/solution-group": "^6.6.0-next.20260327",
-    "@esri/solution-hub-types": "^6.6.0-next.20260327",
-    "@esri/solution-simple-types": "^6.6.0-next.20260327",
-    "@esri/solution-storymap": "^6.6.0-next.20260327",
-    "@esri/solution-velocity": "^6.6.0-next.20260327",
-    "@esri/solution-web-experience": "^6.6.0-next.20260327",
-    "@esri/solution-web-tool": "^6.6.0-next.20260327",
-    "@esri/solution-workflow": "^6.6.0-next.20260327",
+    "@esri/solution-common": "^6.6.0-next.20260328",
+    "@esri/solution-feature-layer": "^6.6.0-next.20260328",
+    "@esri/solution-file": "^6.6.0-next.20260328",
+    "@esri/solution-form": "^6.6.0-next.20260328",
+    "@esri/solution-group": "^6.6.0-next.20260328",
+    "@esri/solution-hub-types": "^6.6.0-next.20260328",
+    "@esri/solution-simple-types": "^6.6.0-next.20260328",
+    "@esri/solution-storymap": "^6.6.0-next.20260328",
+    "@esri/solution-velocity": "^6.6.0-next.20260328",
+    "@esri/solution-web-experience": "^6.6.0-next.20260328",
+    "@esri/solution-web-tool": "^6.6.0-next.20260328",
+    "@esri/solution-workflow": "^6.6.0-next.20260328",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -90,5 +90,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "1fc11520ce9048b6e7e5e16df6b50d1d145e6c85"
+  "gitHead": "7d8064d78a4d80cd0fcbb5983b98f89d67f14c27"
 }
