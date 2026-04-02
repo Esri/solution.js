@@ -33,9 +33,13 @@ call npm view @esri/solution-common version >temp.txt
 set/p latestVersion=<temp.txt
 del/q temp.txt
 
-rem Create a version number from a root value suffixed with "-next.<today's date>"
-rem MM/dd/yyyy (04/06/2010) --> 20100406
-set timestamp=%date:~6,4%%date:~0,2%%date:~3,2%
+rem Create a version number from a root value suffixed with "-next.<today's date + time>"
+rem MM/dd/yyyy (04/06/2010) and hh:mm:ss.xx (07:05:09.12) --> 20100406070509
+set hh=%time:~0,2%
+set hh=%hh: =0%
+set mm=%time:~3,2%
+set ss=%time:~6,2%
+set timestamp=%date:~6,4%%date:~0,2%%date:~3,2%%hh%%mm%%ss%
 set nextVersion=%versionRoot%-next.%timestamp%
 echo Publishing %nextVersion%
 
