@@ -45,6 +45,7 @@ import {
   restGetGroupCategorySchema as portalGetGroupCategorySchema,
   restGetItemResources as portalGetItemResources,
   restGetPortal as portalGetPortal,
+  restSearchItems,
   UserSession,
 } from "./arcgisRestJS";
 import { getBlob } from "./resources/get-blob";
@@ -293,10 +294,19 @@ export function getGroupContents(groupId: string, authentication: UserSession): 
  *         or response error code
  */
 export function getItemBase(itemId: string, authentication: UserSession): Promise<IItem> {
-  const itemParam: IRequestOptions = {
-    authentication: authentication,
-  };
-  return getItem(itemId, itemParam);
+  const requestOptions: IRequestOptions = { authentication };
+
+  return restSearchItems({
+    q: `id:${itemId}`,
+    num: 1,
+    ...requestOptions,
+  }).then((searchResponse) => {
+    const item = searchResponse?.results?.[0];
+    if (!item || item.id !== itemId) {
+      throw new Error(`Item not found via search: ${itemId}`);
+    }
+    return item;
+  });
 }
 
 /**

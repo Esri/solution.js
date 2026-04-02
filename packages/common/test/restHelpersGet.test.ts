@@ -341,61 +341,55 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemBase", () => {
-    it("item doesn't allow access to item", async () => {
+    it("item doesn't allow access to item (search returns 403)", async () => {
       const itemId = "itm1234567890";
-      const expected: any = {
-        name: "ArcGISAuthError",
-        message: "GWM_0003: You do not have permissions to access this resource or perform this operation.",
-        originalMessage: "You do not have permissions to access this resource or perform this operation.",
-        code: "GWM_0003",
-        response: {
-          error: {
-            code: 403,
-            messageCode: "GWM_0003",
-            message: "You do not have permissions to access this resource or perform this operation.",
-            details: [] as any[],
-          },
-        },
-        url: utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token",
-        options: {
-          httpMethod: "GET",
-          params: {
-            f: "json",
-          },
-          authentication: {
-            clientId: "clientId",
-            refreshToken: "refreshToken",
-            refreshTokenExpires: "2019-06-13T19:35:21.995Z",
-            username: "casey",
-            password: "123456",
-            token: "fake-token",
-            tokenExpires: "2019-06-13T19:35:21.995Z",
-            portal: utils.PORTAL_SUBSET.restUrl,
-            tokenDuration: 20160,
-            redirectUri: "https://example-app.com/redirect-uri",
-            refreshTokenTTL: 1440,
-          },
-          headers: {},
+
+      // What the portal would return for forbidden
+      const forbiddenBody = {
+        error: {
+          code: 403,
+          messageCode: "GWM_0003",
+          message: "You do not have permissions to access this resource or perform this operation.",
+          details: [] as any[],
         },
       };
 
-      fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token",
-        JSON.stringify(expected),
-      );
+      // Match the new endpoint.
+      // You can match exactly OR use begin:/function matcher (less brittle).
+      const expectedUrl =
+        `${utils.PORTAL_SUBSET.restUrl}/search` +
+        `?f=json&q=id%3A${itemId}&num=1&token=fake-token`;
 
-      const response = await restHelpersGet.getItemBase(itemId, MOCK_USER_SESSION);
-      expect(response).toEqual(expected);
+      fetchMock.get(expectedUrl, {
+        status: 403,
+        body: forbiddenBody,
+        headers: { "Content-Type": "application/json" },
+      });
+
+      await expectAsync(
+        restHelpersGet.getItemBase(itemId, MOCK_USER_SESSION)
+      ).toBeRejected();
     });
 
     it("item is accessible", async () => {
       const itemId = "itm1234567890";
-      const expected: any = { values: { a: 1, b: "c" } };
+      const expected: any = { values: { a: 1, b: "c" }, id: itemId };
 
-      fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token",
-        JSON.stringify(expected),
-      );
+      const searchUrl =
+        `${utils.PORTAL_SUBSET.restUrl}/search` +
+        `?f=json&q=id%3A${itemId}&num=1&token=fake-token`;
+
+      fetchMock.get(searchUrl, {
+        status: 200,
+        body: {
+          total: 1,
+          start: 1,
+          num: 1,
+          nextStart: -1,
+          results: [expected],
+        },
+        headers: { "Content-Type": "application/json" },
+      });
 
       const response = await restHelpersGet.getItemBase(itemId, MOCK_USER_SESSION);
       expect(response).toEqual(expected);

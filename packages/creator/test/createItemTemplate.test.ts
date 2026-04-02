@@ -173,6 +173,7 @@ describe("Module `createItemTemplate`", () => {
       const templateDictionary: any = {};
       const authentication: common.UserSession = MOCK_USER_SESSION;
       const existingTemplates: common.IItemTemplate[] = [];
+
       const resources: any = {
         total: 1,
         start: 1,
@@ -189,11 +190,46 @@ describe("Module `createItemTemplate`", () => {
         ],
       };
 
+      const qcItem = mockItems.getAGOLItem("QuickCapture Project");
+      const webMapItem = mockItems.getAGOLItem("Web Map");
+
+      // ✅ NEW: mock searchItems for QuickCapture item
+      fetchMock.get(
+        (url: string) =>
+          url.startsWith(utils.PORTAL_SUBSET.restUrl + "/search?") &&
+          url.includes("f=json") &&
+          url.includes("token=fake-token") &&
+          // match either q=id:<id> OR q="<id>" etc (encoded or not)
+          url.includes("q=") &&
+          url.includes(itemId),
+        {
+          total: 1,
+          start: 1,
+          num: 1,
+          nextStart: -1,
+          results: [qcItem],
+        },
+      );
+
+      // ✅ NEW: mock searchItems for the dependent Web Map
+      fetchMock.get(
+        (url: string) =>
+          url.startsWith(utils.PORTAL_SUBSET.restUrl + "/search?") &&
+          url.includes("f=json") &&
+          url.includes("token=fake-token") &&
+          url.includes("q=") &&
+          url.includes("map1234567890"),
+        {
+          total: 1,
+          start: 1,
+          num: 1,
+          nextStart: -1,
+          results: [webMapItem],
+        },
+      );
+
+      // Everything else remains the same
       fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/qck1234567890?f=json&token=fake-token",
-          mockItems.getAGOLItem("QuickCapture Project"),
-        )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png?w=400",
           utils.getSampleImageAsBlob(),
@@ -209,10 +245,6 @@ describe("Module `createItemTemplate`", () => {
           utils.getSampleQCProjectJsonFile(),
           { sendAsJson: false },
         )
-        .get(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890?f=json&token=fake-token",
-          mockItems.getAGOLItem("Web Map"),
-        )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
           utils.getSampleImageAsBlob(),
@@ -227,6 +259,7 @@ describe("Module `createItemTemplate`", () => {
           success: true,
           id: solutionItemId,
         });
+
       staticRelatedItemsMocks.fetchMockRelatedItems("qck1234567890", {
         total: 0,
         relatedItems: [],
@@ -245,6 +278,7 @@ describe("Module `createItemTemplate`", () => {
         existingTemplates,
         utils.ITEM_PROGRESS_CALLBACK,
       );
+
       expect(existingTemplates.length).toEqual(2);
       expect(existingTemplates[0].itemId).toEqual(itemId);
       expect(existingTemplates[0].resources).toEqual(["qck1234567890_info_thumbnail/ago_downloaded.png"]);
