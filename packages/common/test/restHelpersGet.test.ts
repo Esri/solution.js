@@ -356,9 +356,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
       // Match the new endpoint.
       // You can match exactly OR use begin:/function matcher (less brittle).
-      const expectedUrl =
-        `${utils.PORTAL_SUBSET.restUrl}/search` +
-        `?f=json&q=id%3A${itemId}&num=1&token=fake-token`;
+      const expectedUrl = `${utils.PORTAL_SUBSET.restUrl}/search` + `?f=json&q=id%3A${itemId}&num=1&token=fake-token`;
 
       fetchMock.get(expectedUrl, {
         status: 403,
@@ -366,18 +364,14 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         headers: { "Content-Type": "application/json" },
       });
 
-      await expectAsync(
-        restHelpersGet.getItemBase(itemId, MOCK_USER_SESSION)
-      ).toBeRejected();
+      await expectAsync(restHelpersGet.getItemBase(itemId, MOCK_USER_SESSION)).toBeRejected();
     });
 
     it("item is accessible", async () => {
       const itemId = "itm1234567890";
       const expected: any = { values: { a: 1, b: "c" }, id: itemId };
 
-      const searchUrl =
-        `${utils.PORTAL_SUBSET.restUrl}/search` +
-        `?f=json&q=id%3A${itemId}&num=1&token=fake-token`;
+      const searchUrl = `${utils.PORTAL_SUBSET.restUrl}/search` + `?f=json&q=id%3A${itemId}&num=1&token=fake-token`;
 
       fetchMock.get(searchUrl, {
         status: 200,

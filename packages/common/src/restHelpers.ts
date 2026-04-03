@@ -2489,7 +2489,7 @@ export function _updateItemURL(id: string, url: string, authentication: UserSess
           // Get the item to see if the URL really changed; we'll delay a bit before testing because AGO
           // has a timing problem with URL updates
           setTimeout(() => {
-            getItem(id, { authentication: authentication }).then(
+            getItemBase(id, authentication).then(
               (item) => {
                 const iBrace = item.url.indexOf("{");
                 if (iBrace > -1) {

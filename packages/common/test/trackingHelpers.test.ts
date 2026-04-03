@@ -56,12 +56,9 @@ describe("Module `trackingHelpers`: common functions", () => {
       const expected = false;
 
       // Mock the `restSearchItem` endpoint
-      fetchMock.get(
-        `https://myorg.maps.arcgis.com/sharing/rest/search?f=json&q=id%3A${id}&num=1&token=fake-token`,
-        {
-          results: [{ id, owner }],
-        }
-      );
+      fetchMock.get(`https://myorg.maps.arcgis.com/sharing/rest/search?f=json&q=id%3A${id}&num=1&token=fake-token`, {
+        results: [{ id, owner }],
+      });
 
       const expectedTemplateDict: any = cloneObject(templateDictionary);
       expectedTemplateDict[id] = {

@@ -409,7 +409,7 @@ export async function _updateCreateOptionForReDeployedTemplate(
       if (template.type === "Group") {
         checkExistsList.push(getGroup(template.itemId, { authentication: authentication }));
       } else {
-        checkExistsList.push(getItem(template.itemId, { authentication: authentication }));
+        checkExistsList.push(getItemBase(template.itemId, authentication));
       }
     }
     const itemFetches = await Promise.allSettled(checkExistsList);
