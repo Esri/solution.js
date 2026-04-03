@@ -311,6 +311,7 @@ describe("Module `deployer`", () => {
           testUtils.getSuccessResponse({
             layers: [{ name: "ROW Permits", id: 0 }],
             tables: [{ name: "ROW Permit Comment", id: 1 }],
+            customParams: { someProperty: "ABC" }, // Add this if `someProperty` is expected
           }),
         )
         .post(featureServerAdminUrl + "/0?f=json", layer)
@@ -516,7 +517,7 @@ describe("Module `deployer`", () => {
       };
 
       const expectedUpdateBody: string =
-        "f=json&id=map1234567890&url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3Dmap1234567890&token=fake-token";
+      "f=json&id=map1234567890&url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3Dmap1234567890&token=fake-token";
 
       const options: common.IDeploySolutionOptions = {
         templateDictionary: templateDictionary,

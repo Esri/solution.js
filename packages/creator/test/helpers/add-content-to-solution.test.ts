@@ -137,10 +137,14 @@ describe("addContentToSolution", () => {
 
     return addContentToSolution(solutionId, options, MOCK_USER_SESSION, MOCK_USER_SESSION).then(
       () => {
-        return Promise.reject();
+        return Promise.reject("Expected the promise to reject, but it resolved.");
       },
       (e) => {
+        // Ensure the rejection object has the expected properties
+        expect(e).toBeDefined();
+        expect(e.success).toBeDefined();
         expect(e.success).toBeFalse();
+        expect(e.error).toBeDefined();
         expect(e.error).toEqual("One or more items cannot be converted into templates");
         return Promise.resolve();
       },

@@ -49,30 +49,16 @@ describe("Module `trackingHelpers`: common functions", () => {
     it("will get tracking info", async () => {
       const id = "7ab2bd317dd645308b9d7de3045423c6";
       const owner = "LocationTrackingOwner";
-
       const templateDictionary: any = {
         locationTrackingEnabled: true,
         locationTracking: { id },
       };
-
       const expected = false;
 
-      // If getTackingServiceOwner now uses searchItems/restSearchItems,
-      // it will hit /sharing/rest/search with q containing the item id.
-      // We mock that endpoint and return a search response.
+      // Mock the `restSearchItem` endpoint
       fetchMock.get(
-        // Use a regex to avoid issues with param ordering/encoding
-        new RegExp(
-          `^https://myorg\\.maps\\.arcgis\\.com/sharing/rest/search\\?` +
-            `.*(?:^|&)f=json(?:&|$).*` +
-            `(?:^|&)q=.*${id}.*` +
-            `(?:^|&)token=fake-token(?:&|$).*`
-        ),
+        `https://myorg.maps.arcgis.com/sharing/rest/search?f=json&q=id%3A${id}&num=1&token=fake-token`,
         {
-          total: 1,
-          start: 1,
-          num: 1,
-          nextStart: -1,
           results: [{ id, owner }],
         }
       );
@@ -84,7 +70,6 @@ describe("Module `trackingHelpers`: common functions", () => {
       expectedTemplateDict.locationTracking.owner = owner;
 
       const actual = await getTackingServiceOwner(templateDictionary, MOCK_USER_SESSION);
-
       expect(actual).toEqual(expected);
       expect(templateDictionary).toEqual(expectedTemplateDict);
     });

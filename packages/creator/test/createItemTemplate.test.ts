@@ -443,24 +443,14 @@ describe("Module `createItemTemplate`", () => {
         )
         .post(utils.PORTAL_SUBSET.restUrl + "/content/items/wma1234567890/resources", noResourcesResponse)
         .get(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890?f=json&token=fake-token",
-          mockItems.getAGOLItem("Web Map"),
+          "https://myorg.maps.arcgis.com/sharing/rest/search?f=json&q=id%3Awma1234567890&num=1&token=fake-token",
+          { results: [] }, // Mock an empty search result
         )
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
-          utils.getSampleImageAsBlob(),
-        )
-        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data", noDataResponse)
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/info/metadata/metadata.xml",
-          noMetadataResponse,
-        )
-        .post(utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/resources", noResourcesResponse)
-        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/sln1234567890/addResources", {
-          success: true,
-          id: solutionItemId,
-        })
-        .post(utils.PORTAL_SUBSET.portalUrl + "/FeatureServer", mockItems.get500Failure());
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/wma1234567890?f=json&token=fake-token",
+          { results: [] }, // Mock an empty group result
+        );
+
       staticRelatedItemsMocks.fetchMockRelatedItems("wma1234567890", {
         total: 0,
         relatedItems: [],
@@ -475,9 +465,26 @@ describe("Module `createItemTemplate`", () => {
         existingTemplates,
         utils.ITEM_PROGRESS_CALLBACK,
       );
+
       const createdTemplate = common.findTemplateInList(existingTemplates, itemId);
-      expect(createdTemplate?.properties.error).not.toBeUndefined();
-      const parsedError: any = JSON.parse(createdTemplate?.properties.error);
+
+      // Ensure the createdTemplate exists
+      expect(createdTemplate).not.toBeUndefined();
+      expect(createdTemplate?.properties).not.toBeUndefined();
+
+      // Ensure the error property is set
+      if (!createdTemplate?.properties.error) {
+        fail("Error property is not set on the created template.");
+      }
+
+      // Parse the error only if it's a valid JSON string
+      let parsedError: any;
+      try {
+        parsedError = JSON.parse(createdTemplate?.properties.error);
+      } catch (e) {
+        fail(`Error property is not valid JSON: ${createdTemplate?.properties.error}`);
+      }
+
       expect(parsedError.success).toBeFalse();
       expect(parsedError.error.message).toEqual("Item does not have a file.");
     });
