@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-creator",
-  "version": "6.6.0-next.20260402204821",
+  "version": "6.6.0-next.20260403204833",
   "description": "Manages the creation of a Solution item for @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -25,18 +25,18 @@
   },
   "dependencies": {
     "@esri/hub-common": "^17.0.2",
-    "@esri/solution-common": "^6.6.0-next.20260402204821",
-    "@esri/solution-feature-layer": "^6.6.0-next.20260402204821",
-    "@esri/solution-file": "^6.6.0-next.20260402204821",
-    "@esri/solution-form": "^6.6.0-next.20260402204821",
-    "@esri/solution-group": "^6.6.0-next.20260402204821",
-    "@esri/solution-hub-types": "^6.6.0-next.20260402204821",
-    "@esri/solution-simple-types": "^6.6.0-next.20260402204821",
-    "@esri/solution-storymap": "^6.6.0-next.20260402204821",
-    "@esri/solution-velocity": "^6.6.0-next.20260402204821",
-    "@esri/solution-web-experience": "^6.6.0-next.20260402204821",
-    "@esri/solution-web-tool": "^6.6.0-next.20260402204821",
-    "@esri/solution-workflow": "^6.6.0-next.20260402204821",
+    "@esri/solution-common": "^6.6.0-next.20260403204833",
+    "@esri/solution-feature-layer": "^6.6.0-next.20260403204833",
+    "@esri/solution-file": "^6.6.0-next.20260403204833",
+    "@esri/solution-form": "^6.6.0-next.20260403204833",
+    "@esri/solution-group": "^6.6.0-next.20260403204833",
+    "@esri/solution-hub-types": "^6.6.0-next.20260403204833",
+    "@esri/solution-simple-types": "^6.6.0-next.20260403204833",
+    "@esri/solution-storymap": "^6.6.0-next.20260403204833",
+    "@esri/solution-velocity": "^6.6.0-next.20260403204833",
+    "@esri/solution-web-experience": "^6.6.0-next.20260403204833",
+    "@esri/solution-web-tool": "^6.6.0-next.20260403204833",
+    "@esri/solution-workflow": "^6.6.0-next.20260403204833",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -91,5 +91,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "62096f7663a709abbb3a2aabe40ea7c2ca8d2a35"
+  "gitHead": "b2a5a46d46c8c0dded7ffa08f3f8b6c5d2be114a"
 }
