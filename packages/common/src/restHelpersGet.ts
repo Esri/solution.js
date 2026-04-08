@@ -126,6 +126,59 @@ export function getFoldersAndGroups(authentication: UserSession): Promise<any> {
 }
 
 /**
+ * Gets the folders of a specific user.
+ *
+ * @param username Username of the user whose folders are sought
+ * @param authentication Credentials for the request to AGO
+ * @returns A promise that will resolve with list of user's folders or an empty list
+ */
+export function getUserFolders(username: string, authentication: UserSession): Promise<any[]> {
+  return new Promise<any[]>((resolve, reject) => {
+    const requestOptions = {
+      httpMethod: "GET",
+      authentication: authentication,
+      rawResponse: false,
+    } as IRequestOptions;
+
+    const foldersUrl: string = `${authentication.portal}/content/users/${encodeURIComponent(username)}`;
+
+    request(foldersUrl, requestOptions).then(
+      (response) => {
+        resolve(response.folders || []);
+      },
+      (e) => reject(e),
+    );
+  });
+}
+
+/**
+ * Gets a specific folder and its contents for a user.
+ *
+ * @param username Username of the user whose folder is sought
+ * @param folderId ID of the folder to retrieve
+ * @param authentication Credentials for the request to AGO
+ * @returns A promise that will resolve with folder information including currentFolder and items
+ */
+export function getUserFolder(username: string, folderId: string, authentication: UserSession): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    const requestOptions = {
+      httpMethod: "GET",
+      authentication: authentication,
+      rawResponse: false,
+    } as IRequestOptions;
+
+    const folderUrl: string = `${authentication.portal}/content/users/${encodeURIComponent(username)}/${encodeURIComponent(folderId)}`;
+
+    request(folderUrl, requestOptions).then(
+      (response) => {
+        resolve(response);
+      },
+      (e) => reject(e),
+    );
+  });
+}
+
+/**
  * Gets a Blob from a web site and casts it as a file using the supplied name.
  *
  * @param url Address of Blob
