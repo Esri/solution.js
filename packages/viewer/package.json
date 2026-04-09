@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "6.6.0-next.20260408204908",
+  "version": "6.6.1-next.0",
   "description": "Simplifies access to @esri/solution.js.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -22,7 +22,7 @@
     "npm-check-updates": "^17.1.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^6.6.0-next.20260408204908",
+    "@esri/solution-common": "^6.6.1-next.0",
     "tslib": "1.14.1"
   },
   "scripts": {
@@ -77,5 +77,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "b12dbc50c4b945605d107efa25ddac41f133b84b"
+  "gitHead": "a17c59d6edd0de471700387f3d1a85802b9f0c76"
 }
