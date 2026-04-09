@@ -131,6 +131,129 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
+  describe("getUserFolders", () => {
+    it("can handle an exception on get user folders", async () => {
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl + "/content/users/testuser?f=json&token=fake-token",
+        mockItems.get500Failure(),
+      );
+
+      return restHelpersGet.getUserFolders("testuser", MOCK_USER_SESSION).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
+    });
+
+    it("can handle undefined folders", async () => {
+      const response: any = utils.getSuccessResponse();
+      fetchMock.get(utils.PORTAL_SUBSET.restUrl + "/content/users/testuser?f=json&token=fake-token", response);
+
+      const actual = await restHelpersGet.getUserFolders("testuser", MOCK_USER_SESSION);
+      expect(actual).toEqual([]);
+    });
+
+    it("can retrieve folders for a specific user", async () => {
+      const response: any = {
+        ...utils.getSuccessResponse(),
+        folders: [
+          {
+            id: "abc1234567890",
+            title: "Test Folder",
+            username: "testuser",
+            created: 1234567890000,
+          },
+          {
+            id: "def0987654321",
+            title: "Another Folder",
+            username: "testuser",
+            created: 1234567891000,
+          },
+        ],
+      };
+      fetchMock.get(utils.PORTAL_SUBSET.restUrl + "/content/users/testuser?f=json&token=fake-token", response);
+
+      const actual = await restHelpersGet.getUserFolders("testuser", MOCK_USER_SESSION);
+      expect(actual).toEqual(response.folders);
+      expect(actual.length).toEqual(2);
+    });
+  });
+
+  describe("getUserFolder", () => {
+    it("can handle an exception on get user folder", async () => {
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl + "/content/users/testuser/abc1234567890?f=json&token=fake-token",
+        mockItems.get500Failure(),
+      );
+
+      return restHelpersGet.getUserFolder("testuser", "abc1234567890", MOCK_USER_SESSION).then(
+        () => fail(),
+        () => Promise.resolve(),
+      );
+    });
+
+    it("can retrieve a specific folder with items", async () => {
+      const response: any = {
+        username: "testuser",
+        currentFolder: {
+          username: "testuser",
+          id: "abc1234567890",
+          title: "Test Folder",
+          created: 1234567890000,
+        },
+        items: [
+          {
+            id: "item1234567890",
+            owner: "testuser",
+            title: "Test Item 1",
+            type: "Web Map",
+            access: "private",
+            created: 1234567891000,
+            modified: 1234567892000,
+          },
+          {
+            id: "item0987654321",
+            owner: "testuser",
+            title: "Test Item 2",
+            type: "Feature Service",
+            access: "public",
+            created: 1234567893000,
+            modified: 1234567894000,
+          },
+        ],
+      };
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl + "/content/users/testuser/abc1234567890?f=json&token=fake-token",
+        response,
+      );
+
+      const actual = await restHelpersGet.getUserFolder("testuser", "abc1234567890", MOCK_USER_SESSION);
+      expect(actual).toEqual(response);
+      expect(actual.currentFolder.id).toEqual("abc1234567890");
+      expect(actual.items.length).toEqual(2);
+    });
+
+    it("can retrieve an empty folder", async () => {
+      const response: any = {
+        username: "testuser",
+        currentFolder: {
+          username: "testuser",
+          id: "def0987654321",
+          title: "Empty Folder",
+          created: 1234567890000,
+        },
+        items: [],
+      };
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl + "/content/users/testuser/def0987654321?f=json&token=fake-token",
+        response,
+      );
+
+      const actual = await restHelpersGet.getUserFolder("testuser", "def0987654321", MOCK_USER_SESSION);
+      expect(actual).toEqual(response);
+      expect(actual.items.length).toEqual(0);
+    });
+  });
+
   describe("getBlobAsFile", () => {
     it("should ignore ignorable error", async () => {
       const url = utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890?f=json&token=fake-token";
