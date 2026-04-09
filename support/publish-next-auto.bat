@@ -4,7 +4,6 @@ rem e.g, support\publish-next-auto.bat 6.2.0
 rem NOTE: This batch file must be run from the root of the repo.
 rem NOTE: This batch file does a hard reset of git changes!
 rem There will be no working directory or staged changes when it completes.
-rem NOTE: The system short-date format must be MM/dd/yyyy (04/06/2010).
 setlocal
 echo off
 
@@ -33,14 +32,22 @@ call npm view @esri/solution-common version >temp.txt
 set/p latestVersion=<temp.txt
 del/q temp.txt
 
-rem Create a version number from a root value suffixed with "-next.<today's date + time>"
-rem MM/dd/yyyy (04/06/2010) and hh:mm:ss.xx (07:05:09.12) --> 20100406070509
-set hh=%time:~0,2%
-set hh=%hh: =0%
-set mm=%time:~3,2%
-set ss=%time:~6,2%
-set timestamp=%date:~6,4%%date:~0,2%%date:~3,2%%hh%%mm%%ss%
-set nextVersion=%versionRoot%-next.%timestamp%
+rem Build the next version using an incrementing prerelease number.
+rem If npm "next" tag matches this root (for example 6.6.1-next.3), publish 6.6.1-next.4.
+rem Otherwise start at 6.6.1-next.0.
+call npm view @esri/solution-common dist-tags.next >temp.txt
+set/p currentNextVersion=<temp.txt
+del/q temp.txt
+
+set nextNumber=0
+echo %currentNextVersion% | findstr /B /C:"%versionRoot%-next." >nul
+if %errorlevel%==0 (
+	for /f "tokens=2 delims=-" %%a in ("%currentNextVersion%") do (
+		for /f "tokens=2 delims=." %%b in ("%%a") do set /a nextNumber=%%b+1
+	)
+)
+
+set nextVersion=%versionRoot%-next.%nextNumber%
 echo Publishing %nextVersion%
 
 rem Update the version number for all but the top-level package
