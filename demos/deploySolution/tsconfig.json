@@ -9,7 +9,7 @@
     "importHelpers": true,
     "lib": ["dom", "esnext"],
     "module": "es2022",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noImplicitAny": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
