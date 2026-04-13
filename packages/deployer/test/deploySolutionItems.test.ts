@@ -870,8 +870,13 @@ describe("Module `deploySolutionItems`", () => {
       abortController.abort();
 
       const folderError = new Error("folder removal failed");
-      // Spy on getUser to reject — this causes deleteSolutionFolder to throw without making any HTTP calls
-      spyOn(MOCK_USER_SESSION, "getUser").and.rejectWith(folderError);
+      // Spy on deleteSolutionByComponents so deleteSolutionContents never runs and makes no HTTP calls.
+      // deleteSolutionContents imports deleteSolutionFolder directly (not via `common`), so without this
+      // spy the real deleteSolutionFolder would be called from within deleteSolutionContents, triggering
+      // a real getUser → generateToken HTTP request.
+      spyOn(common, "deleteSolutionByComponents").and.resolveTo([]);
+      // Spy on deleteSolutionFolder so the try/catch in checkCancelled triggers console.warn.
+      spyOn(common, "deleteSolutionFolder").and.rejectWith(folderError);
 
       // Use a promise that resolves when console.warn fires, to avoid a race condition where
       // the outer deploySolutionItems promise resolves (via the normal empty-templates flow)
