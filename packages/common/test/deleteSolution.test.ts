@@ -1364,5 +1364,42 @@ describe("Module `deleteSolution`: functions for deleting a deployed Solution it
       expect(result).toEqual([deletedSummary, failureSummary]);
       expect(noOptionResult).toEqual([deletedSummary, failureSummary]);
     });
+
+    it("resolves with partial summaries when the promise chain rejects", async () => {
+      const solutionItemId = "sol1234567890";
+
+      const solutionSummary: interfaces.ISolutionPrecis = mockItems.getSolutionPrecis([
+        mockItems.getAGOLItemPrecis("Web Map"),
+      ]);
+
+      const deletedSummary: interfaces.ISolutionPrecis = {
+        id: solutionSummary.id,
+        title: solutionSummary.title,
+        folder: solutionSummary.folder,
+        items: [],
+        groups: [],
+      };
+
+      const failureSummary: interfaces.ISolutionPrecis = {
+        id: solutionSummary.id,
+        title: solutionSummary.title,
+        folder: solutionSummary.folder,
+        items: [],
+        groups: [],
+      };
+
+      spyOn(reportProgress, "reportProgress");
+      spyOn(removeItems, "removeItems").and.resolveTo([deletedSummary, failureSummary]);
+      spyOn(deleteSolutionItem, "deleteSolutionItem").and.rejectWith(new Error("deleteSolutionItem failed"));
+
+      const result = await deleteSolutionContents.deleteSolutionContents(
+        solutionItemId,
+        solutionSummary,
+        MOCK_USER_SESSION,
+      );
+
+      // The catch block should resolve with the partial summaries set before the rejection
+      expect(result).toEqual([deletedSummary, failureSummary]);
+    });
   });
 });

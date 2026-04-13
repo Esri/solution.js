@@ -32,8 +32,8 @@ import {
 /**
  * Deletes a deployed Solution's folder if the folder is empty.
  *
- * @param solutionFolderId Id of the folder of a deployed Solution
- * @param deletedItemIds Ids in the Solution, including the Solution item; used to deal with lagging folder deletion
+ * @param solutionIds Ids in the Solution, including the Solution item; used to deal with lagging folder deletion
+ * @param folderId Id of the folder of a deployed Solution; if falsy, resolves immediately with true
  * @param authentication Credentials for the request
  * @param solutionOwner Optional. The owner of the solution item if it is not the logged on user
  * @returns Promise that will resolve if deletion was successful and fail if any part of it failed;
@@ -45,6 +45,11 @@ export function deleteSolutionFolder(
   authentication: UserSession,
   solutionOwner?: string,
 ): Promise<boolean> {
+  //  if there's no folder ID, there's nothing to search for or delete.
+  if (!folderId) {
+    return Promise.resolve(true);
+  }
+
   // See if the deployment folder is empty and can be deleted; first, we need info about user
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   return authentication

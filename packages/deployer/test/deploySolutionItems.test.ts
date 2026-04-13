@@ -865,6 +865,47 @@ describe("Module `deploySolutionItems`", () => {
         );
     });
 
+    it("warns via console.warn when deleteSolutionFolder throws during abort cleanup", async () => {
+      const abortController = new AbortController();
+      abortController.abort();
+
+      const folderError = new Error("folder removal failed");
+      // Spy on getUser to reject — this causes deleteSolutionFolder to throw without making any HTTP calls
+      spyOn(MOCK_USER_SESSION, "getUser").and.rejectWith(folderError);
+
+      // Use a promise that resolves when console.warn fires, to avoid a race condition where
+      // the outer deploySolutionItems promise resolves (via the normal empty-templates flow)
+      // before the checkCancelled cleanup chain reaches the console.warn call.
+      let resolveWarnCalled!: () => void;
+      const warnCalledPromise = new Promise<void>((resolve) => {
+        resolveWarnCalled = resolve;
+      });
+      const warnSpy = spyOn(console, "warn").and.callFake(() => {
+        resolveWarnCalled();
+      });
+
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [],
+          MOCK_USER_SESSION,
+          { folderId: "folder1234567890" },
+          "",
+          MOCK_USER_SESSION,
+          {
+            enableItemReuse: false,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK,
+            abortController,
+          },
+        )
+        .then(() => {}, () => {});
+
+      await warnCalledPromise;
+
+      expect(warnSpy).toHaveBeenCalledWith("deleteSolutionFolder failed (ignored during cleanup):", folderError);
+    });
+
     it("handles failure to delete all items when unwinding after failure to deploy", async () => {
       const id: string = "aa4a6047326243b290f625e80ebe6531";
       const newItemID: string = "ba4a6047326243b290f625e80ebe6531";
