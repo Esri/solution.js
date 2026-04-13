@@ -904,7 +904,10 @@ describe("Module `deploySolutionItems`", () => {
             abortController,
           },
         )
-        .then(() => {}, () => {});
+        .then(
+          () => {},
+          () => {},
+        );
 
       await warnCalledPromise;
 
