@@ -26,7 +26,7 @@
     "@esri/hub-initiatives": "^17.0.1",
     "@esri/hub-sites": "^18.0.1",
     "@esri/hub-teams": "^17.0.1",
-    "@esri/solution-common": "^6.6.1-next.5",
+    "@esri/solution-common": "workspace:*",
     "tslib": "1.14.1"
   },
   "scripts": {
