@@ -43,6 +43,8 @@ module.exports = function(config) {
       compilerOptions: {
         lib: ["dom", "es2017"],
         module: "commonjs", // ES not supported until experimental node12/nodenext moduleResolution
+        // Keep Karma on classic Node resolution because CommonJS mode is incompatible with bundler resolution.
+        moduleResolution: "node",
         target: "es2017",
         types: ["node", "jasmine"]
       },
