@@ -27,12 +27,12 @@
   },
   "scripts": {
     "build": "npm-run-all --parallel build:*",
-    "build:cjs": "tsc --outDir ./dist/cjs -m commonjs",
+    "build:cjs": "tsc --outDir ./dist/cjs -m commonjs --moduleResolution node",
     "postbuild:cjs": "node ../../scripts/create-dist-package-jsons.mjs",
     "build:esm": "tsc --outDir ./dist/esm --declaration",
     "postbuild:esm": "node ../../scripts/create-dist-package-jsons.mjs",
     "dev": "npm-run-all --parallel dev:*",
-    "dev:cjs": "tsc -w --outDir ./dist/cjs -m commonjs",
+    "dev:cjs": "tsc -w --outDir ./dist/cjs -m commonjs --moduleResolution node",
     "dev:esm": "tsc -w --outDir ./dist/esm --declaration",
     "getupdates": "npm-check-updates --upgrade"
   },
