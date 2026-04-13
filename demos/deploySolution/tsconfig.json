@@ -4,7 +4,6 @@
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
     "declaration": true,
-    "downlevelIteration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
