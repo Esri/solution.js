@@ -79,6 +79,8 @@ export async function deploySolutionFromTemplate(
     thumbDef = common.getBlobAsFile(thumbnailurl, thumbFilename, storageAuthentication, [400]);
   }
 
+  solutionTemplateBase = _replaceBaseParamVariables(solutionTemplateBase, templateDictionary);
+
   _replaceParamVariables(solutionTemplateData, templateDictionary);
 
   // Get information about deployment environment
@@ -361,6 +363,21 @@ export function _applySourceToDeployOptions(
   }
 
   return deployOptions;
+}
+
+/**
+ * Update the custom parameters in template base
+ *
+ * @param solutionTemplateBase the item base to replace
+ * @param templateDictionary the template with substitution values
+ * @private
+ */
+export function _replaceBaseParamVariables(solutionTemplateBase: any, templateDictionary: any): any {
+  // a custom params object can be passed in with the options to deploy a solution
+  // to replace parameters in the based such has title, description and tags
+  solutionTemplateBase = common.replaceInTemplate(solutionTemplateBase, templateDictionary);
+
+  return solutionTemplateBase;
 }
 
 //TODO: function doc
