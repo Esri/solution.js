@@ -1514,4 +1514,29 @@ describe("Module `deployer`", () => {
       expect(solutionData.templates[0].properties.service.spatialReference.wkid).toEqual(102100);
     });
   });
+  describe("_replaceBaseParamVariables", () => {
+    it("should update description in item base with custom parameter", () => {
+      const expectedTemplate: any = {
+        title: "title",
+        description: "{{params.buildSolution.solution.description}}",
+      };
+
+      const templateDictionary: any = {
+        params: {
+          buildSolution: {
+            solution: {
+              description: "hello world",
+            },
+          },
+        },
+      };
+
+      const updatedTemplate = deploySolutionFromTemplate._replaceBaseParamVariables(
+        expectedTemplate,
+        templateDictionary,
+      );
+
+      expect(updatedTemplate.description).toEqual("hello world");
+    });
+  });
 });

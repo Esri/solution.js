@@ -106,7 +106,10 @@ export function isSolutionTemplateItem(item: common.IItem): boolean {
   // Solution items
   let result = false;
   if (item.type === "Solution") {
-    if (kwds.indexOf("Solution") > -1 && (kwds.indexOf("Template") > -1 || kwds.indexOf("solutionTemplate") > -1)) {
+    if (
+      kwds.indexOf("Solution") > -1 &&
+      (kwds.indexOf("Template") > -1 || kwds.indexOf("solutionTemplate") > -1 || kwds.indexOf("Build") > -1)
+    ) {
       result = true;
     }
   }
