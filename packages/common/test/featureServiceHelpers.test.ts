@@ -591,6 +591,24 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       });
     });
 
+    it("should cache when layer.id is 0 (falsy)", () => {
+      // Regression: layer ids are commonly 0 for the first layer, which is
+      // falsy in JS. cacheFieldInfos must still cache an entry and run the
+      // property loop (e.g. set relationships to null).
+      let fieldInfos: any = {};
+      const layer: any = {
+        id: 0,
+        type: "layer",
+        fields: [{ name: "A", type: "string" }],
+        relationships: [{ relatedId: 1 }],
+      };
+      fieldInfos = cacheFieldInfos(layer, fieldInfos, false, false);
+      expect(fieldInfos[0]).toBeDefined();
+      expect(fieldInfos[0].sourceFields).toEqual([{ name: "A", type: "string" }]);
+      expect(fieldInfos[0].relationships).toEqual([{ relatedId: 1 }]);
+      expect(layer.relationships).toBeNull();
+    });
+
     it("should cache the key properties for fieldInfos", () => {
       let fieldInfos: any = {};
       const layer: any = {

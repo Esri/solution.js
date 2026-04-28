@@ -19,11 +19,8 @@
  */
 
 import * as arcgisRestJS from "../src/arcgisRestJS";
-import * as arcgisRestPortal from "@esri/arcgis-rest-portal";
-import * as arcgisFeatureService from "@esri/arcgis-rest-feature-service";
-//import * as arcgisRestRequest from "@esri/arcgis-rest-request";
-import * as sinon from "sinon";
 import * as utils from "./mocks/utils";
+const fetchMock = require("fetch-mock");
 
 let MOCK_USER_SESSION: arcgisRestJS.UserSession;
 
@@ -33,29 +30,32 @@ describe("Module arcgisRestJS", () => {
   });
 
   afterEach(() => {
-    sinon.restore();
+    fetchMock.restore();
   });
 
+  // The wrapper functions in arcgisRestJS exist so that consumers can stub the
+  // local module instead of stubbing upstream package bindings, which are
+  // non-configurable under strict ESM. To verify each wrapper actually calls
+  // through to the upstream function we drive fetch-mock at the underlying
+  // REST endpoint and assert the network call was made.
+
   it("tests binding function getSelf", async () => {
-    const getSelfSpy = sinon.stub(arcgisRestPortal, "getSelf").resolves();
-    await arcgisRestJS.getSelf();
-    expect(getSelfSpy.called);
+    const url = utils.PORTAL_SUBSET.restUrl + "/portals/self";
+    fetchMock.get(`begin:${url}`, { id: "abc" });
+    await arcgisRestJS.getSelf({ authentication: MOCK_USER_SESSION });
+    expect(fetchMock.called(`begin:${url}`)).toBe(true);
   });
 
   it("tests binding function queryRelated", async () => {
     const requestOptions: arcgisRestJS.IQueryRelatedOptions = {
       relationshipId: 0,
       url: "https://www.arcgis.com",
+      authentication: MOCK_USER_SESSION,
     };
-
-    const queryRelatedStub = sinon.stub(arcgisFeatureService, "queryRelated").resolves({ relatedRecords: [] });
-
+    const expectedUrl = "https://www.arcgis.com/queryRelatedRecords";
+    fetchMock.get(`begin:${expectedUrl}`, { relatedRecords: [] });
     await arcgisRestJS.queryRelated(requestOptions);
-
-    sinon.assert.calledOnce(queryRelatedStub);
-    sinon.assert.calledWith(queryRelatedStub, requestOptions);
-
-    queryRelatedStub.restore();
+    expect(fetchMock.called(`begin:${expectedUrl}`)).toBe(true);
   });
 
   it("tests binding function removeItemResource", async () => {
@@ -63,15 +63,17 @@ describe("Module arcgisRestJS", () => {
       id: "0",
       authentication: MOCK_USER_SESSION,
     };
-    const removeItemResourceSpy = sinon.stub(arcgisRestPortal, "removeItemResource").resolves();
+    const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/0/removeResources";
+    fetchMock.post(`begin:${url}`, { success: true });
     await arcgisRestJS.removeItemResource(requestOptions);
-    expect(removeItemResourceSpy.called);
+    expect(fetchMock.called(`begin:${url}`)).toBe(true);
   });
 
   it("tests binding function restGetUser", async () => {
-    const restGetUserSpy = sinon.stub(arcgisRestPortal, "getUser").resolves();
-    await arcgisRestJS.restGetUser();
-    expect(restGetUserSpy.called);
+    const url = utils.PORTAL_SUBSET.restUrl + "/community/users/casey";
+    fetchMock.get(`begin:${url}`, { username: "casey" });
+    await arcgisRestJS.restGetUser({ authentication: MOCK_USER_SESSION });
+    expect(fetchMock.called(`begin:${url}`)).toBe(true);
   });
 
   it("tests binding function updateItemResource", async () => {
@@ -79,9 +81,10 @@ describe("Module arcgisRestJS", () => {
       id: "0",
       authentication: MOCK_USER_SESSION,
     };
-    const updateItemResourceSpy = sinon.stub(arcgisRestPortal, "updateItemResource").resolves();
+    const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/0/updateResources";
+    fetchMock.post(`begin:${url}`, { success: true });
     await arcgisRestJS.updateItemResource(requestOptions);
-    expect(updateItemResourceSpy.called);
+    expect(fetchMock.called(`begin:${url}`)).toBe(true);
   });
 
   it("tests binding function unprotectGroup", async () => {
@@ -89,9 +92,10 @@ describe("Module arcgisRestJS", () => {
       id: "0",
       authentication: MOCK_USER_SESSION,
     };
-    const unprotectGroupSpy = sinon.stub(arcgisRestPortal, "unprotectGroup").resolves();
+    const url = utils.PORTAL_SUBSET.restUrl + "/community/groups/0/unprotect";
+    fetchMock.post(`begin:${url}`, { success: true });
     await arcgisRestJS.unprotectGroup(requestOptions);
-    expect(unprotectGroupSpy.called);
+    expect(fetchMock.called(`begin:${url}`)).toBe(true);
   });
 
   it("tests binding function unprotectItem", async () => {
@@ -99,9 +103,10 @@ describe("Module arcgisRestJS", () => {
       id: "0",
       authentication: MOCK_USER_SESSION,
     };
-    const unprotectItemSpy = sinon.stub(arcgisRestPortal, "unprotectItem").resolves();
+    const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/0/unprotect";
+    fetchMock.post(`begin:${url}`, { success: true });
     await arcgisRestJS.unprotectItem(requestOptions);
-    expect(unprotectItemSpy.called);
+    expect(fetchMock.called(`begin:${url}`)).toBe(true);
   });
 
   it("tests getDomainCredentials with no trusted domains property", () => {
