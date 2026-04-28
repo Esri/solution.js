@@ -66,8 +66,8 @@ module.exports = () => {
       ...createDevAliases(),
     };
   }
-  return config;
-};
+
+  config.experiments = {
     ...config.experiments,
     topLevelAwait: true
   }
