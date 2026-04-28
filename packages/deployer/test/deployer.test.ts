@@ -1444,6 +1444,12 @@ describe("Module `deployer`", () => {
       // get templates
       const itemInfo: any = templates.getSolutionTemplateItem([templates.getItemTemplate("Feature Service")]);
 
+      // Stub cleanup helpers so the abort cleanup path does not issue real
+      // network/token requests (which previously produced a noisy
+      // "deleteSolutionFolder failed (ignored during cleanup)" warning).
+      spyOn(common, "deleteSolutionByComponents").and.resolveTo({} as any);
+      spyOn(common, "deleteSolutionFolder").and.resolveTo({} as any);
+
       const abortController = new AbortController();
       abortController.abort();
 

@@ -842,27 +842,74 @@ describe("Module `deploySolutionItems`", () => {
         );
     });
 
-    it("can handle error on abort by user", async () => {
+    it("rejects with failed-ids result when aborted by user", async () => {
+      // Stub cleanup helpers so the abort path does not issue real network/token
+      // requests (which previously produced a noisy
+      // "deleteSolutionFolder failed (ignored during cleanup)" warning).
+      const deleteByComponentsSpy = spyOn(common, "deleteSolutionByComponents").and.resolveTo({} as any);
+      const deleteFolderSpy = spyOn(common, "deleteSolutionFolder").and.resolveTo({} as any);
+
       const abortController = new AbortController();
       abortController.abort();
 
-      return deploySolution
-        .deploySolutionItems(utils.PORTAL_URL, "sln1234567890", [], MOCK_USER_SESSION, {}, "", MOCK_USER_SESSION, {
-          enableItemReuse: true,
-          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK,
-          abortController,
-        })
-        .then(
-          () => {
-            // The promise resolves even when aborted → since it cleaning deletes
-            // and it's the delete that will raise the rejection
-            expect(true).toBeTrue();
-          },
-          () => {
-            // If it rejects, that's actually a failure with current code
-            fail("Promise should not reject when abort is signaled");
+      try {
+        await deploySolution.deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [],
+          MOCK_USER_SESSION,
+          {},
+          "",
+          MOCK_USER_SESSION,
+          {
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK,
+            abortController,
           },
         );
+        fail("Expected rejection when abort is signaled");
+      } catch (error) {
+        expect(error).toEqual(common.failWithIds([]));
+        expect(deleteByComponentsSpy).toHaveBeenCalled();
+        expect(deleteFolderSpy).toHaveBeenCalled();
+      }
+    });
+
+    it("ignores deleteSolutionFolder failure during abort cleanup", async () => {
+      // Exercise the catch branch around deleteSolutionFolder in the abort
+      // cleanup path, which logs a warning but still rejects with the
+      // failed-ids result.
+      spyOn(common, "deleteSolutionByComponents").and.resolveTo({} as any);
+      const deleteFolderSpy = spyOn(common, "deleteSolutionFolder").and.rejectWith(new Error("simulated failure"));
+      const warnSpy = spyOn(console, "warn").and.callFake(() => {});
+
+      const abortController = new AbortController();
+      abortController.abort();
+
+      try {
+        await deploySolution.deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [],
+          MOCK_USER_SESSION,
+          {},
+          "",
+          MOCK_USER_SESSION,
+          {
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK,
+            abortController,
+          },
+        );
+        fail("Expected rejection when abort is signaled");
+      } catch (error) {
+        expect(error).toEqual(common.failWithIds([]));
+        expect(deleteFolderSpy).toHaveBeenCalled();
+        expect(warnSpy).toHaveBeenCalledWith(
+          "deleteSolutionFolder failed (ignored during cleanup):",
+          jasmine.any(Error),
+        );
+      }
     });
 
     it("handles failure to delete all items when unwinding after failure to deploy", async () => {
