@@ -3737,6 +3737,102 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       await addFeatureServiceDefinition(expectedUrl, [], {}, MOCK_USER_SESSION, "", {}, {}, itemTemplate);
     });
+
+    it("should add stub fieldInfos entry for layers without a fields array (e.g., views)", async () => {
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      itemTemplate = templates.getItemTemplate("Feature Service", [], url);
+      itemTemplate.properties.service.isView = true;
+      itemTemplate.properties.layers = [];
+      itemTemplate.properties.tables = [];
+
+      // View-style layer: no `fields` array, only adminLayerInfo + identity props
+      const viewLayer: any = {
+        id: 0,
+        name: "ViewLayer",
+        type: "Feature Layer",
+        adminLayerInfo: {
+          geometryField: { name: "Shape" },
+          viewLayerDefinition: {
+            sourceServiceName: "src",
+            sourceLayerId: 0,
+            sourceLayerFields: "*",
+          },
+        },
+      };
+
+      const fieldInfos: any = {};
+      const adminLayerInfos: any = {};
+
+      fetchMock.post(adminUrl + "/addToDefinition", '{"success": "true"}');
+
+      await addFeatureServiceDefinition(
+        url,
+        [{ item: viewLayer, type: "layer" }],
+        { isPortal: false },
+        MOCK_USER_SESSION,
+        itemTemplate.key,
+        adminLayerInfos,
+        fieldInfos,
+        itemTemplate,
+      );
+
+      expect(fieldInfos[0]).toBeDefined();
+      expect(fieldInfos[0].sourceFields).toEqual([]);
+      expect(Array.isArray(fieldInfos[0].sourceFields)).toBe(true);
+      expect(fieldInfos[0].id).toBe(0);
+      expect(fieldInfos[0].type).toBe("Feature Layer");
+    });
+
+    it("should not overwrite an existing fieldInfos entry created by cacheFieldInfos", async () => {
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      itemTemplate = templates.getItemTemplate("Feature Service", [], url);
+      itemTemplate.properties.service.isView = false;
+      itemTemplate.properties.layers = [];
+      itemTemplate.properties.tables = [];
+
+      // Standard layer carrying a `fields` array
+      const layerWithFields: any = {
+        id: 0,
+        name: "ParkLocations",
+        type: "Feature Layer",
+        fields: [
+          { name: "objectid", type: "esriFieldTypeOID" },
+          { name: "park_name", type: "esriFieldTypeString" },
+        ],
+      };
+
+      const fieldInfos: any = {};
+      const adminLayerInfos: any = {};
+
+      fetchMock.post(adminUrl + "/addToDefinition", '{"success": "true"}');
+
+      await addFeatureServiceDefinition(
+        url,
+        [{ item: layerWithFields, type: "layer" }],
+        { isPortal: false },
+        MOCK_USER_SESSION,
+        itemTemplate.key,
+        adminLayerInfos,
+        fieldInfos,
+        itemTemplate,
+      );
+
+      // cacheFieldInfos should have populated sourceFields with the actual fields,
+      // and the stub should NOT have replaced them with an empty array.
+      expect(fieldInfos[0]).toBeDefined();
+      expect(Array.isArray(fieldInfos[0].sourceFields)).toBe(true);
+      expect(fieldInfos[0].sourceFields.length).toBe(2);
+      expect(fieldInfos[0].sourceFields[0].name).toBe("objectid");
+      expect(fieldInfos[0].sourceFields[1].name).toBe("park_name");
+    });
   });
 
   describe("updateLayerFieldReferences", () => {
