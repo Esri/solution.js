@@ -68,6 +68,14 @@ import {
   queryRelated as restQueryRelated,
 } from "@esri/arcgis-rest-feature-service";
 export {
+  createFeatureService as svcAdminCreateFeatureService,
+  queryFeatures,
+  addFeatures,
+  applyEdits,
+} from "@esri/arcgis-rest-feature-service";
+// TypeScript interfaces (no runtime export); use type-only re-exports to avoid
+// webpack "was not found" warnings.
+export type {
   IAddToServiceDefinitionOptions,
   IAddToServiceDefinitionResult,
   ICreateServiceParams,
@@ -78,12 +86,33 @@ export {
   IQueryRelatedOptions,
   IQueryRelatedResponse,
   IRelatedRecordGroup,
-  createFeatureService as svcAdminCreateFeatureService,
-  queryFeatures,
-  addFeatures,
-  applyEdits,
 } from "@esri/arcgis-rest-feature-service";
 export {
+  addItemData as restAddItemData,
+  addItemRelationship,
+  createFolder,
+  createGroup,
+  createItem,
+  createItemInFolder,
+  moveItem,
+  protectItem,
+  SearchQueryBuilder,
+  getGroupCategorySchema as restGetGroupCategorySchema,
+  getItem,
+  getItemData,
+  getItemResources as restGetItemResources,
+  getUserContent,
+  getPortal as restGetPortal,
+  getPortalUrl,
+  searchGroupContent,
+  setItemAccess,
+  searchGroups as restSearchGroups,
+  removeGroupUsers,
+  removeItem as restRemoveItem,
+} from "@esri/arcgis-rest-portal";
+// TypeScript interfaces / type aliases (no runtime export); use type-only
+// re-exports to avoid webpack "was not found" warnings.
+export type {
   IAddFolderResponse,
   IAddItemDataOptions,
   ICreateItemOptions,
@@ -120,37 +149,11 @@ export {
   IUserGroupOptions,
   IGroupSharingOptions,
   IUserItemOptions,
-  addItemData as restAddItemData,
-  addItemRelationship,
-  createFolder,
-  createGroup,
-  createItem,
-  createItemInFolder,
-  moveItem,
-  protectItem,
-  SearchQueryBuilder,
-  getGroupCategorySchema as restGetGroupCategorySchema,
-  getItem,
-  getItemData,
-  getItemResources as restGetItemResources,
-  getUserContent,
-  getPortal as restGetPortal,
-  getPortalUrl,
-  searchGroupContent,
-  setItemAccess,
-  searchGroups as restSearchGroups,
-  removeGroupUsers,
-  removeItem as restRemoveItem,
 } from "@esri/arcgis-rest-portal";
-export {
-  IArcGISIdentityManagerOptions,
-  ICredential,
-  IRequestOptions,
-  IParams,
-  ArcGISAuthError,
-  encodeFormData,
-  ArcGISIdentityManager as UserSession,
-} from "@esri/arcgis-rest-request";
+export { ArcGISAuthError, encodeFormData, ArcGISIdentityManager as UserSession } from "@esri/arcgis-rest-request";
+// These are TypeScript interfaces (no runtime export from arcgis-rest-request),
+// so re-export them as type-only exports to avoid webpack "was not found" warnings.
+export type { IArcGISIdentityManagerOptions, ICredential, IRequestOptions, IParams } from "@esri/arcgis-rest-request";
 export interface IFolderSuccessResult {
   success: boolean;
   folder: {
