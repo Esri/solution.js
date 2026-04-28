@@ -228,7 +228,7 @@ export function deleteViewProps(layer: any, isPortal: boolean) {
  */
 export function cacheFieldInfos(layer: any, fieldInfos: any, isView: boolean, isPortal: boolean): any {
   // cache the source fields as they are in the original source
-  if (layer) {
+  if (layer && layer.id) {
     fieldInfos[layer.id] = {
       sourceFields: layer.fields ? JSON.parse(JSON.stringify(layer.fields)) : [],
       type: layer.type,
