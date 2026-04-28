@@ -150,19 +150,10 @@ export type {
   IGroupSharingOptions,
   IUserItemOptions,
 } from "@esri/arcgis-rest-portal";
-export {
-  ArcGISAuthError,
-  encodeFormData,
-  ArcGISIdentityManager as UserSession,
-} from "@esri/arcgis-rest-request";
+export { ArcGISAuthError, encodeFormData, ArcGISIdentityManager as UserSession } from "@esri/arcgis-rest-request";
 // These are TypeScript interfaces (no runtime export from arcgis-rest-request),
 // so re-export them as type-only exports to avoid webpack "was not found" warnings.
-export type {
-  IArcGISIdentityManagerOptions,
-  ICredential,
-  IRequestOptions,
-  IParams,
-} from "@esri/arcgis-rest-request";
+export type { IArcGISIdentityManagerOptions, ICredential, IRequestOptions, IParams } from "@esri/arcgis-rest-request";
 export interface IFolderSuccessResult {
   success: boolean;
   folder: {
