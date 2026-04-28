@@ -571,6 +571,26 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(fieldInfos).toEqual({});
     });
 
+    it("should cache an empty sourceFields array when the layer has no fields", () => {
+      let fieldInfos: any = {};
+      const layer: any = {
+        id: "7",
+        type: "layer",
+      };
+      fieldInfos = cacheFieldInfos(layer, fieldInfos, false, false);
+      expect(layer).toEqual({
+        id: "7",
+        type: "layer",
+      });
+      expect(fieldInfos).toEqual({
+        "7": {
+          sourceFields: [],
+          type: "layer",
+          id: "7",
+        },
+      });
+    });
+
     it("should cache the key properties for fieldInfos", () => {
       let fieldInfos: any = {};
       const layer: any = {
