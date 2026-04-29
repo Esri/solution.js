@@ -980,7 +980,12 @@ export function addFeatureServiceDefinition(
         // this can still chunk layers
         options = _updateAddOptions(itemTemplate, options, layerChunks, isSelfReferential, authentication);
 
-        if (item.type === "Feature Layer") {
+        // Route based on the discriminator set by getLayersAndTables (which derives from
+        // properties.layers vs properties.tables) rather than the layer object's own `type`
+        // field. The latter may be missing when users supply custom layer JSON via
+        // params (e.g. {{params.buildSolution.items.<id>.service.layers}}), which would
+        // otherwise cause every layer to be pushed into the `tables` array.
+        if (toAdd.type === "layer" || item.type === "Feature Layer") {
           options.layers.push(item);
         } else {
           options.tables.push(item);
