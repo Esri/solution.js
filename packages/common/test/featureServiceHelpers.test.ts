@@ -1972,6 +1972,26 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const actual: IItemTemplate[] = setNamesAndTitles(_templates);
       expect(actual).toEqual(expected);
     });
+
+    it("should not truncate if '{{param' is used", () => {
+      const t: IItemTemplate = templates.getItemTemplateSkeleton();
+      t.item.type = "Feature Service";
+      t.item.name = "{{params.buildSolution.items.46c2f61bc5bc4f3aad6b391360e8e53d.title}}";
+      t.item.title = "TheName";
+      const _templates: IItemTemplate[] = [t];
+
+      spyOn(generalHelpers, "generateGUID").and.returnValue("212dbc19b03943008fdfaf8d6adca00e");
+
+      const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedTemplate.item.type = "Feature Service";
+      expectedTemplate.item.name = `{{params.buildSolution.items.46c2f61bc5bc4f3aad6b391360e8e53d.title}}_212dbc19b03943008fdfaf8d6adca00e`;
+      expectedTemplate.item.title = "TheName";
+      const expected: IItemTemplate[] = [expectedTemplate];
+
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates);
+      expect(actual).toEqual(expected);
+    });
+
   });
 
   describe("updateSettingsFieldInfos", () => {

@@ -555,7 +555,10 @@ export function setNamesAndTitles(templates: IItemTemplate[]): IItemTemplate[] {
 
         // The name length limit is 98
         // Limit the baseName to 50 characters before the _<guid>
-        const name: string = baseName.substring(0, 50) + "_" + guid;
+        // If the baseName includes '{{params' it is likely being used in a template replacement, so do not truncate.
+        const name: string = baseName.includes("{{params")
+          ? baseName + "_" + guid
+          : baseName.substring(0, 50) + "_" + guid;
 
         // If the name + GUID already exists then append "_occurrenceCount"
         t.item.name = names.indexOf(name) === -1 ? name : `${name}_${names.filter((n) => n === name).length}`;
