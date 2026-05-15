@@ -152,6 +152,8 @@ describe("Module `deploySolutionFromTemplate`", () => {
     it("defaults storageAuthentication to authentication", async () => {
       const templates: common.IItemTemplate[] = [mockTemplates.getItemTemplate("Web Map")];
       const solution: common.ISolutionItem = mockTemplates.getSolutionTemplateItem(templates);
+      // Add the "Build" typeKeyword so we can verify it is removed during deployment
+      solution.item.typeKeywords = [...(solution.item.typeKeywords as string[]), "Build"];
       const folderId = "fld1234567890";
       const templateSolutionId: string = "sln1234567890";
       const solutionTemplateBase: any = solution.item;
@@ -248,6 +250,19 @@ describe("Module `deploySolutionFromTemplate`", () => {
       expect(deployFnCall.args[0]).toEqual(MOCK_USER_SESSION.portal); // portalSharingUrl
       expect(deployFnCall.args[3].portal).toEqual(MOCK_USER_SESSION.portal); // storageAuthentication
       expect(deployFnCall.args[6].portal).toEqual(MOCK_USER_SESSION.portal); // destinationAuthentication
+      // The "Build" typeKeyword should have been removed and "Deployed" added in the
+      // payload sent to the portal's item update endpoint.
+      const updateUrl =
+        testUtils.PORTAL_SUBSET.restUrl + "/content/users/casey/fld1234567890/items/dpl1234567890/update";
+      const updateOptions: any = fetchMock.lastOptions(updateUrl);
+      const typeKeywordsParam = decodeURIComponent(
+        ((updateOptions.body as string).split("&").find((p: string) => p.startsWith("typeKeywords=")) || "").replace(
+          "typeKeywords=",
+          "",
+        ),
+      );
+      expect(typeKeywordsParam.split(",")).not.toContain("Build");
+      expect(typeKeywordsParam.split(",")).toContain("Deployed");
     });
 
     it("defaults storageAuthentication to authentication with no templateDictionary", async () => {

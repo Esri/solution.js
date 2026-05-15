@@ -261,6 +261,10 @@ export async function deploySolutionFromTemplate(
     if (iTemplateKeyword >= 0) {
       solutionTemplateBase.typeKeywords.splice(iTemplateKeyword, 1);
     }
+    const iBuildKeyword = solutionTemplateBase.typeKeywords.indexOf("Build");
+    if (iBuildKeyword >= 0) {
+      solutionTemplateBase.typeKeywords.splice(iBuildKeyword, 1);
+    }
 
     solutionTemplateData.templates = solutionTemplateData.templates.map((itemTemplate: common.IItemTemplate) =>
       _purgeTemplateProperties(itemTemplate),
