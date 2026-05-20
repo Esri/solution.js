@@ -266,6 +266,13 @@ export async function deploySolutionFromTemplate(
       solutionTemplateBase.typeKeywords.splice(iBuildKeyword, 1);
     }
 
+    // If both "AIAssistant" and "ArcGIS Solution" typeKeywords are present, remove "AIAssistant"
+    const iAIAssistantKeyword = solutionTemplateBase.typeKeywords.indexOf("AIAssistant");
+    const iArcGISSolutionKeyword = solutionTemplateBase.typeKeywords.indexOf("ArcGIS Solution");
+    if (iAIAssistantKeyword >= 0 && iArcGISSolutionKeyword >= 0) {
+      solutionTemplateBase.typeKeywords.splice(iAIAssistantKeyword, 1);
+    }
+
     solutionTemplateData.templates = solutionTemplateData.templates.map((itemTemplate: common.IItemTemplate) =>
       _purgeTemplateProperties(itemTemplate),
     );
