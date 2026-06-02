@@ -553,6 +553,10 @@ export function setNamesAndTitles(templates: IItemTemplate[]): IItemTemplate[] {
         // If the name already contains a GUID remove it
         baseName = baseName.replace(/_[0-9A-F]{32}/gi, "");
 
+        // Replace characters that are not allowed in a feature service name with "_"
+        // Disallowed: '#', '%', '&', '"', '\', '/', '+', '?', ':', '*', '<', '>', ' ', '\t'
+        baseName = baseName.replace(/[#%&"\\/+?:*<> \t]/g, "_");
+
         // The name length limit is 98
         // Limit the baseName to 50 characters before the _<guid>
         // If the baseName includes '{{params' it is likely being used in a template replacement, so do not truncate.
