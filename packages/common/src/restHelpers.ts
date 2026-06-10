@@ -385,6 +385,42 @@ export function _validateExtent(extent: IExtent): IExtent {
 }
 
 /**
+ * The geometry service can resolve a projection request successfully but still
+ * return "NaN" coordinate values or no geometry at all. This check is used to
+ * decide whether a projected extent can be used for a service's initial and full
+ * extents.
+ *
+ * @param extent the extent to test
+ * @returns true if the extent has numeric xmin, ymin, xmax, and ymax values
+ * @private
+ */
+export function _extentIsValid(extent: any): boolean {
+  return (
+    !!extent &&
+    [extent.xmin, extent.ymin, extent.xmax, extent.ymax].every(
+      (coordinate) => typeof coordinate === "number" && !isNaN(coordinate),
+    )
+  );
+}
+
+/**
+ * Removes the templatized extent from a template's layers and tables.
+ *
+ * Used when the organization's default extent cannot be projected into the
+ * service's spatial reference so that the layers and tables are created without an
+ * extent rather than with an unresolved template variable.
+ *
+ * @param itemTemplate the template whose layer and table extents should be removed
+ * @private
+ */
+export function _removeLayerExtents(itemTemplate: IItemTemplate): void {
+  ["properties.layers", "properties.tables"].forEach((path) => {
+    const items: any[] = getProp(itemTemplate, path) || [];
+    items.forEach((item) => deleteProp(item, "extent"));
+  });
+}
+
+/**
  * If the request to convert the extent fails it has commonly been due to an invalid extent.
  * This function will first attempt to use the provided extent. If it fails it will default to
  * the source items extent and if that fails it will then use a default global extent.
@@ -437,7 +473,6 @@ export function convertExtentWithFallback(
 
 /**
  * Converts an extent to a specified spatial reference.
- *
  * @param extent Extent object to check and (possibly) to project
  * @param outSR Desired spatial reference
  * @param geometryServiceUrl Path to geometry service providing `findTransformations` and `project` services
@@ -2092,8 +2127,6 @@ export function _getCreateServiceOptions(
 
     validateSpatialReferenceAndExtent(serviceInfo, newItemTemplate, templateDictionary);
 
-    const fallbackExtent: any = _getFallbackExtent(serviceInfo, templateDictionary);
-
     const params: IParams = {};
 
     const itemInfo: any = {
@@ -2117,17 +2150,25 @@ export function _getCreateServiceOptions(
       ? _setItemProperties(createOptions.item, newItemTemplate, serviceInfo, params, isPortal)
       : setTrackingOptions(newItemTemplate, createOptions, templateDictionary);
 
-    // project the portals extent to match that of the service
-    convertExtentWithFallback(
-      templateDictionary.organization.defaultExtent,
-      fallbackExtent,
+    convertExtent(
+      _validateExtent(templateDictionary.organization.defaultExtent),
       serviceInfo.service.spatialReference,
       templateDictionary.organization.helperServices.geometry.url,
       authentication,
     ).then(
       (extent) => {
-        templateDictionary[itemId].solutionExtent = extent;
-        setDefaultSpatialReference(templateDictionary, itemId, extent.spatialReference);
+        if (_extentIsValid(extent)) {
+          templateDictionary[itemId].solutionExtent = extent;
+          setDefaultSpatialReference(templateDictionary, itemId, extent.spatialReference);
+        } else {
+          // The org's default extent could not be projected into the service's spatial
+          // reference, so remove the templatized extent properties from the service and
+          // its layers and tables
+          deleteProp(createOptions.item, "initialExtent");
+          deleteProp(createOptions.item, "fullExtent");
+          _removeLayerExtents(newItemTemplate);
+          setDefaultSpatialReference(templateDictionary, itemId, serviceInfo.service.spatialReference);
+        }
         createOptions.item = replaceInTemplate(createOptions.item, templateDictionary);
         createOptions.params = replaceInTemplate(createOptions.params, templateDictionary);
 
@@ -2141,29 +2182,6 @@ export function _getCreateServiceOptions(
       (e) => reject(fail(e)),
     );
   });
-}
-
-/**
- * When the services spatial reference does not match that of it's default extent
- * use the out SRs default extent if it exists in the templateDictionary
- * this should be set when adding a custom out wkid to the params before calling deploy
- * this will help avoid situations where the orgs default extent and default world extent
- * will not project successfully to the out SR
- *
- * @param serviceInfo the object that contains the spatial reference to evaluate
- * @param templateDictionary the template dictionary
- * @returns the extent to use as the fallback
- * @private
- */
-export function _getFallbackExtent(serviceInfo: any, templateDictionary: any): any {
-  const serviceSR: any = serviceInfo.service.spatialReference;
-  const serviceInfoWkid = getProp(serviceInfo, "defaultExtent.spatialReference.wkid");
-  const customDefaultExtent = getProp(templateDictionary, "params.defaultExtent");
-  return serviceInfoWkid && serviceInfoWkid === serviceSR.wkid
-    ? serviceInfo.defaultExtent
-    : customDefaultExtent
-      ? customDefaultExtent
-      : serviceInfo.defaultExtent;
 }
 
 /**

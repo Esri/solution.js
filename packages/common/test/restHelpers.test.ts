@@ -1760,6 +1760,48 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("convertExtentWithFallback", () => {
+    it("resolves with the projected extent when it is already valid", async () => {
+      const ext: IExtent = {
+        xmax: 180,
+        xmin: -180,
+        ymax: 90,
+        ymin: -90,
+        spatialReference: {
+          wkid: 4326,
+        },
+      };
+
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse(),
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=4326&outSR=2&extentOfInterest=%7B%22xmax%22%3A180%2C%22xmin%22%3A-180%2C%22ymax%22%3A90%2C%22ymin%22%3A-90%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D",
+          {},
+        )
+        .get(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=4326&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-180%2C%22y%22%3A-90%7D%2C%7B%22x%22%3A180%2C%22y%22%3A90%7D%5D%7D",
+          {
+            geometries: projectedGeometries,
+          },
+        )
+        .get(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .get(geometryServiceUrl + "/project/rest/info", "{}");
+
+      const actual = await restHelpers.convertExtentWithFallback(
+        ext,
+        undefined,
+        serviceSR,
+        geometryServiceUrl,
+        MOCK_USER_SESSION,
+      );
+      expect(actual).toEqual(expectedExtent);
+    });
+
     it("can handle NaN", async () => {
       // "NaN" extent values are returned when you try to project this to 102100
       const ext: IExtent = {
@@ -1872,6 +1914,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             geometries: NaNGeoms,
           },
           { overwriteRoutes: false },
+        )
+        .getOnce(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=4326&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-179%2C%22y%22%3A-89%7D%2C%7B%22x%22%3A179%2C%22y%22%3A89%7D%5D%7D",
+          {
+            geometries: projectedGeometries,
+          },
+          { overwriteRoutes: false },
         );
 
       const actual = await restHelpers.convertExtentWithFallback(
@@ -1938,6 +1988,88 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             overwriteRoutes: false,
           },
         );
+
+      await expectAsync(
+        restHelpers.convertExtentWithFallback(ext, undefined, serviceSR, geometryServiceUrl, MOCK_USER_SESSION),
+      ).toBeRejected();
+    });
+
+    it("falls back to the default extent when the first projection request fails", async () => {
+      const ext: IExtent = {
+        xmax: 180,
+        xmin: -180,
+        ymax: 90,
+        ymin: -90,
+        spatialReference: {
+          wkid: 4326,
+        },
+      };
+
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse(),
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=4326&outSR=2&extentOfInterest=%7B%22xmax%22%3A180%2C%22xmin%22%3A-180%2C%22ymax%22%3A90%2C%22ymin%22%3A-90%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D",
+          mockItems.get400Failure(),
+        )
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=4326&outSR=2&extentOfInterest=%7B%22xmin%22%3A-179%2C%22xmax%22%3A179%2C%22ymin%22%3A-89%2C%22ymax%22%3A89%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D",
+          {},
+        )
+        .get(
+          geometryServiceUrl +
+            "/project?f=json&outSR=2&inSR=4326&geometries=%7B%22geometryType%22%3A%22esriGeometryPoint%22%2C%22geometries%22%3A%5B%7B%22x%22%3A-179%2C%22y%22%3A-89%7D%2C%7B%22x%22%3A179%2C%22y%22%3A89%7D%5D%7D",
+          {
+            geometries: projectedGeometries,
+          },
+        )
+        .get(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .get(geometryServiceUrl + "/project/rest/info", "{}");
+
+      const actual = await restHelpers.convertExtentWithFallback(
+        ext,
+        undefined,
+        serviceSR,
+        geometryServiceUrl,
+        MOCK_USER_SESSION,
+      );
+      expect(actual).toEqual(expectedExtent);
+    });
+
+    it("rejects when both the first and default projection requests fail", async () => {
+      const ext: IExtent = {
+        xmax: 180,
+        xmin: -180,
+        ymax: 90,
+        ymin: -90,
+        spatialReference: {
+          wkid: 4326,
+        },
+      };
+
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse(),
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=4326&outSR=2&extentOfInterest=%7B%22xmax%22%3A180%2C%22xmin%22%3A-180%2C%22ymax%22%3A90%2C%22ymin%22%3A-90%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D",
+          mockItems.get400Failure(),
+        )
+        .get(
+          geometryServiceUrl +
+            "/findTransformations?f=json&inSR=4326&outSR=2&extentOfInterest=%7B%22xmin%22%3A-179%2C%22xmax%22%3A179%2C%22ymin%22%3A-89%2C%22ymax%22%3A89%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D",
+          mockItems.get400Failure(),
+        )
+        .get(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .get(geometryServiceUrl + "/project/rest/info", "{}");
 
       await expectAsync(
         restHelpers.convertExtentWithFallback(ext, undefined, serviceSR, geometryServiceUrl, MOCK_USER_SESSION),
@@ -4348,91 +4480,163 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         () => Promise.resolve(),
       );
     });
+
+    it("omits service and layer extents when the org extent cannot be projected", async () => {
+      const itemId = "ab766cba0dd44ec080420acc10990282";
+      const serviceWkid = 3857;
+
+      itemTemplate = {
+        itemId,
+        key: "",
+        properties: {
+          service: {
+            somePropNotInItem: true,
+            capabilities: ["Query"],
+            spatialReference: {
+              wkid: serviceWkid,
+            },
+            initialExtent: "{{" + itemId + ".solutionExtent}}",
+            fullExtent: "{{" + itemId + ".solutionExtent}}",
+          },
+          layers: [
+            {
+              id: 0,
+              fields: [],
+              extent: "{{" + itemId + ".solutionExtent}}",
+            },
+          ],
+          tables: [],
+        },
+        type: "",
+        item: {
+          id: "",
+          type: "",
+          name: "A",
+        },
+        data: {},
+        resources: [],
+        estimatedDeploymentCostFactor: 0,
+        dependencies: [],
+        groups: [],
+      };
+
+      const templateDictionary: any = {
+        folderId: "aabb123456",
+        isPortal: false,
+        solutionItemId: "sol1234567890",
+        [itemId]: {},
+        organization,
+        solutionItemExtent,
+      };
+
+      const findTransformationsUrl =
+        geometryServiceUrl +
+        "/findTransformations?f=json&inSR=102100&outSR=" +
+        serviceWkid +
+        "&extentOfInterest=" +
+        encodeURIComponent(JSON.stringify(organization.defaultExtent));
+
+      const projectUrl =
+        geometryServiceUrl +
+        "/project?f=json&outSR=" +
+        serviceWkid +
+        "&inSR=102100&geometries=" +
+        encodeURIComponent(
+          JSON.stringify({
+            geometryType: "esriGeometryPoint",
+            geometries: [
+              { x: organization.defaultExtent.xmin, y: organization.defaultExtent.ymin },
+              { x: organization.defaultExtent.xmax, y: organization.defaultExtent.ymax },
+            ],
+          }),
+        );
+
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/portals/self?f=json&token=fake-token",
+          utils.getPortalsSelfResponse(),
+        )
+        .post("https://utility.arcgisonline.com/arcgis/rest/info", SERVER_INFO)
+        .get(findTransformationsUrl, {})
+        .get(projectUrl, {
+          geometries: [
+            { x: "NaN", y: "NaN" },
+            { x: "NaN", y: "NaN" },
+          ],
+        });
+
+      const options = await restHelpers._getCreateServiceOptions(itemTemplate, MOCK_USER_SESSION, templateDictionary);
+
+      expect(options.item.initialExtent).toBeUndefined();
+      expect(options.item.fullExtent).toBeUndefined();
+      expect(itemTemplate.properties.layers[0].hasOwnProperty("extent")).toBe(false);
+      expect(templateDictionary[itemId].solutionExtent).toBeUndefined();
+      expect(templateDictionary[itemId].defaultSpatialReference).toEqual({ wkid: serviceWkid });
+    });
   });
 
-  describe("_getFallbackExtent", () => {
-    it("will handle missing defaultExtent", () => {
-      const serviceInfo: any = {
-        service: {
-          spatialReference: {
-            wkid: 1234,
-          },
-        },
-      };
-      const templateDictionary: any = {};
-      const expected: any = undefined;
-
-      const actual: any = restHelpers._getFallbackExtent(serviceInfo, templateDictionary);
-      expect(actual).toEqual(expected);
+  describe("_extentIsValid", () => {
+    it("returns true for an extent with numeric coordinates", () => {
+      expect(
+        restHelpers._extentIsValid({
+          xmin: -131,
+          ymin: 16,
+          xmax: -57,
+          ymax: 58,
+          spatialReference: { wkid: 2 },
+        }),
+      ).toBe(true);
     });
 
-    it("will handle customDefaultExtent", () => {
-      const serviceInfo: any = {
-        service: {
-          spatialReference: {
-            wkid: 1234,
-          },
-        },
-      };
-      const templateDictionary: any = {
-        params: {
-          defaultExtent: {
-            xmax: 1,
-          },
-        },
-      };
-      const expected: any = {
-        xmax: 1,
-      };
-
-      const actual: any = restHelpers._getFallbackExtent(serviceInfo, templateDictionary);
-      expect(actual).toEqual(expected);
+    it("returns false for an undefined extent", () => {
+      expect(restHelpers._extentIsValid(undefined)).toBe(false);
     });
 
-    it("will handle missing customDefaultExtent", () => {
-      const serviceInfo: any = {
-        defaultExtent: {
-          xmax: 1,
-        },
-        service: {
-          spatialReference: {
-            wkid: 1234,
-          },
-        },
-      };
-      const templateDictionary: any = {};
-      const expected: any = {
-        xmax: 1,
-      };
-
-      const actual: any = restHelpers._getFallbackExtent(serviceInfo, templateDictionary);
-      expect(actual).toEqual(expected);
+    it("returns false for an extent with 'NaN' string coordinates", () => {
+      expect(
+        restHelpers._extentIsValid({
+          xmin: "NaN",
+          ymin: "NaN",
+          xmax: "NaN",
+          ymax: "NaN",
+          spatialReference: { wkid: 2 },
+        }),
+      ).toBe(false);
     });
 
-    it("will handle matching wkid", () => {
-      const serviceInfo: any = {
-        defaultExtent: {
-          xmax: 1,
-          spatialReference: {
-            wkid: 1234,
-          },
+    it("returns false for an extent with NaN numeric coordinates", () => {
+      expect(
+        restHelpers._extentIsValid({
+          xmin: NaN,
+          ymin: NaN,
+          xmax: NaN,
+          ymax: NaN,
+          spatialReference: { wkid: 2 },
+        }),
+      ).toBe(false);
+    });
+  });
+
+  describe("_removeLayerExtents", () => {
+    it("removes templatized extents from layers and tables", () => {
+      const itemTemplate: any = {
+        properties: {
+          layers: [{ id: 0, extent: "{{abc.solutionExtent}}" }, { id: 1 }],
+          tables: [{ id: 2, extent: "{{abc.solutionExtent}}" }],
         },
-        service: {
-          spatialReference: {
-            wkid: 1234,
-          },
-        },
-      };
-      const templateDictionary: any = {};
-      const expected: any = {
-        xmax: 1,
-        spatialReference: {
-          wkid: 1234,
-        },
+        data: {},
       };
 
-      const actual: any = restHelpers._getFallbackExtent(serviceInfo, templateDictionary);
-      expect(actual).toEqual(expected);
+      restHelpers._removeLayerExtents(itemTemplate);
+
+      expect(itemTemplate.properties.layers[0].hasOwnProperty("extent")).toBe(false);
+      expect(itemTemplate.properties.layers[1].hasOwnProperty("extent")).toBe(false);
+      expect(itemTemplate.properties.tables[0].hasOwnProperty("extent")).toBe(false);
+    });
+
+    it("handles a template without layers or tables", () => {
+      const itemTemplate: any = { properties: {}, data: {} };
+      expect(() => restHelpers._removeLayerExtents(itemTemplate)).not.toThrow();
     });
   });
 
