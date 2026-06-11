@@ -156,7 +156,7 @@ function go(
   document.getElementById("output").style.display = "block";
 
   // use the manually entered value, falling back to the select lists
-  const solutionId =
+  let solutionId =
     htmlUtil.getHTMLValue("solutionId") ||
     htmlUtil.getHTMLValue("solutionPicklist");
   const folderId = htmlUtil.getHTMLValue("foldersPicklist");
@@ -168,7 +168,43 @@ function go(
   const dontCreateSolutionItem = htmlUtil.getHTMLChecked("dontCreateSolutionItem");
 
   // Custom Params
-  const customParams = htmlUtil.getHTMLValue("customParams");
+  let customParams = htmlUtil.getHTMLValue("customParams");
+
+  // buildSolution: a separate JSON input that gets merged into customParams as `buildSolution`
+  // so we can easily test payloads coming from solutions-components
+  const buildSolutionRaw = (htmlUtil.getHTMLValue("buildSolution") || "").trim();
+  if (buildSolutionRaw.length > 0) {
+    let buildSolutionObj: any;
+    try {
+      buildSolutionObj = JSON.parse(buildSolutionRaw);
+    } catch (e) {
+      document.getElementById("input").style.display = "block";
+      document.getElementById("output").style.display = "none";
+      alert("buildSolution input is not valid JSON: " + (e as Error).message);
+      return;
+    }
+
+    let paramsObj: any = {};
+    if (typeof customParams === "string" && customParams.trim().length > 0) {
+      try {
+        paramsObj = JSON.parse(customParams);
+      } catch (e) {
+        document.getElementById("input").style.display = "block";
+        document.getElementById("output").style.display = "none";
+        alert("Custom Params is not valid JSON: " + (e as Error).message);
+        return;
+      }
+    }
+    paramsObj.buildSolution = buildSolutionObj;
+    customParams = JSON.stringify(paramsObj);
+
+    if (!solutionId) {
+      const embeddedId = buildSolutionObj?.solution?.item?.id;
+      if (typeof embeddedId === "string" && embeddedId.length > 0) {
+        solutionId = embeddedId;
+      }
+    }
+  }
 
   // Source credentials
   const srcHtmlValue = htmlUtil.getHTMLValue("srcPortal");
