@@ -168,41 +168,26 @@ function go(
   const dontCreateSolutionItem = htmlUtil.getHTMLChecked("dontCreateSolutionItem");
 
   // Custom Params
-  let customParams = htmlUtil.getHTMLValue("customParams");
+  // The textarea contents are parsed and assigned to `templateDictionary.params`
+  // (see deploy-solution-main.ts). To exercise a buildSolution payload, wrap it
+  // as `{ "buildSolution": {...} }` so templates can reference
+  // `{{params.buildSolution.items.<id>.title}}` etc.
+  const customParams = htmlUtil.getHTMLValue("customParams");
 
-  // buildSolution: a separate JSON input that gets merged into customParams as `buildSolution`
-  // so we can easily test payloads coming from solutions-components
-  const buildSolutionRaw = (htmlUtil.getHTMLValue("buildSolution") || "").trim();
-  if (buildSolutionRaw.length > 0) {
-    let buildSolutionObj: any;
+  // If no Solution Id was entered, fall back to buildSolution.solution.item.id
+  // when present in the custom params.
+  if (!solutionId && typeof customParams === "string" && customParams.trim().length > 0) {
     try {
-      buildSolutionObj = JSON.parse(buildSolutionRaw);
-    } catch (e) {
-      document.getElementById("input").style.display = "block";
-      document.getElementById("output").style.display = "none";
-      alert("buildSolution input is not valid JSON: " + (e as Error).message);
-      return;
-    }
-
-    let paramsObj: any = {};
-    if (typeof customParams === "string" && customParams.trim().length > 0) {
-      try {
-        paramsObj = JSON.parse(customParams);
-      } catch (e) {
-        document.getElementById("input").style.display = "block";
-        document.getElementById("output").style.display = "none";
-        alert("Custom Params is not valid JSON: " + (e as Error).message);
-        return;
-      }
-    }
-    paramsObj.buildSolution = buildSolutionObj;
-    customParams = JSON.stringify(paramsObj);
-
-    if (!solutionId) {
-      const embeddedId = buildSolutionObj?.solution?.item?.id;
+      const paramsObj = JSON.parse(customParams);
+      const embeddedId = paramsObj?.buildSolution?.solution?.item?.id;
       if (typeof embeddedId === "string" && embeddedId.length > 0) {
         solutionId = embeddedId;
       }
+    } catch (e) {
+      document.getElementById("input").style.display = "block";
+      document.getElementById("output").style.display = "none";
+      alert("Custom Params is not valid JSON: " + (e as Error).message);
+      return;
     }
   }
 
