@@ -168,10 +168,6 @@ function go(
   const dontCreateSolutionItem = htmlUtil.getHTMLChecked("dontCreateSolutionItem");
 
   // Custom Params
-  // The textarea contents are parsed and assigned to `templateDictionary.params`
-  // (see deploy-solution-main.ts). To exercise a buildSolution payload, wrap it
-  // as `{ "buildSolution": {...} }` so templates can reference
-  // `{{params.buildSolution.items.<id>.title}}` etc.
   const customParams = htmlUtil.getHTMLValue("customParams");
 
   // If no Solution Id was entered, fall back to buildSolution.solution.item.id
