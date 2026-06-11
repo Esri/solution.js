@@ -2106,6 +2106,17 @@ export function _countRelationships(layers: any[]): number {
 }
 
 /**
+ * Remove spaces and replace other characters that are not allowed in a feature service name with "_".
+ * Spaces are removed entirely. Disallowed (replaced with "_"): '#', '%', '&', '"', '\', '/', '+', '?', ':', '*', '<', '>', '\t'
+ *
+ * @param name The candidate service name
+ * @returns The sanitized name, or the input unchanged if it is not a string
+ */
+export function sanitizeFeatureServiceName(name: string): string {
+  return typeof name === "string" ? name.replace(/ /g, "").replace(/[#%&"\\/+?:*<>\t]/g, "_") : name;
+}
+
+/**
  * Gets the full definitions of the layers affiliated with a hosted service.
  *
  * @param serviceUrl URL to hosted service
@@ -2171,6 +2182,7 @@ export function _getCreateServiceOptions(
         }
         createOptions.item = replaceInTemplate(createOptions.item, templateDictionary);
         createOptions.params = replaceInTemplate(createOptions.params, templateDictionary);
+        createOptions.item.name = sanitizeFeatureServiceName(createOptions.item.name);
 
         if (newItemTemplate.item.thumbnail) {
           // Pass thumbnail file in via params because item property is serialized, which discards a blob

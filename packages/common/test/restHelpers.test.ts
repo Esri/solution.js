@@ -4573,6 +4573,58 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expect(templateDictionary[itemId].solutionExtent).toBeUndefined();
       expect(templateDictionary[itemId].defaultSpatialReference).toEqual({ wkid: serviceWkid });
     });
+
+    it("sanitizes disallowed characters in service name resolved from a {{params}} placeholder", async () => {
+      const userSession: UserSession = new UserSession({
+        username: "jsmith",
+        password: "123456",
+      });
+
+      const templateDictionary: any = {
+        folderId: "aabb123456",
+        isPortal: false,
+        solutionItemId: "sol1234567890",
+        ab766cba0dd44ec080420acc10990282: {},
+        organization: organization,
+        solutionItemExtent: solutionItemExtent,
+        params: {
+          buildSolution: {
+            items: {
+              ab766cba0dd44ec080420acc10990282: {
+                title: 'My & Service #1: a/b\\c <d> "e" +f?g*h%i j\tk',
+              },
+            },
+          },
+        },
+      };
+
+      itemTemplate.item.name =
+        "{{params.buildSolution.items.ab766cba0dd44ec080420acc10990282.title}}_0a25612a2fc54f6e8828c679e2300a49";
+      itemTemplate.item.title = "{{params.buildSolution.items.ab766cba0dd44ec080420acc10990282.title}}";
+      itemTemplate.properties.service.spatialReference = { wkid: 102100 };
+      itemTemplate.itemId = "ab766cba0dd44ec080420acc10990282";
+
+      const options = await restHelpers._getCreateServiceOptions(itemTemplate, userSession, templateDictionary);
+      expect(options.item.name).toEqual("My_Service_1_a_b_c_d__e__f_g_h_ij_k_0a25612a2fc54f6e8828c679e2300a49");
+      // Title is *not* sanitized — only the service name has the character restriction.
+      expect(options.item.title).toEqual('My & Service #1: a/b\\c <d> "e" +f?g*h%i j\tk');
+    });
+  });
+
+  describe("sanitizeFeatureServiceName", () => {
+    it("removes spaces and replaces every other disallowed character with '_'", () => {
+      const disallowedName = 'a#b%c&d"e\\f/g+h?i:j*k<l>m n\to';
+      expect(restHelpers.sanitizeFeatureServiceName(disallowedName)).toEqual("a_b_c_d_e_f_g_h_i_j_k_l_mn_o");
+    });
+
+    it("returns allowed names unchanged", () => {
+      expect(restHelpers.sanitizeFeatureServiceName("AcceptableName_1")).toEqual("AcceptableName_1");
+    });
+
+    it("returns non-string inputs unchanged", () => {
+      expect(restHelpers.sanitizeFeatureServiceName(undefined as any)).toBeUndefined();
+      expect(restHelpers.sanitizeFeatureServiceName(null as any)).toBeNull();
+    });
   });
 
   describe("_extentIsValid", () => {
