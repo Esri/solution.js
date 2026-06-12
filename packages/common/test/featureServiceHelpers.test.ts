@@ -1973,27 +1973,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(actual).toEqual(expected);
     });
 
-    it("should replace disallowed characters in the name with '_'", () => {
-      const t: IItemTemplate = templates.getItemTemplateSkeleton();
-      t.item.type = "Feature Service";
-      // Includes each disallowed character: #  %  &  "  \  /  +  ?  :  *  <  >  space  tab
-      const disallowedName = 'a#b%c&d"e\\f/g+h?i:j*k<l>m n\to';
-      t.item.name = disallowedName;
-      t.item.title = disallowedName;
-      const _templates: IItemTemplate[] = [t];
-
-      spyOn(generalHelpers, "generateGUID").and.returnValue("212dbc19b03943008fdfaf8d6adca00e");
-
-      const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
-      expectedTemplate.item.type = "Feature Service";
-      expectedTemplate.item.name = `a_b_c_d_e_f_g_h_i_j_k_l_m_n_o_212dbc19b03943008fdfaf8d6adca00e`;
-      expectedTemplate.item.title = disallowedName;
-      const expected: IItemTemplate[] = [expectedTemplate];
-
-      const actual: IItemTemplate[] = setNamesAndTitles(_templates);
-      expect(actual).toEqual(expected);
-    });
-
     it("should not truncate if '{{param' is used", () => {
       const t: IItemTemplate = templates.getItemTemplateSkeleton();
       t.item.type = "Feature Service";

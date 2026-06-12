@@ -156,7 +156,7 @@ function go(
   document.getElementById("output").style.display = "block";
 
   // use the manually entered value, falling back to the select lists
-  const solutionId =
+  let solutionId =
     htmlUtil.getHTMLValue("solutionId") ||
     htmlUtil.getHTMLValue("solutionPicklist");
   const folderId = htmlUtil.getHTMLValue("foldersPicklist");
@@ -169,6 +169,23 @@ function go(
 
   // Custom Params
   const customParams = htmlUtil.getHTMLValue("customParams");
+
+  // If no Solution Id was entered, fall back to buildSolution.solution.item.id
+  // when present in the custom params.
+  if (!solutionId && typeof customParams === "string" && customParams.trim().length > 0) {
+    try {
+      const paramsObj = JSON.parse(customParams);
+      const embeddedId = paramsObj?.buildSolution?.solution?.item?.id;
+      if (typeof embeddedId === "string" && embeddedId.length > 0) {
+        solutionId = embeddedId;
+      }
+    } catch (e) {
+      document.getElementById("input").style.display = "block";
+      document.getElementById("output").style.display = "none";
+      alert("Custom Params is not valid JSON: " + (e as Error).message);
+      return;
+    }
+  }
 
   // Source credentials
   const srcHtmlValue = htmlUtil.getHTMLValue("srcPortal");

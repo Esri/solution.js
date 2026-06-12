@@ -100,7 +100,25 @@
 
       <div class="section-title">Custom Params</div>
       <div class="labeledItem">
-        <textarea id="customParams" cols="40" rows="5" placeholder="requires a valid JSON object"></textarea>
+        <p style="margin:0 0 6px 0; max-width:80ch;">
+          Paste a JSON object whose properties will be added to the deploy's <code>templateDictionary.params</code>.
+          Templates can reference these via <code>{{params.&lt;key&gt;...}}</code>.
+        </p>
+        <p style="margin:0 0 6px 0; max-width:80ch;">
+          To exercise a <strong>buildSolution</strong> payload (e.g. from solutions-components), wrap it under a
+          <code>buildSolution</code> key so templates can resolve it as <code>{{params.buildSolution.items.&lt;id&gt;.title}}</code>:
+        </p>
+        <pre style="margin:0 0 6px 0; padding:6px; background:#f4f4f4; border:1px solid #ddd; max-width:80ch; overflow:auto;">{
+  "buildSolution": {
+    "solution": { "item": { "id": "&lt;solutionItemId&gt;", ... }, ... },
+    "items": { "&lt;itemId&gt;": { "title": "...", ... } }
+  }
+}</pre>
+        <p style="margin:0 0 6px 0; max-width:80ch;">
+          If the Solution Id field above is empty, it will be pulled from
+          <code>buildSolution.solution.item.id</code>.
+        </p>
+        <textarea id="customParams" cols="80" rows="10" placeholder="requires a valid JSON object"></textarea>
       </div>
 
       <br /><br />
