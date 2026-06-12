@@ -4613,8 +4613,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
   describe("sanitizeFeatureServiceName", () => {
     it("removes spaces and replaces every other disallowed character with '_'", () => {
-      const disallowedName = 'a#b%c&d"e\\f/g+h?i:j*k<l>m n\to';
-      expect(restHelpers.sanitizeFeatureServiceName(disallowedName)).toEqual("a_b_c_d_e_f_g_h_i_j_k_l_mn_o");
+      const disallowedName = "a#b%c&d\"e\\f/g+h?i:j*k<l>m n\to!p@q'r;s,t";
+      expect(restHelpers.sanitizeFeatureServiceName(disallowedName)).toEqual("a_b_c_d_e_f_g_h_i_j_k_l_mn_o_p_q_r_s_t");
     });
 
     it("returns allowed names unchanged", () => {

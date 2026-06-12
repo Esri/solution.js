@@ -2107,13 +2107,14 @@ export function _countRelationships(layers: any[]): number {
 
 /**
  * Remove spaces and replace other characters that are not allowed in a feature service name with "_".
- * Spaces are removed entirely. Disallowed (replaced with "_"): '#', '%', '&', '"', '\', '/', '+', '?', ':', '*', '<', '>', '\t'
+ * Spaces are removed entirely. Disallowed (replaced with "_"): '#', '%', '&', '"', '\', '/', '+', '?', ':', '*',
+ * '<', '>', '\t', '!', '@', "'", ';', ','
  *
  * @param name The candidate service name
  * @returns The sanitized name, or the input unchanged if it is not a string
  */
 export function sanitizeFeatureServiceName(name: string): string {
-  return typeof name === "string" ? name.replace(/ /g, "").replace(/[#%&"\\/+?:*<>\t]/g, "_") : name;
+  return typeof name === "string" ? name.replace(/ /g, "").replace(/[#%&"\\/+?:*<>\t!@';,]/g, "_") : name;
 }
 
 /**
