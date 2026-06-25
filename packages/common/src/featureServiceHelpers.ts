@@ -534,9 +534,12 @@ export function getLayerSettings(layerInfos: any, url: string, itemId: string, e
  * The feature service name will have a generated GUID appended.
  *
  * @param templates A collection of AGO item templates.
+ * @param templateDictionary Optional hash of values used to resolve `{{...}}` tokens in the name
+ *   before applying the 50-char base-name limit. When omitted, names containing unresolved tokens
+ *   are passed through untruncated (legacy behavior).
  * @returns An updated collection of AGO templates with unique feature service names.
  */
-export function setNamesAndTitles(templates: IItemTemplate[]): IItemTemplate[] {
+export function setNamesAndTitles(templates: IItemTemplate[], templateDictionary?: any): IItemTemplate[] {
   const guid: string = generateGUID();
   const names: string[] = [];
   return templates.map((t) => {
@@ -553,12 +556,21 @@ export function setNamesAndTitles(templates: IItemTemplate[]): IItemTemplate[] {
         // If the name already contains a GUID remove it
         baseName = baseName.replace(/_[0-9A-F]{32}/gi, "");
 
-        // The name length limit is 98
-        // Limit the baseName to 50 characters before the _<guid>
-        // If the baseName includes '{{params' it is likely being used in a template replacement, so do not truncate.
-        const name: string = baseName.includes("{{params")
-          ? baseName + "_" + guid
-          : baseName.substring(0, 50) + "_" + guid;
+        // Resolve any {{...}} tokens (e.g. {{params.buildSolution.items.<id>.title}}) so the
+        // base-name length limit reflects the value AGOL will actually see at create time.
+        const resolvedBaseName: string = templateDictionary
+          ? replaceInTemplate(baseName, templateDictionary)
+          : baseName;
+
+        // Limit the base name to 50 chars so the full service name (base + "_" + 32-char guid)
+        // stays within AGOL's service-name length limit. This 50-char cap is long-standing
+        // behavior. If unresolved {{...}} tokens remain we can't know the resolved length, so
+        // leave the name untruncated.
+        const maxBaseNameLength = 50;
+        const stillTemplatized = resolvedBaseName.includes("{{");
+        const name: string = stillTemplatized
+          ? resolvedBaseName + "_" + guid
+          : resolvedBaseName.substring(0, maxBaseNameLength) + "_" + guid;
 
         // If the name + GUID already exists then append "_occurrenceCount"
         t.item.name = names.indexOf(name) === -1 ? name : `${name}_${names.filter((n) => n === name).length}`;
@@ -882,6 +894,59 @@ export function addFeatureServiceLayersAndTables(
 }
 
 /**
+ * Shorten any layer or table name longer than `maxNameLength` to a unique value of at most
+ * `maxNameLength` characters, in preparation for an addToDefinition call, and report the original
+ * names so they can be restored afterward.
+ *
+ * Mutates the `name` of each over-long layer/table in `layerChunks` in place.
+ *
+ * @param layerChunks The addToDefinition chunks whose `layers` and `tables` will be added
+ * @param maxNameLength Names longer than this are truncated to a unique value of this length
+ * @returns The original names to restore, as `{ layers: [{ id, name }], tables: [{ id, name }] }`
+ * @private
+ */
+export function _truncateNamesForAddToDefinition(
+  layerChunks: any[],
+  maxNameLength: number,
+): { layers: Array<{ id: any; name: string }>; tables: Array<{ id: any; name: string }> } {
+  const restore: { layers: Array<{ id: any; name: string }>; tables: Array<{ id: any; name: string }> } = {
+    layers: [],
+    tables: [],
+  };
+  const allItems: Array<{ item: any; isLayer: boolean }> = [];
+  layerChunks.forEach((chunk) => {
+    chunk.layers.forEach((layer: any) => allItems.push({ item: layer, isLayer: true }));
+    chunk.tables.forEach((table: any) => allItems.push({ item: table, isLayer: false }));
+  });
+
+  // Reserve names that are already short enough so the truncated names won't collide with them.
+  const usedNames = new Set<string>();
+  allItems.forEach(({ item }) => {
+    if (item.name.length <= maxNameLength) {
+      usedNames.add(item.name.toLowerCase());
+    }
+  });
+
+  allItems.forEach(({ item, isLayer }) => {
+    if (item.name.length > maxNameLength) {
+      const originalName: string = item.name;
+      let candidate = originalName.substring(0, maxNameLength);
+      let counter = 1;
+      // Keep the truncated name unique by trimming room for a numeric suffix when needed.
+      while (usedNames.has(candidate.toLowerCase())) {
+        const suffix = `_${counter++}`;
+        candidate = originalName.substring(0, maxNameLength - suffix.length) + suffix;
+      }
+      usedNames.add(candidate.toLowerCase());
+      item.name = candidate;
+      (isLayer ? restore.layers : restore.tables).push({ id: item.id, name: originalName });
+    }
+  });
+
+  return restore;
+}
+
+/**
  * Updates a feature service with a list of layers and/or tables.
  *
  * @param serviceUrl URL of feature service
@@ -1013,13 +1078,43 @@ export function addFeatureServiceDefinition(
       // than the defined chunk size
       const useAsync: boolean = listToAdd.length > chunkSize;
 
+      // Shorten any over-long layer/table names to short, unique values before adding them.
+      // Names will be restored afterward with one updateDefinition call per layer/table.
+      const maxBackingTableNameLength = 30;
+      const restoreNames = _truncateNamesForAddToDefinition(layerChunks, maxBackingTableNameLength);
+
+      // Base admin URL used for the per-layer updateDefinition restore calls below.
+      const adminServiceUrl = checkUrlPathTermination(serviceUrl.replace("/rest/services", "/rest/admin/services"));
+
       layerChunks
         .reduce(
           (prev, curr) => prev.then(() => addToServiceDefinition(serviceUrl, curr, false, useAsync)),
           Promise.resolve(null),
         )
         .then(
-          () => resolve(null),
+          () => {
+            // Restore the original (pre-truncation) display names.
+            // I was seeing the updateDefinition call succeed but the names not being restored when I was doing this
+            // with a single call at the service endpoint. So now we are doing this sequentially.
+            const restoreItems = [...restoreNames.layers, ...restoreNames.tables];
+            restoreItems
+              .reduce(
+                (prev, entry) =>
+                  prev.then(() => {
+                    const restoreUpdate: IUpdate = {
+                      url: adminServiceUrl + entry.id + "/updateDefinition",
+                      params: { updateDefinition: { name: entry.name } },
+                      args: { authentication } as IPostProcessArgs,
+                    };
+                    return getRequest(restoreUpdate, false, false, templateDictionary.isPortal);
+                  }),
+                Promise.resolve(null),
+              )
+              .then(
+                () => resolve(null),
+                (e: any) => reject(fail(e)),
+              );
+          },
           (e: any) => reject(fail(e)),
         );
     }
