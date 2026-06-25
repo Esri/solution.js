@@ -35,6 +35,7 @@ import {
   getLayersAndTables,
   getExistingLayersAndTables,
   addFeatureServiceDefinition,
+  _truncateNamesForAddToDefinition,
   addFeatureServiceLayersAndTables,
   updateLayerFieldReferences,
   postProcessFields,
@@ -1938,7 +1939,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should limit the base name to 50 chars", () => {
       const t: IItemTemplate = templates.getItemTemplateSkeleton();
       t.item.type = "Feature Service";
-      t.item.name = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
+      t.item.name = "a".repeat(60);
       t.item.title = "TheName";
       const _templates: IItemTemplate[] = [t];
 
@@ -1946,7 +1947,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
-      expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_212dbc19b03943008fdfaf8d6adca00e`;
+      expectedTemplate.item.name = "a".repeat(50) + "_212dbc19b03943008fdfaf8d6adca00e";
       expectedTemplate.item.title = "TheName";
       const expected: IItemTemplate[] = [expectedTemplate];
 
@@ -1957,7 +1958,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should limit the base name to 50 chars and handle existing guid in the name", () => {
       const t: IItemTemplate = templates.getItemTemplateSkeleton();
       t.item.type = "Feature Service";
-      t.item.name = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab_aa766cba0dd44ec080420acc10990282";
+      t.item.name = "a".repeat(60) + "_aa766cba0dd44ec080420acc10990282";
       t.item.title = "TheName";
       const _templates: IItemTemplate[] = [t];
 
@@ -1965,7 +1966,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
       expectedTemplate.item.type = "Feature Service";
-      expectedTemplate.item.name = `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa_212dbc19b03943008fdfaf8d6adca00e`;
+      expectedTemplate.item.name = "a".repeat(50) + "_212dbc19b03943008fdfaf8d6adca00e";
       expectedTemplate.item.title = "TheName";
       const expected: IItemTemplate[] = [expectedTemplate];
 
@@ -1990,6 +1991,42 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const actual: IItemTemplate[] = setNamesAndTitles(_templates);
       expect(actual).toEqual(expected);
+    });
+
+    it("should resolve '{{params...}}' via the templateDictionary and truncate the resolved value to 50 chars", () => {
+      const t: IItemTemplate = templates.getItemTemplateSkeleton();
+      t.item.type = "Feature Service";
+      t.item.name = "{{params.buildSolution.items.46c2f61bc5bc4f3aad6b391360e8e53d.title}}";
+      t.item.title = "TheName";
+      const _templates: IItemTemplate[] = [t];
+
+      spyOn(generalHelpers, "generateGUID").and.returnValue("212dbc19b03943008fdfaf8d6adca00e");
+
+      // 80-char resolved title — well past the 50-char base limit
+      const longTitle = "TrailConditions" + "a".repeat(65);
+      expect(longTitle.length).toBe(80);
+      const templateDictionary: any = {
+        params: {
+          buildSolution: {
+            items: {
+              "46c2f61bc5bc4f3aad6b391360e8e53d": {
+                title: longTitle,
+              },
+            },
+          },
+        },
+      };
+
+      const expectedTemplate: IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedTemplate.item.type = "Feature Service";
+      expectedTemplate.item.name = longTitle.substring(0, 50) + "_212dbc19b03943008fdfaf8d6adca00e";
+      expectedTemplate.item.title = "TheName";
+      const expected: IItemTemplate[] = [expectedTemplate];
+
+      const actual: IItemTemplate[] = setNamesAndTitles(_templates, templateDictionary);
+      expect(actual).toEqual(expected);
+      // Confirm the resolved value is truncated to the 50-char base (50 + "_" + 32-char guid).
+      expect(actual[0].item.name.length).toBe(50 + 1 + 32);
     });
   });
 
@@ -3793,6 +3830,181 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
 
       await addFeatureServiceDefinition(expectedUrl, [], {}, MOCK_USER_SESSION, "", {}, {}, itemTemplate);
+    });
+
+    it("should truncate over-long names for the add, then restore each via a per-layer updateDefinition call", async () => {
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminAddUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition";
+
+      itemTemplate = templates.getItemTemplate("Feature Service", [], expectedUrl);
+
+      // Two layers and one table whose names are all longer than 30 chars.
+      const longName0 = "Ski Hills " + "x".repeat(40);
+      const longName1 = "Tasks " + "y".repeat(40);
+      const longName2 = "Inspections " + "z".repeat(40);
+      const layer0 = mockItems.getAGOLLayerOrTable(0, longName0, "Feature Layer", []);
+      const layer1 = mockItems.getAGOLLayerOrTable(1, longName1, "Feature Layer", []);
+      const table2 = mockItems.getAGOLLayerOrTable(2, longName2, "Table", []);
+      const listToAdd = [
+        { item: layer0, type: "layer" },
+        { item: layer1, type: "layer" },
+        { item: table2, type: "table" },
+      ];
+
+      fetchMock.post(adminAddUrl, '{"success": true}').post(/updateDefinition/, '{"success": true}');
+
+      await addFeatureServiceDefinition(expectedUrl, listToAdd, {}, MOCK_USER_SESSION, "", {}, {}, itemTemplate);
+
+      // All layers and tables are added in a single batched call, with names truncated to <= 30.
+      const addCalls: any[] = fetchMock.calls(/addToDefinition/);
+      expect(addCalls.length).withContext("a single batched addToDefinition call").toEqual(1);
+      const addBody: string = addCalls[0][1].body as string;
+      const addToDef = JSON.parse(decodeURIComponent(/addToDefinition=([^&]*)/.exec(addBody)![1]));
+      expect(addToDef.layers.length).toEqual(2);
+      expect(addToDef.tables.length).toEqual(1);
+      addToDef.layers.concat(addToDef.tables).forEach((item: any) => {
+        expect(item.name.length).withContext("truncated to <= 30 chars").toBeLessThanOrEqual(30);
+      });
+
+      // One layer-level updateDefinition call per truncated item restores the original name.
+      const updateCalls: any[] = fetchMock.calls(/updateDefinition/);
+      expect(updateCalls.length).withContext("one updateDefinition call per truncated item").toEqual(3);
+      const restoredById: any = {};
+      updateCalls.forEach((call) => {
+        const url: string = call[0] as string;
+        const id = /FeatureServer\/(\d+)\/updateDefinition/.exec(url)![1];
+        const body: string = call[1].body as string;
+        const def = JSON.parse(decodeURIComponent(/updateDefinition=([^&]*)/.exec(body)![1]));
+        restoredById[id] = def.name;
+      });
+      expect(restoredById["0"]).toEqual(longName0);
+      expect(restoredById["1"]).toEqual(longName1);
+      expect(restoredById["2"]).toEqual(longName2);
+    });
+
+    it("should add in a single call with no updateDefinition when no name is longer than 30", async () => {
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminAddUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition";
+
+      itemTemplate = templates.getItemTemplate("Feature Service", [], expectedUrl);
+
+      // All names are <= 30 chars, so nothing is truncated and no updateDefinition call is made.
+      const layer0 = mockItems.getAGOLLayerOrTable(0, "Ski Hills", "Feature Layer", []);
+      const layer1 = mockItems.getAGOLLayerOrTable(1, "Tasks", "Feature Layer", []);
+      const table2 = mockItems.getAGOLLayerOrTable(2, "Inspections", "Table", []);
+      const listToAdd = [
+        { item: layer0, type: "layer" },
+        { item: layer1, type: "layer" },
+        { item: table2, type: "table" },
+      ];
+
+      fetchMock.post(adminAddUrl, '{"success": true}');
+
+      await addFeatureServiceDefinition(expectedUrl, listToAdd, {}, MOCK_USER_SESSION, "", {}, {}, itemTemplate);
+
+      const addCalls: any[] = fetchMock.calls(/addToDefinition/);
+      expect(addCalls.length).withContext("a single batched addToDefinition call").toEqual(1);
+      const updateCalls: any[] = fetchMock.calls(/updateDefinition/);
+      expect(updateCalls.length).withContext("no updateDefinition call").toEqual(0);
+
+      const body: string = addCalls[0][1].body as string;
+      const addToDef = JSON.parse(decodeURIComponent(/addToDefinition=([^&]*)/.exec(body)![1]));
+      expect(addToDef.layers.length).toEqual(2);
+      expect(addToDef.tables.length).toEqual(1);
+    });
+
+    it("should reject when a restore updateDefinition call fails", async () => {
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminAddUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition";
+
+      itemTemplate = templates.getItemTemplate("Feature Service", [], expectedUrl);
+
+      const layer0 = mockItems.getAGOLLayerOrTable(0, "Ski Hills " + "x".repeat(40), "Feature Layer", []);
+      const listToAdd = [{ item: layer0, type: "layer" }];
+
+      fetchMock.post(adminAddUrl, '{"success": true}').post(/updateDefinition/, mockItems.get400Failure());
+
+      await expectAsync(
+        addFeatureServiceDefinition(expectedUrl, listToAdd, {}, MOCK_USER_SESSION, "", {}, {}, itemTemplate),
+      ).toBeRejected();
+    });
+  });
+
+  describe("_truncateNamesForAddToDefinition", () => {
+    it("truncates over-long names to <= maxNameLength and reports originals to restore", () => {
+      const longLayer = "Ski Hills " + "x".repeat(40);
+      const longTable = "Inspections " + "z".repeat(40);
+      const chunks = [
+        {
+          layers: [
+            { id: 0, name: longLayer },
+            { id: 1, name: "Short Layer" },
+          ],
+          tables: [{ id: 2, name: longTable }],
+        },
+      ];
+
+      const restore = _truncateNamesForAddToDefinition(chunks, 30);
+
+      // Over-long names truncated to 30; short name left alone.
+      expect(chunks[0].layers[0].name).toEqual(longLayer.substring(0, 30));
+      expect(chunks[0].layers[0].name.length).toEqual(30);
+      expect(chunks[0].layers[1].name).toEqual("Short Layer");
+      expect(chunks[0].tables[0].name).toEqual(longTable.substring(0, 30));
+
+      // Originals captured for restore, split by layer vs table.
+      expect(restore.layers).toEqual([{ id: 0, name: longLayer }]);
+      expect(restore.tables).toEqual([{ id: 2, name: longTable }]);
+    });
+
+    it("keeps truncated names unique when they share a prefix", () => {
+      // Two names with the same first 30 characters must not collide after truncation.
+      const sharedPrefix = "Trailheads ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const nameA = sharedPrefix + " first";
+      const nameB = sharedPrefix + " second";
+      const chunks = [
+        {
+          layers: [
+            { id: 0, name: nameA },
+            { id: 1, name: nameB },
+          ],
+          tables: [],
+        },
+      ];
+
+      const restore = _truncateNamesForAddToDefinition(chunks, 30);
+
+      const truncatedA = chunks[0].layers[0].name;
+      const truncatedB = chunks[0].layers[1].name;
+      expect(truncatedA.length).toBeLessThanOrEqual(30);
+      expect(truncatedB.length).toBeLessThanOrEqual(30);
+      expect(truncatedA).not.toEqual(truncatedB);
+      // Originals are preserved regardless of the uniquifying suffix.
+      expect(restore.layers).toEqual([
+        { id: 0, name: nameA },
+        { id: 1, name: nameB },
+      ]);
+    });
+
+    it("makes no changes when all names are within the limit", () => {
+      const chunks = [
+        {
+          layers: [{ id: 0, name: "Ski Hills" }],
+          tables: [{ id: 2, name: "Inspections" }],
+        },
+      ];
+
+      const restore = _truncateNamesForAddToDefinition(chunks, 30);
+
+      expect(chunks[0].layers[0].name).toEqual("Ski Hills");
+      expect(chunks[0].tables[0].name).toEqual("Inspections");
+      expect(restore).toEqual({ layers: [], tables: [] });
     });
   });
 
