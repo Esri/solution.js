@@ -194,7 +194,7 @@ export function deploySolutionItems(
         useExistingItemsDef.then(() => {
           checkCancelled();
 
-          templates = common.setNamesAndTitles(templates);
+          templates = common.setNamesAndTitles(templates, templateDictionary);
 
           buildOrder.forEach((id: string) => {
             // Get the item's template out of the list of templates
