@@ -6,14 +6,14 @@
 * \[ \] Open a Windows shell and go to the top level of the repo
 * \[ \] Run `npm run clean:dist`
 * \[ \] Run `build.bat`
-* \[ \] Create a .npmrc file if you don't want to have to enter a one-time password during publishing
-* \[ \] Pick and run a publishing option:
+* \[ \] Use npm 11.15.0 or later and configure npm authentication, such as a granular access token in `.npmrc`
+* \[ \] Pick and run a staging option:
   - Run `npm run publish` and pick new version number for the current AGO release
   - Run `npm run publish:next` and pick new version number for the next AGO release (sample: versionroot"-next.yyyymmdd" such as 6.5.0-next.20251001)
   - Run `npm run publish patch` to automatically bump patch version number for the current AGO release
   - Run `npm run publish:next patch` to automatically bump patch version number for the next AGO release
   - (One can replace "patch" with "major" | "minor" | "premajor" | "preminor" | "prepatch" | "prerelease")
-* \[ \] Check that publishing to the current AGO release worked using `check_npm_package_versions.html` in a browser
+* \[ \] Check npmjs.com to confirm that all packages were staged with the expected tag
 * \[ \] Create a release from the build's tag in GitHub  (tags > release > draft a new release > type changes in this version)
 * \[ \] Update documentation via `npm run docs:build`
 * \[ \] Deploy documentation via `npm run docs:deploy`

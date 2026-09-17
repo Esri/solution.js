@@ -13,6 +13,13 @@ echo Syntax publish-next-auto.bat 6.2.0
 exit /b
 
 :checkSignin
+rem Staged publishing requires npm 11.15.0 or later
+call npm stage --help >nul 2>&1
+if not %errorlevel%==0 (
+	echo Staged publishing requires npm 11.15.0 or later
+	exit /b
+)
+
 rem Make sure user is logged in to npm
 call npm whoami 2>temp.txt
 for /f %%a in ("temp.txt") do set size=%%~za
@@ -25,11 +32,6 @@ rem Remove existing "next" version tags
 git tag -l *next* >temp.txt
 for /f %%a in (temp.txt) do git push --delete origin %%a
 for /f %%a in (temp.txt) do git tag -d %%a
-del/q temp.txt
-
-rem Save latest version number
-call npm view @esri/solution-common version >temp.txt
-set/p latestVersion=<temp.txt
 del/q temp.txt
 
 rem Build the next version using an incrementing prerelease number.
@@ -48,7 +50,7 @@ if %errorlevel%==0 (
 )
 
 set nextVersion=%versionRoot%-next.%nextNumber%
-echo Publishing %nextVersion%
+echo Staging %nextVersion%
 
 rem Update the version number for all but the top-level package
 call npx lerna publish %nextVersion% --no-git-tag-version --no-push --skip-npm --yes
@@ -63,14 +65,13 @@ rem Update the top-level package.json version to the lerna version
 call npm version %nextVersion% --allow-same-version --no-git-tag-version
 call git add package.json package-lock.json
 
-rem Publish to npm
-call npx lerna publish %nextVersion% --yes --force-publish=* --no-push --no-git-tag-version
+rem Finish the Lerna publish flow without publishing to npm
+call npx lerna publish %nextVersion% --yes --force-publish=* --no-push --no-git-tag-version --skip-npm
 
-rem Restore the latest version number
-call support\setLatestVersion.bat %latestVersion%
+rem Stage workspace versions that are not already published
+call node support\stage-from-package.mjs --tag next
 
-rem Set the next version number
-call support\setNextVersion.bat %nextVersion%
+echo Packages staged with the next tag on npmjs.com.
 
 rem Discard the package*.json file changes
 call git reset --hard HEAD
